@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import {
   CounterpartyReport,
   EnclaveAttestation,
+  ExecutionDirective,
+  GauntletThreatType,
   PolicyEvaluationResult,
   SettlementResult,
   TreasuryLedgerEntry,
@@ -15,11 +17,11 @@ interface EnclaveReceiptProps {
   readonly attestation: EnclaveAttestation | null;
   readonly policyResult: PolicyEvaluationResult | null;
   readonly settlement: SettlementResult | null;
+  readonly directive?: ExecutionDirective | null;
   readonly counterparty?: CounterpartyReport | null;
   readonly ledgerEntry?: TreasuryLedgerEntry | null;
   readonly isBlocked: boolean;
-  readonly isTamperTest: boolean;
-  readonly isAttackDemo?: boolean;
+  readonly threatType?: GauntletThreatType;
   readonly latencyMs: number;
 }
 
@@ -27,11 +29,11 @@ export function EnclaveReceipt({
   attestation,
   policyResult,
   settlement,
+  directive,
   counterparty,
   ledgerEntry,
   isBlocked,
-  isTamperTest,
-  isAttackDemo,
+  threatType,
   latencyMs,
 }: EnclaveReceiptProps) {
   const [showProofModal, setShowProofModal] = useState<boolean>(false);
@@ -46,13 +48,14 @@ export function EnclaveReceipt({
       {
         enclaveId: attestation.enclaveId,
         pcr0: attestation.pcr0,
-        nonce: attestation.nonce,
+        clientNonce: attestation.clientNonce,
+        directiveId: directive?.directiveId || 'N/A',
+        responsibleLayer: policyResult.responsibleLayer || 'N/A',
         counterpartyStatus: counterparty?.overallStatus || 'N/A',
         policyPassed: policyResult.approved,
         blockReason: policyResult.blockReasonHeadline,
         settlementIntent: settlement?.intentHash || 'N/A',
         netYieldUsd: ledgerEntry?.netYieldUsd || 0,
-        contributorPayoutUsd: ledgerEntry?.contributorPayoutUsd || 0,
         evaluatedAt: policyResult.evaluatedAt,
       },
       null,
@@ -89,20 +92,14 @@ export function EnclaveReceipt({
             {policyResult.evaluatedAt} // Latency: {latencyMs}ms
           </div>
 
-          {isTamperTest && (
-            <div className="mt-2 inline-block px-2 py-0.5 bg-[#FCE8E6] text-[#991B1B] border border-[#1E1E1E] font-bold text-[10px] uppercase">
-              [TAMPER TEST AUDIT VERIFICATION]
-            </div>
-          )}
-
-          {isAttackDemo && (
+          {threatType && (
             <div className="mt-2 inline-block px-2 py-0.5 bg-[#FCE8E6] text-[#991B1B] border border-[#991B1B] font-bold text-[10px] uppercase">
-              [ATTACK DEMO: INJECTION BLOCKED]
+              [GAUNTLET THREAT CHALLENGE: {threatType}]
             </div>
           )}
         </div>
 
-        {/* Status Headline */}
+        {/* Status Headline with Responsible Layer Attribution */}
         <div
           className={`my-3 p-2.5 rounded-lg border-2 border-[#1E1E1E] ${
             isBlocked
@@ -112,10 +109,12 @@ export function EnclaveReceipt({
         >
           <div className="flex items-center justify-between">
             <span className="font-bold uppercase tracking-wider text-[11px]">
-              {isBlocked ? 'TRANSACTION BLOCKED' : 'TRANSACTION AUTHORIZED'}
+              {isBlocked ? 'ACTION REJECTED' : 'TRANSACTION AUTHORIZED'}
             </span>
             <span className="font-bold text-[10px] uppercase">
-              {isBlocked ? 'HALTED' : 'SETTLED'}
+              {isBlocked
+                ? `BY: ${policyResult.responsibleLayer || 'SECURITY SHIELD'}`
+                : 'SETTLED'}
             </span>
           </div>
           {isBlocked && policyResult.blockReasonHeadline && (
@@ -144,13 +143,25 @@ export function EnclaveReceipt({
               {attestation.isSimulated && (
                 <SimulatedBadge reason={attestation.simulationReason} />
               )}
-              <span className="font-bold text-[#2E7D32]">VERIFIED</span>
+              <span
+                className={`font-bold ${
+                  attestation.verified ? 'text-[#2E7D32]' : 'text-[#991B1B]'
+                }`}
+              >
+                {attestation.verified ? 'VERIFIED' : 'NONCE REPLAY REJECTED'}
+              </span>
             </div>
           </div>
           <div className="flex justify-between items-start">
-            <span className="text-[#666666]">Fresh Nonce (Replay Proof):</span>
+            <span className="text-[#666666]">Client Fresh Nonce:</span>
             <span className="font-mono text-[10px] text-[#1E1E1E]">
-              {attestation.nonce.slice(0, 16)}...
+              {attestation.clientNonce.slice(0, 16)}...
+            </span>
+          </div>
+          <div className="flex justify-between items-start">
+            <span className="text-[#666666]">Directive Idempotency Key:</span>
+            <span className="font-mono text-[10px] text-[#1E1E1E]">
+              {directive?.directiveId || 'N/A'}
             </span>
           </div>
           <div className="flex justify-between items-start">
@@ -179,16 +190,16 @@ export function EnclaveReceipt({
           </div>
         )}
 
-        {/* Security Policy Checklist (Plain Language) */}
+        {/* Security Policy Outcomes with Layer Attribution */}
         <div className="py-2.5 border-b border-dashed border-[#D5D0C5]">
           <div className="text-[10px] font-bold text-[#666666] uppercase mb-1.5">
-            Security Policy Outcomes (Deterministic)
+            Security Policy Outcomes (Layer-Attributed)
           </div>
           <div className="space-y-1">
             {policyResult.rules.map((rule) => (
               <div key={rule.ruleId} className="flex items-start justify-between gap-2 text-[11px]">
                 <span className="text-[#444444] leading-snug">
-                  {rule.ruleName}:
+                  [{rule.layer.slice(0, 10)}] {rule.ruleName}:
                 </span>
                 <span
                   className={`font-bold uppercase text-[10px] shrink-0 ${
@@ -209,15 +220,21 @@ export function EnclaveReceipt({
               Autonomous Business Settlement (P&amp;L)
             </div>
             <div className="flex justify-between items-center text-[10px]">
-              <span className="text-[#666666]">Self-Funded Inference Cost:</span>
+              <span className="text-[#666666]">Self-Funded Compute Cost:</span>
               <span className="font-bold text-[#B45309] tabular-nums">
                 -${ledgerEntry.inferenceCostUsd.toFixed(3)} (NEAR AI Cloud)
               </span>
             </div>
             <div className="flex justify-between items-center text-[10px]">
-              <span className="text-[#666666]">Contributor Payout (20%):</span>
-              <span className="font-bold text-[#2E7D32] tabular-nums">
-                +${ledgerEntry.contributorPayoutUsd.toFixed(4)}
+              <span className="text-[#666666]">Market Spread Result:</span>
+              <span
+                className={`font-bold tabular-nums ${
+                  ledgerEntry.netYieldUsd >= 0 ? 'text-[#2E7D32]' : 'text-[#991B1B]'
+                }`}
+              >
+                {ledgerEntry.netYieldUsd >= 0
+                  ? `+$${ledgerEntry.netYieldUsd.toFixed(4)}`
+                  : `-$${Math.abs(ledgerEntry.netYieldUsd).toFixed(4)}`}
               </span>
             </div>
           </div>

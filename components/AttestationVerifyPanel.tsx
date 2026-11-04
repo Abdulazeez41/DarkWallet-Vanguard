@@ -97,9 +97,15 @@ export function AttestationVerifyPanel({
               Cryptographic Enclave Nonce &amp; Digests:
             </div>
             <div>
-              <span className="text-[#888888] text-[10px]">Fresh Nonce (Replay Proof): </span>
+              <span className="text-[#888888] text-[10px]">Client Fresh Nonce: </span>
               <span className="font-mono text-[10px] text-[#FEF3C7] break-all">
-                {attestation.nonce}
+                {attestation.clientNonce}
+              </span>
+            </div>
+            <div>
+              <span className="text-[#888888] text-[10px]">Quote Report Nonce: </span>
+              <span className="font-mono text-[10px] text-[#D4F0E4] break-all">
+                {attestation.quoteReportDataNonce}
               </span>
             </div>
             <div>

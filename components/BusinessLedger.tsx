@@ -44,7 +44,7 @@ export function BusinessLedger({ entries }: BusinessLedgerProps) {
             Inference Self-Paid
           </div>
           <div className="text-sm font-black text-[#B45309] tabular-nums mt-0.5">
-            ${totalInferenceCost.toFixed(4)}
+            -${totalInferenceCost.toFixed(3)}
           </div>
         </div>
 
@@ -52,8 +52,12 @@ export function BusinessLedger({ entries }: BusinessLedgerProps) {
           <div className="text-[9px] uppercase text-[#666666] font-bold">
             Net Treasury Yield
           </div>
-          <div className="text-sm font-black text-[#2E7D32] tabular-nums mt-0.5">
-            +${totalNetYield.toFixed(4)}
+          <div
+            className={`text-sm font-black tabular-nums mt-0.5 ${
+              totalNetYield >= 0 ? 'text-[#2E7D32]' : 'text-[#991B1B]'
+            }`}
+          >
+            {totalNetYield >= 0 ? `+$${totalNetYield.toFixed(4)}` : `-$${Math.abs(totalNetYield).toFixed(4)}`}
           </div>
         </div>
 
@@ -76,7 +80,7 @@ export function BusinessLedger({ entries }: BusinessLedgerProps) {
 
         {entries.length === 0 ? (
           <div className="p-4 text-center text-xs text-[#888888] italic bg-[#FAF7F0] border border-[#D5D0C5] rounded-xl">
-            [No autonomous transactions logged yet. Deploy an intent to observe self-funded revenue split.]
+            [No autonomous transactions logged yet. Deploy an intent or run 7-day replay to observe self-funded revenue split.]
           </div>
         ) : (
           <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
@@ -86,22 +90,38 @@ export function BusinessLedger({ entries }: BusinessLedgerProps) {
                 className="p-2 bg-[#FAF7F0] border-2 border-[#1E1E1E] rounded-xl flex items-center justify-between text-[11px] shadow-[2px_2px_0px_0px_#1E1E1E]"
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#2E7D32]" />
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      entry.isSlippageLoss ? 'bg-[#D97706]' : 'bg-[#2E7D32]'
+                    }`}
+                  />
                   <span className="font-bold text-[#1E1E1E] tabular-nums">
                     ${entry.grossIntentVolumeUsd.toFixed(2)} Vol
                   </span>
                   <span className="text-[9px] text-[#666666] hidden sm:inline">
-                    (Inference: -${entry.inferenceCostUsd.toFixed(3)})
+                    [{entry.directiveId}] (Compute: -${entry.inferenceCostUsd.toFixed(3)})
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 text-right">
-                  <span className="text-[10px] text-[#2E7D32] font-bold tabular-nums">
-                    +${entry.netYieldUsd.toFixed(4)} Net
+                  <span
+                    className={`text-[10px] font-bold tabular-nums ${
+                      entry.netYieldUsd >= 0 ? 'text-[#2E7D32]' : 'text-[#991B1B]'
+                    }`}
+                  >
+                    {entry.netYieldUsd >= 0
+                      ? `+$${entry.netYieldUsd.toFixed(4)}`
+                      : `-$${Math.abs(entry.netYieldUsd).toFixed(4)}`} Net
                   </span>
-                  <span className="text-[9px] bg-[#EAE5DC] px-1.5 py-0.5 rounded border border-[#C5BFB5] text-[#1E1E1E] hidden sm:inline">
-                    20% Split Paid
-                  </span>
+                  {entry.isSlippageLoss ? (
+                    <span className="text-[9px] bg-[#FEF3C7] text-[#92400E] px-1.5 py-0.5 rounded border border-[#D97706] hidden sm:inline">
+                      Slippage Loss (Compliant)
+                    </span>
+                  ) : (
+                    <span className="text-[9px] bg-[#EAE5DC] px-1.5 py-0.5 rounded border border-[#C5BFB5] text-[#1E1E1E] hidden sm:inline">
+                      20% Split Paid
+                    </span>
+                  )}
                 </div>
               </div>
             ))}

@@ -3,9 +3,11 @@
  *
  * DarkWallet Vanguard - Enclave Agent Execution Endpoint
  *
- * Pillar A (Track 03): Private Brain (NEAR AI Cloud TEE with OpenAI SDK & Fresh Nonce Attestation)
- * Pillar B (Track 06): OutLayer Security Policy Engine & Counterparty Risk Screening (ALLOW/WARN/BLOCK)
- * Pillar C (Track 04): Cross-Chain Settlement (NEAR Intents) & Self-Funding Autonomous Business Ledger
+ * Explicit Security Layer Attribution:
+ *  - TEE_ATTESTATION_VERIFIER: Checks Intel TDX quote & cryptographic nonce freshness.
+ *  - POLICY_ENGINE: Checks spending limits, cumulative budget, whitelists, and counterparties.
+ *  - EXECUTION_COORDINATOR: Enforces execution-level idempotency (duplicate prevention).
+ *  - EMERGENCY_CONTROL: Halts when kill switch is tripped.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -18,6 +20,7 @@ import {
   AgentStepTelemetry,
   EnclaveAttestation,
   ExecutionDirective,
+  GauntletThreatType,
   SettlementResult,
   TreasuryLedgerEntry,
   VerificationCheckItem,
@@ -34,42 +37,43 @@ const DirectiveSchema = z.object({
   destinationAddress: z.string().optional(),
 });
 
-// Agent Connect cross-chain intents RPC endpoint path
-// Confirm current path in the official NEAR Intents docs (https://docs.near-intents.org)
 const AGENT_CONNECT_RPC_PATH = '/v1/intents/quote_and_submit';
 
 export async function POST(req: NextRequest): Promise<NextResponse<AgentRunResponse>> {
   const startTime = Date.now();
   const steps: AgentStepTelemetry[] = [];
 
-  let isTamperTest = false;
-  let isAttackDemo = false;
+  let threatType: GauntletThreatType | undefined;
   let humanApprovedWarn = false;
   let rawGoal = '';
   let policyInput: AgentPolicy;
+  let executedDirectiveIds: string[] = [];
 
   try {
     const body = await req.json();
     rawGoal = typeof body.goal === 'string' ? body.goal.trim() : '';
     policyInput = body.policy as AgentPolicy;
-    isTamperTest = Boolean(body.isTamperTest);
-    isAttackDemo = Boolean(body.isAttackDemo);
+    threatType = body.threatType as GauntletThreatType | undefined;
     humanApprovedWarn = Boolean(body.humanApprovedWarn);
+    executedDirectiveIds = Array.isArray(body.executedDirectiveIds)
+      ? body.executedDirectiveIds
+      : [];
   } catch {
     const fallbackAttestation = createFallbackAttestation(true, 'Invalid request payload');
     return NextResponse.json(
       {
         success: false,
-        isTamperTest: false,
-        isAttackDemo: false,
         directive: null,
         counterparty: scoreCounterparty(undefined, 'Ethereum', false),
         attestation: fallbackAttestation,
         policyResult: {
           approved: false,
+          responsibleLayer: 'POLICY_ENGINE',
           blockReasonHeadline: 'Trade details could not be understood',
           blockReasonDetail: 'Request payload was malformed or missing JSON structure.',
           rules: [],
+          updatedSpentInSessionUsd: 0,
+          remainingBudgetUsd: 200,
           evaluatedAt: new Date().toISOString(),
         },
         settlement: null,
@@ -83,7 +87,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<AgentRunRespo
     );
   }
 
-  // Generate redacted version of confidential goal for privacy-preserving telemetry
+  // Redacted representation for non-confidential telemetry
   const redactedGoal = rawGoal
     ? rawGoal
         .split(' ')
@@ -99,7 +103,6 @@ export async function POST(req: NextRequest): Promise<NextResponse<AgentRunRespo
   let isAiSimulated = false;
   let aiSimulationReason: string | undefined;
 
-  // Official NEAR AI Cloud TEE base URL
   const nearAiBaseUrl = process.env.NEAR_AI_BASE_URL || 'https://cloud-api.near.ai/v1';
   const nearAiApiKey = process.env.NEAR_AI_API_KEY;
   const nearAiModel = process.env.NEAR_AI_MODEL || 'deepseek-ai/DeepSeek-V3';
@@ -124,8 +127,8 @@ Output ONLY a strict JSON object adhering to this schema:
   "sourceChain": "Solana" | "Ethereum" | "Bitcoin",
   "destinationChain": "Solana" | "Ethereum" | "Bitcoin",
   "token": "USDC" | "USDT" | "SOL" | "ETH" | "BTC" | "NEAR",
-  "amountUsd": number (reasonable trade amount matching user intent, e.g. 25.00),
-  "rationale": string (brief confidential reasoning),
+  "amountUsd": number,
+  "rationale": string,
   "estimatedGasUsd": number,
   "destinationAddress": string
 }
@@ -146,6 +149,7 @@ No markdown fences, no conversational prose. Just pure JSON.`;
       const validated = DirectiveSchema.parse(parsed);
 
       directive = {
+        directiveId: `dir_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
         sourceChain: validated.sourceChain,
         destinationChain: validated.destinationChain,
         token: validated.token,
@@ -164,21 +168,28 @@ No markdown fences, no conversational prose. Just pure JSON.`;
     directive = deriveSimulatedDirective(rawGoal);
   }
 
-  // If this is a deliberate Tamper Test, override amount to $500 to trigger spending cap rejection
-  if (isTamperTest && directive) {
-    directive = {
-      ...directive,
-      amountUsd: 500.0,
-      rationale: '[TAMPER_TEST_OVERRIDE] Deliberately elevated trade size to verify out-of-bounds policy rejection.',
-    };
-  }
-
-  // If this is an Attack Demo (prompt injection targeting malicious drainer)
-  if (isAttackDemo && directive) {
+  // Inject specific controlled challenges based on Threat Gauntlet scenario
+  if (threatType === 'UNAUTHORIZED_RECIPIENT' && directive) {
     directive = {
       ...directive,
       destinationAddress: '0xbad000...prompt_injected_drainer',
-      rationale: '[ATTACK_DEMO_INJECTION] Prompt injection payload instructed transfer to flagged exploit address.',
+      rationale: '[CONTROLLED_TEST: UNAUTHORIZED_RECIPIENT] Adversary instructed transfer to unapproved threat address.',
+    };
+  } else if (threatType === 'CUMULATIVE_BUDGET_EXHAUSTION' && directive) {
+    // Force amount to exceed remaining session budget allowance
+    const remaining = Math.max(0, policyInput.sessionBudgetCapUsd - policyInput.spentInSessionUsd);
+    directive = {
+      ...directive,
+      amountUsd: Math.max(remaining + 15, 35),
+      rationale: '[CONTROLLED_TEST: CUMULATIVE_BUDGET_EXHAUSTION] Order size exceeds remaining session budget.',
+    };
+  } else if (threatType === 'DUPLICATE_DIRECTIVE_REPLAY' && directive) {
+    // Deliberately reuse the latest executed directive ID to test execution-level idempotency
+    const existingId = executedDirectiveIds[0] || 'dir_prev_executed_0x9a';
+    directive = {
+      ...directive,
+      directiveId: existingId,
+      rationale: '[CONTROLLED_TEST: DUPLICATE_DIRECTIVE_REPLAY] Re-submitting previously settled directive ID to test idempotency.',
     };
   }
 
@@ -186,6 +197,7 @@ No markdown fences, no conversational prose. Just pure JSON.`;
   steps.push({
     stepIndex: 1,
     stepId: 'TEE_DECRYPT',
+    layer: 'TEE_ATTESTATION_VERIFIER',
     title: 'Decrypting Prompt Inside Intel TDX Enclave',
     subtitle: isAiSimulated
       ? 'Inference evaluated via simulated enclave boundary'
@@ -211,10 +223,18 @@ No markdown fences, no conversational prose. Just pure JSON.`;
   const realAttestationKey = process.env.TEE_ATTESTATION_KEY;
   const isAttestationReal = Boolean(realAttestationKey && realAttestationKey.length > 20);
 
-  // Generate fresh random 32-byte hex nonce for replay attack prevention
-  const freshNonce = Array.from({ length: 32 }, () =>
+  // Generate fresh client nonce for replay defense
+  const freshClientNonce = `0x${Array.from({ length: 32 }, () =>
     Math.floor(Math.random() * 16).toString(16)
-  ).join('');
+  ).join('')}`;
+
+  // If testing Stale Attestation Nonce, simulate captured quote containing an old nonce
+  const quoteNonce =
+    threatType === 'STALE_ATTESTATION_NONCE'
+      ? '0xdeadbeef00000000000000000000000000000000000000000000000000000000'
+      : freshClientNonce;
+
+  const isNonceFresh = quoteNonce === freshClientNonce;
 
   const verificationChecks: VerificationCheckItem[] = [
     {
@@ -226,8 +246,10 @@ No markdown fences, no conversational prose. Just pure JSON.`;
     {
       id: 'check-nonce-freshness',
       title: 'Attestation Nonce Freshness Match',
-      passed: true,
-      detail: `Fresh nonce [0x${freshNonce.slice(0, 8)}...] matched in TDX quote report data (replay proof).`,
+      passed: isNonceFresh,
+      detail: isNonceFresh
+        ? `Fresh client nonce matches quote report data (${freshClientNonce.slice(0, 10)}...).`
+        : `STALE NONCE MISMATCH: Client nonce (${freshClientNonce.slice(0, 10)}...) does not match quote report data (${quoteNonce.slice(0, 10)}...). Replay attack rejected.`,
     },
     {
       id: 'check-mrtd-pcr0',
@@ -248,8 +270,9 @@ No markdown fences, no conversational prose. Just pure JSON.`;
     pcr0: '8a9c3d4e7f1b2a0c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c',
     tdxQuote: 'AgAAAAAAAADAAAAAAQAAAFq7iP3...tdx_quote_sha256_e7d2b4f9c1a0e8d3c5b7',
     signingKeyDigest: 'ed25519:6h2N4hB...78yVvM8zK2',
-    nonce: `0x${freshNonce}`,
-    verified: true,
+    clientNonce: freshClientNonce,
+    quoteReportDataNonce: quoteNonce,
+    verified: isNonceFresh,
     isSimulated: !isAttestationReal,
     simulationReason: !isAttestationReal
       ? 'Hardware attestation quote generated with mock TDX endorsement key. Real Intel TDX hardware attestation requires mainnet TEE node deployment.'
@@ -259,9 +282,58 @@ No markdown fences, no conversational prose. Just pure JSON.`;
   };
 
   const step2Latency = Date.now() - step2Start;
+
+  // If Attestation Verifier fails (e.g. Stale Nonce Replay), halt immediately at Step 2!
+  if (!isNonceFresh) {
+    steps.push({
+      stepIndex: 2,
+      stepId: 'HARDWARE_ATTESTATION',
+      layer: 'TEE_ATTESTATION_VERIFIER',
+      title: 'Verifying Cryptographic Proof Keys',
+      subtitle: 'Attestation verifier rejected stale quote: nonce mismatch detected',
+      status: 'blocked',
+      latencyMs: Math.max(step2Latency, 180),
+      timestamp: new Date().toISOString(),
+      isSimulated: attestation.isSimulated,
+      simulationReason: attestation.simulationReason,
+      details: {
+        layer: 'TEE_ATTESTATION_VERIFIER',
+        reason: 'Client fresh nonce does not match quote report data.',
+        clientNonce: freshClientNonce,
+        quoteNonce,
+      },
+    });
+
+    const totalLatencyMs = Date.now() - startTime;
+    return NextResponse.json({
+      success: false,
+      threatType,
+      directive,
+      counterparty: scoreCounterparty(directive.destinationAddress, directive.destinationChain, false),
+      attestation,
+      policyResult: {
+        approved: false,
+        responsibleLayer: 'TEE_ATTESTATION_VERIFIER',
+        blockReasonHeadline: 'Attestation freshness verification failed',
+        blockReasonDetail:
+          'Attestation verifier rejected quote: client fresh nonce does not match quote report data (Replay Attack Deflected).',
+        rules: [],
+        updatedSpentInSessionUsd: policyInput.spentInSessionUsd,
+        remainingBudgetUsd: Math.max(0, policyInput.sessionBudgetCapUsd - policyInput.spentInSessionUsd),
+        evaluatedAt: new Date().toISOString(),
+      },
+      settlement: null,
+      ledgerEntry: null,
+      steps,
+      totalLatencyMs,
+      redactedGoal,
+    });
+  }
+
   steps.push({
     stepIndex: 2,
     stepId: 'HARDWARE_ATTESTATION',
+    layer: 'TEE_ATTESTATION_VERIFIER',
     title: 'Verifying Cryptographic Proof Keys',
     subtitle: attestation.isSimulated
       ? 'Synthetic TDX quote verified with fresh nonce (developer fallback)'
@@ -272,51 +344,59 @@ No markdown fences, no conversational prose. Just pure JSON.`;
     isSimulated: attestation.isSimulated,
     simulationReason: attestation.simulationReason,
     details: {
+      layer: 'TEE_ATTESTATION_VERIFIER',
       pcr0Digest: attestation.pcr0.slice(0, 16) + '...',
       enclaveId: attestation.enclaveId,
-      freshNonce: attestation.nonce,
-      hardwareVendor: 'Intel TDX 1.5',
+      freshClientNonce: attestation.clientNonce,
       checksPassed: '4 / 4 checks verified',
     },
   });
 
   // --------------------------------------------------------------------------
-  // STEP 3: OutLayer Security Policy Engine & Counterparty Risk Screening
+  // STEP 3: OutLayer Security Policy Engine & Execution Coordinator
   // --------------------------------------------------------------------------
   const step3Start = Date.now();
 
-  // Evaluate counterparty receiver intelligence (Track 06)
+  const isAdversaryAddress = threatType === 'UNAUTHORIZED_RECIPIENT';
   const counterparty = scoreCounterparty(
     directive.destinationAddress,
     directive.destinationChain,
-    isAttackDemo
+    isAdversaryAddress
   );
 
-  // Evaluate OutLayer policy rules
-  const policyResult = evaluatePolicy(directive, policyInput, counterparty, humanApprovedWarn);
+  const policyResult = evaluatePolicy(
+    directive,
+    policyInput,
+    counterparty,
+    executedDirectiveIds,
+    humanApprovedWarn
+  );
   const step3Latency = Date.now() - step3Start;
   const policyPassed = policyResult.approved;
 
   steps.push({
     stepIndex: 3,
     stepId: 'POLICY_VERIFICATION',
+    layer: policyResult.responsibleLayer || 'POLICY_ENGINE',
     title: 'Checking Transaction Policies & Counterparty Risk',
     subtitle: policyPassed
-      ? 'All spending limits, whitelists, and receiver checks approved'
-      : policyResult.blockReasonHeadline || 'Transaction blocked by user security policy',
+      ? 'All spending limits, aggregate budget, whitelists, and idempotency checks approved'
+      : policyResult.blockReasonHeadline || 'Transaction blocked by security layer',
     status: policyPassed ? 'success' : 'blocked',
     latencyMs: Math.max(step3Latency, 140),
     timestamp: new Date().toISOString(),
     isSimulated: false,
     details: {
-      maxAuthorizedLimit: `$${policyInput.maxUsdPerTx}`,
+      responsibleLayer: policyResult.responsibleLayer || 'POLICY_ENGINE',
+      maxPerTradeLimit: `$${policyInput.maxUsdPerTx}`,
+      cumulativeSessionBudget: `$${policyInput.sessionBudgetCapUsd}`,
+      previouslySpentInSession: `$${policyInput.spentInSessionUsd}`,
       proposedAmount: `$${directive?.amountUsd ?? 0}`,
       counterpartyStatus: counterparty.overallStatus,
-      counterpartyRiskScore: `${counterparty.riskScore}/100`,
-      tokenChecked: directive?.token,
-      routingPath: `${directive?.sourceChain} -> ${directive?.destinationChain}`,
+      directiveId: directive?.directiveId,
       ruleOutcomes: policyResult.rules.map((r) => ({
         id: r.ruleId,
+        layer: r.layer,
         passed: r.passed,
         message: r.message,
       })),
@@ -328,8 +408,7 @@ No markdown fences, no conversational prose. Just pure JSON.`;
     const totalLatencyMs = Date.now() - startTime;
     return NextResponse.json({
       success: false,
-      isTamperTest,
-      isAttackDemo,
+      threatType,
       directive,
       counterparty,
       attestation,
@@ -362,6 +441,7 @@ No markdown fences, no conversational prose. Just pure JSON.`;
       id: `dw-${Date.now()}`,
       method: 'intents_executeSwap',
       params: {
+        directive_id: directive.directiveId,
         source_chain: directive.sourceChain.toLowerCase(),
         destination_chain: directive.destinationChain.toLowerCase(),
         token: directive.token,
@@ -369,7 +449,7 @@ No markdown fences, no conversational prose. Just pure JSON.`;
         solver_preference: 'fastest',
         signature_mode: 'near_chain_signatures',
         enclave_attestation_hash: attestation.pcr0,
-        nonce: attestation.nonce,
+        nonce: attestation.clientNonce,
       },
     };
 
@@ -421,20 +501,22 @@ No markdown fences, no conversational prose. Just pure JSON.`;
     };
   }
 
-  // Calculate Track 04 Autonomous Business Revenue Split & Self-Funded Inference
-  const inferenceCostUsd = 0.003; // Cost of NEAR AI Cloud TEE token inference
+  // Realistic Track 04 Financial Accounting
+  const inferenceCostUsd = 0.003;
   const solverRelayerFeeUsd = directive.estimatedGasUsd ?? 0.04;
-  const estimatedSpreadGain = Number((directive.amountUsd * 0.012).toFixed(4)); // 1.2% arbitrage spread
-  const netYieldUsd = Math.max(0, estimatedSpreadGain - inferenceCostUsd - solverRelayerFeeUsd);
-  const contributorPayoutUsd = Number((netYieldUsd * 0.2).toFixed(4)); // 20% contributor share
-  const treasuryShareUsd = Number((netYieldUsd * 0.8).toFixed(4)); // 80% retained treasury
+  const marketSlippageGainUsd = Number((directive.amountUsd * 0.012).toFixed(4));
+  const netYieldUsd = Math.max(0, marketSlippageGainUsd - inferenceCostUsd - solverRelayerFeeUsd);
+  const contributorPayoutUsd = Number((netYieldUsd * 0.2).toFixed(4));
+  const treasuryShareUsd = Number((netYieldUsd * 0.8).toFixed(4));
 
   const ledgerEntry: TreasuryLedgerEntry = {
     entryId: `led_${Date.now().toString(36)}`,
+    directiveId: directive.directiveId,
     timestamp: new Date().toISOString(),
     grossIntentVolumeUsd: directive.amountUsd,
     inferenceCostUsd,
     solverRelayerFeeUsd,
+    marketSlippageGainUsd,
     netYieldUsd,
     treasuryShareUsd,
     contributorPayoutUsd,
@@ -446,6 +528,7 @@ No markdown fences, no conversational prose. Just pure JSON.`;
   steps.push({
     stepIndex: 4,
     stepId: 'INTENTS_SETTLEMENT',
+    layer: 'EXECUTION_COORDINATOR',
     title: 'Executing Gasless Cross-Chain Settlement via Agent Connect',
     subtitle: isSettlementSimulated
       ? `Simulated swap: ${directive.amountUsd} USD of ${directive.token} via NEAR Intents`
@@ -456,7 +539,9 @@ No markdown fences, no conversational prose. Just pure JSON.`;
     isSimulated: isSettlementSimulated,
     simulationReason: settlementSimulationReason,
     details: {
+      layer: 'EXECUTION_COORDINATOR',
       intentHash: settlement.intentHash,
+      directiveId: directive.directiveId,
       settlementRoute: settlement.settlementPath.join(' -> '),
       gasMechanism: 'Gasless intent relay via NEAR Relayer',
       selfFundedInferenceDeducted: `$${inferenceCostUsd} to NEAR AI Cloud`,
@@ -468,8 +553,7 @@ No markdown fences, no conversational prose. Just pure JSON.`;
 
   return NextResponse.json({
     success: true,
-    isTamperTest,
-    isAttackDemo,
+    threatType,
     directive,
     counterparty,
     attestation,
@@ -508,6 +592,7 @@ function deriveSimulatedDirective(goal: string): ExecutionDirective {
   }
 
   return {
+    directiveId: `dir_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
     sourceChain,
     destinationChain,
     token,
@@ -528,7 +613,8 @@ function createFallbackAttestation(
     pcr0: '0000000000000000000000000000000000000000000000000000000000000000',
     tdxQuote: 'MOCK_TDX_QUOTE_SANDBOX_DEV_ONLY',
     signingKeyDigest: 'ed25519:sandbox',
-    nonce: '0x0000000000000000',
+    clientNonce: '0x0000000000000000',
+    quoteReportDataNonce: '0x0000000000000000',
     verified: false,
     isSimulated,
     simulationReason: reason,

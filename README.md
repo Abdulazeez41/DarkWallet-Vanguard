@@ -132,24 +132,28 @@ Follow these reproducible steps to evaluate both successful execution and securi
 3. **Do**: Toggle **"DAEMON: ON"** in the top header.
 4. **See**: The charcoal terminal begins printing continuous 15-second heartbeat pulses, monitoring oracle spreads and self-executing whenever market conditions hit target thresholds without human interaction.
 
-### Test Case 5: Security Gauntlet Threat Simulator (Track 06 Gamified)
-1. **Do**: In the left pane, switch to the **"Threat Gauntlet"** tab.
-2. **See**: A scenario selector appears featuring 4 adversary attack vectors:
-   - *Prompt Injection Drainer*
-   - *Treasury Whale Exploit ($10,000)*
-   - *Attestation Nonce Replay Attack*
-   - *Unapproved Mixer Network Route*
-3. **Do**: Select any scenario and click **"Launch Attack Vector against Enclave"**.
-4. **See**: The attack payload is fired, the UI recoils with tactile audio thud and haptic pulse, and OutLayer immediately deflects the attack, citing the exact plain-language defensive countermeasure in the Telemetry Matrix and receipt.
+### Test Case 5: Security Gauntlet Control Verification (Track 06)
+1. **Do**: In the left pane, switch to the **"Security Gauntlet"** tab.
+2. **See**: A scenario selector appears featuring 4 distinct, decoupled threat challenges:
+   - *Unauthorized Recipient* (Tested Layer: **OutLayer Policy Engine**)
+   - *Cumulative Budget Exhaustion* (Tested Layer: **Stateful Policy Accounting**)
+   - *Stale Attestation Replay* (Tested Layer: **TEE Attestation Verifier**)
+   - *Duplicate Directive Double-Spend* (Tested Layer: **Execution Coordinator**)
+3. **Do**: Select **"Cumulative Budget Exhaustion"** and click **"Execute Controlled Threat Challenge"**.
+4. **See**: The order is rejected specifically because previous orders consumed the $200 session cap:
+   `Session budget allowance exhausted: order exhausts remaining budget (Spent so far: $180, Cap: $200).`
+5. **Do**: Select **"Stale Attestation Replay"** and click **"Execute Controlled Threat Challenge"**.
+6. **See**: The TEE Attestation Verifier independently halts the run at **Step 2** due to client fresh nonce mismatch, demonstrating that attestation freshness is verified before the policy engine is ever reached.
 
-### Test Case 6: Fast-Forward Stress Test (Track 04 Gamified Simulation)
-1. **Do**: In the left pane, switch to the **"Stress Test & P&L"** tab.
-2. **See**: The simulation panel appears showing a 12-cycle progress track and live metrics.
-3. **Do**: Click **"Run Fast-Forward Stress Test"**.
+### Test Case 6: Fast-Forward 7-Day Operational Replay (Track 04)
+1. **Do**: In the left pane, switch to the **"7-Day Stress Replay"** tab.
+2. **See**: The replay panel appears showing a 12-event timeline representing a 7-day operating period.
+3. **Do**: Click **"Run 7-Day Operational Replay"**.
 4. **See**: 
-   - A rapid 15-second simulation executes 12 accelerated market volatility cycles with tactile audio clicks.
-   - Live counters tally settled intents, policy-blocked outlier trades, cumulative volume, and net yield.
-   - On completion, all simulated transactions automatically feed into the **Autonomous Business Ledger**, updating total earnings, self-funded inference deductions, and contributor payouts.
+   - A 15-second simulation executes 12 accelerated market events with live audio ticks.
+   - Event 4 demonstrates a **realistic market slippage loss (-$0.15)** on a 100% policy-compliant trade, proving that the engine verifies authorization safety without claiming unrealistic risk-free market prediction.
+   - Events 5, 7, 9, and 11 trigger explicit layer-attributed rejections (Per-Trade Limit, Cumulative Cap, Threat Blocklist, Duplicate Directive).
+   - On completion, all transactions pipe into the **Autonomous Business Ledger**, updating total volume, self-funded compute fees, and contributor distributions.
 
 ---
 

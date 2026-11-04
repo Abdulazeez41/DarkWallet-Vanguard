@@ -4,17 +4,11 @@
  * DarkWallet Vanguard - Deterministic Policy Engine (OutLayer Model)
  *
  * Implements strict, verifiable user-defined guardrails for autonomous
- * cross-chain AI agent execution. All checks are pure and return
- * explicit human-readable reasons in plain language.
- *
- * Rules:
- *  1. Revocation switch (Agent access was revoked by you)
- *  2. Session expiry time (Agent session has expired)
- *  3. Directive validity (Trade details could not be understood)
- *  4. Maximum USD per transaction (Over your spending limit)
- *  5. Token whitelist (Token not on your approved list)
- *  6. Chain whitelist (Network not on your approved list)
- *  7. Counterparty Risk Check (Receiver flagged by security intelligence)
+ * cross-chain AI agent execution with explicit layer attribution:
+ *  - EMERGENCY_CONTROL: Halts authorizations when kill switch is tripped.
+ *  - POLICY_ENGINE: Enforces per-action spending, stateful cumulative budget, and whitelists.
+ *  - EXECUTION_COORDINATOR: Enforces execution-level idempotency (duplicate prevention).
+ *  - TEE_ATTESTATION_VERIFIER: Validates hardware quote & cryptographic nonce freshness.
  */
 
 import {
@@ -23,12 +17,15 @@ import {
   ExecutionDirective,
   PolicyEvaluationResult,
   PolicyRuleResult,
+  SecurityLayer,
   SupportedChain,
   SupportedToken,
 } from './types';
 
 export const DEFAULT_POLICY: AgentPolicy = {
   maxUsdPerTx: 50,
+  sessionBudgetCapUsd: 200,
+  spentInSessionUsd: 0,
   tokenWhitelist: ['USDC', 'USDT', 'NEAR', 'SOL', 'ETH', 'BTC'],
   chainWhitelist: ['Ethereum', 'Solana', 'Bitcoin', 'NEAR'],
   sessionExpiryMs: Date.now() + 60 * 60 * 1000, // 1 hour active window
@@ -52,52 +49,56 @@ export const STANDARD_TOKENS: readonly SupportedToken[] = [
   'BTC',
 ] as const;
 
-// Known malicious counterparties (phishing, drainer contracts, sanctioned targets)
 export const KNOWN_BAD_ADDRESSES: readonly string[] = [
+  '0xbad000...prompt_injected_drainer',
   '0x71c8fb...phishing_drainer_0xbad',
-  '0xbad000000000000000000000000000000000dead',
   'drainer.near',
   'malicious-solver.sol',
 ];
 
 /**
  * Pure evaluation function checking execution directives against current policy constraints.
- * Returns atomic pass/fail per rule and a composite approval status with plain-language messaging.
+ * Attributes decisions to the exact responsible security layer.
  */
 export function evaluatePolicy(
   directive: ExecutionDirective | null | undefined,
   policy: AgentPolicy,
   counterparty?: CounterpartyReport,
+  executedDirectiveIds: readonly string[] = [],
   humanApprovedWarn: boolean = false,
   currentTimeMs: number = Date.now()
 ): PolicyEvaluationResult {
   const rules: PolicyRuleResult[] = [];
   const evaluatedAt = new Date(currentTimeMs).toISOString();
 
-  // Rule 1: Revocation Switch
+  // Rule 1: Emergency Kill-Switch (Layer: EMERGENCY_CONTROL)
   const isRevoked = Boolean(policy.isRevoked);
   rules.push({
     ruleId: 'REVOCATION_CHECK',
     ruleName: 'Emergency Kill-Switch',
+    layer: 'EMERGENCY_CONTROL',
     passed: !isRevoked,
     headline: 'Agent access was revoked by you',
     message: isRevoked
-      ? 'Agent access was revoked by you. All automated runs are halted immediately.'
+      ? 'Emergency kill-switch is active. Emergency control layer halted all authorizations.'
       : 'Agent authorization is active and unrevoked.',
   });
 
   if (isRevoked) {
     return {
       approved: false,
+      responsibleLayer: 'EMERGENCY_CONTROL',
       blockReasonHeadline: 'Agent access was revoked by you',
       blockReasonDetail:
-        'Agent access was revoked by you. All automated runs are halted immediately.',
+        'Agent access was revoked by you. Emergency control layer halted all authorizations.',
       rules,
+      updatedSpentInSessionUsd: policy.spentInSessionUsd,
+      remainingBudgetUsd: Math.max(0, policy.sessionBudgetCapUsd - policy.spentInSessionUsd),
       evaluatedAt,
     };
   }
 
-  // Rule 2: Session Expiry Check
+  // Rule 2: Session Expiry Check (Layer: POLICY_ENGINE)
   const sessionExpired = currentTimeMs > policy.sessionExpiryMs;
   const expiryFormatted = new Date(policy.sessionExpiryMs).toLocaleTimeString([], {
     hour: '2-digit',
@@ -107,24 +108,28 @@ export function evaluatePolicy(
   rules.push({
     ruleId: 'EXPIRY_CHECK',
     ruleName: 'Session Expiry Window',
+    layer: 'POLICY_ENGINE',
     passed: !sessionExpired,
     headline: 'Agent session has expired',
     message: sessionExpired
-      ? `Agent session has expired (window closed at ${expiryFormatted}). Extend session to continue.`
+      ? `Session window expired at ${expiryFormatted}. Policy engine rejected action.`
       : `Session valid until ${expiryFormatted}.`,
   });
 
   if (sessionExpired) {
     return {
       approved: false,
+      responsibleLayer: 'POLICY_ENGINE',
       blockReasonHeadline: 'Agent session has expired',
-      blockReasonDetail: `Agent session has expired. The active window closed at ${expiryFormatted}.`,
+      blockReasonDetail: `Session window expired at ${expiryFormatted}. Policy engine rejected action.`,
       rules,
+      updatedSpentInSessionUsd: policy.spentInSessionUsd,
+      remainingBudgetUsd: Math.max(0, policy.sessionBudgetCapUsd - policy.spentInSessionUsd),
       evaluatedAt,
     };
   }
 
-  // Rule 3: Directive Validity
+  // Rule 3: Directive Validity (Layer: POLICY_ENGINE)
   const isValidDirective =
     Boolean(directive) &&
     typeof directive?.amountUsd === 'number' &&
@@ -138,26 +143,58 @@ export function evaluatePolicy(
   rules.push({
     ruleId: 'DIRECTIVE_VALIDITY',
     ruleName: 'Directive Structure Integrity',
+    layer: 'POLICY_ENGINE',
     passed: isValidDirective,
     headline: 'Trade details could not be understood',
     message: isValidDirective
-      ? 'Execution directive is well-formed with valid assets and amounts.'
-      : 'Trade details could not be understood. The model output was malformed or missing trade parameters.',
+      ? 'Execution directive is structurally valid.'
+      : 'Policy engine rejected directive: missing or malformed execution parameters.',
   });
 
   if (!isValidDirective || !directive) {
     return {
       approved: false,
+      responsibleLayer: 'POLICY_ENGINE',
       blockReasonHeadline: 'Trade details could not be understood',
       blockReasonDetail:
-        'Trade details could not be understood. Model output did not contain valid structured execution instructions.',
+        'Policy engine rejected directive: missing or malformed execution parameters.',
       rules,
+      updatedSpentInSessionUsd: policy.spentInSessionUsd,
+      remainingBudgetUsd: Math.max(0, policy.sessionBudgetCapUsd - policy.spentInSessionUsd),
       evaluatedAt,
     };
   }
 
-  // Rule 4: Spending Limit (Max USD per trade)
-  const isWithinLimit = directive.amountUsd <= policy.maxUsdPerTx;
+  // Rule 4: Directive Idempotency (Layer: EXECUTION_COORDINATOR)
+  const isDuplicateDirective =
+    Boolean(directive.directiveId) && executedDirectiveIds.includes(directive.directiveId);
+
+  rules.push({
+    ruleId: 'IDEMPOTENCY_DUPLICATE_CHECK',
+    ruleName: 'Execution-Level Idempotency Guard',
+    layer: 'EXECUTION_COORDINATOR',
+    passed: !isDuplicateDirective,
+    headline: 'Duplicate execution directive rejected',
+    message: isDuplicateDirective
+      ? `Directive [${directive.directiveId}] was previously executed. Execution coordinator blocked double-spend replay.`
+      : 'Directive ID is unique and eligible for first-time settlement.',
+  });
+
+  if (isDuplicateDirective) {
+    return {
+      approved: false,
+      responsibleLayer: 'EXECUTION_COORDINATOR',
+      blockReasonHeadline: 'Duplicate execution directive rejected',
+      blockReasonDetail: `Directive [${directive.directiveId}] was previously executed. Execution coordinator blocked double-spend replay.`,
+      rules,
+      updatedSpentInSessionUsd: policy.spentInSessionUsd,
+      remainingBudgetUsd: Math.max(0, policy.sessionBudgetCapUsd - policy.spentInSessionUsd),
+      evaluatedAt,
+    };
+  }
+
+  // Rule 5: Per-Action Spending Limit (Layer: POLICY_ENGINE)
+  const isWithinPerActionLimit = directive.amountUsd <= policy.maxUsdPerTx;
   const formattedTradeAmount = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -168,26 +205,70 @@ export function evaluatePolicy(
   }).format(policy.maxUsdPerTx);
 
   rules.push({
-    ruleId: 'SPENDING_LIMIT',
-    ruleName: 'Max USD Per Transaction',
-    passed: isWithinLimit,
+    ruleId: 'PER_ACTION_LIMIT',
+    ruleName: 'Per-Action Spending Cap',
+    layer: 'POLICY_ENGINE',
+    passed: isWithinPerActionLimit,
     headline: 'Over your spending limit',
-    message: isWithinLimit
-      ? `Trade amount ${formattedTradeAmount} is within your authorized limit of ${formattedLimit}.`
-      : `This trade is ${formattedTradeAmount}, but your limit is ${formattedLimit} per trade.`,
+    message: isWithinPerActionLimit
+      ? `Order amount ${formattedTradeAmount} is within per-trade limit of ${formattedLimit}.`
+      : `Policy engine rejected: order amount is ${formattedTradeAmount}, exceeding your limit of ${formattedLimit} per trade.`,
   });
 
-  if (!isWithinLimit) {
+  if (!isWithinPerActionLimit) {
     return {
       approved: false,
+      responsibleLayer: 'POLICY_ENGINE',
       blockReasonHeadline: 'Over your spending limit',
-      blockReasonDetail: `This trade is ${formattedTradeAmount}, but your limit is ${formattedLimit} per trade.`,
+      blockReasonDetail: `Policy engine rejected: order amount is ${formattedTradeAmount}, exceeding your limit of ${formattedLimit} per trade.`,
       rules,
+      updatedSpentInSessionUsd: policy.spentInSessionUsd,
+      remainingBudgetUsd: Math.max(0, policy.sessionBudgetCapUsd - policy.spentInSessionUsd),
       evaluatedAt,
     };
   }
 
-  // Rule 5: Token Whitelist
+  // Rule 6: Stateful Cumulative Session Budget Check (Layer: POLICY_ENGINE)
+  const remainingBudget = Math.max(0, policy.sessionBudgetCapUsd - policy.spentInSessionUsd);
+  const isWithinSessionBudget = directive.amountUsd <= remainingBudget;
+  const formattedRemaining = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(remainingBudget);
+  const formattedCap = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(policy.sessionBudgetCapUsd);
+  const formattedSpent = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(policy.spentInSessionUsd);
+
+  rules.push({
+    ruleId: 'CUMULATIVE_BUDGET_CAP',
+    ruleName: 'Cumulative Session Budget Accounting',
+    layer: 'POLICY_ENGINE',
+    passed: isWithinSessionBudget,
+    headline: 'Session budget allowance exhausted',
+    message: isWithinSessionBudget
+      ? `Order amount ${formattedTradeAmount} fits within remaining session budget of ${formattedRemaining} (Cap: ${formattedCap}).`
+      : `Policy engine rejected: order of ${formattedTradeAmount} exhausts remaining session budget of ${formattedRemaining} (Spent so far: ${formattedSpent}, Cap: ${formattedCap}).`,
+  });
+
+  if (!isWithinSessionBudget) {
+    return {
+      approved: false,
+      responsibleLayer: 'POLICY_ENGINE',
+      blockReasonHeadline: 'Session budget allowance exhausted',
+      blockReasonDetail: `Policy engine rejected: order of ${formattedTradeAmount} exhausts remaining session budget of ${formattedRemaining} (Spent so far: ${formattedSpent}, Cap: ${formattedCap}).`,
+      rules,
+      updatedSpentInSessionUsd: policy.spentInSessionUsd,
+      remainingBudgetUsd: remainingBudget,
+      evaluatedAt,
+    };
+  }
+
+  // Rule 7: Token Whitelist (Layer: POLICY_ENGINE)
   const normalizedToken = directive.token.toUpperCase().trim();
   const allowedTokensUpper = policy.tokenWhitelist.map((t) => t.toUpperCase().trim());
   const isTokenAllowed = allowedTokensUpper.includes(normalizedToken);
@@ -195,24 +276,28 @@ export function evaluatePolicy(
   rules.push({
     ruleId: 'TOKEN_WHITELIST',
     ruleName: 'Approved Asset Whitelist',
+    layer: 'POLICY_ENGINE',
     passed: isTokenAllowed,
     headline: 'Token not on your approved list',
     message: isTokenAllowed
-      ? `Asset [${normalizedToken}] is verified on your approved token whitelist.`
-      : `Token [${normalizedToken}] is not on your approved list. Allowed: ${policy.tokenWhitelist.join(', ')}.`,
+      ? `Asset [${normalizedToken}] is verified on approved token whitelist.`
+      : `Policy engine rejected: token [${normalizedToken}] is not on approved whitelist: ${policy.tokenWhitelist.join(', ')}.`,
   });
 
   if (!isTokenAllowed) {
     return {
       approved: false,
+      responsibleLayer: 'POLICY_ENGINE',
       blockReasonHeadline: 'Token not on your approved list',
-      blockReasonDetail: `Token [${normalizedToken}] is not on your approved list. Approved: ${policy.tokenWhitelist.join(', ')}.`,
+      blockReasonDetail: `Policy engine rejected: token [${normalizedToken}] is not on approved whitelist: ${policy.tokenWhitelist.join(', ')}.`,
       rules,
+      updatedSpentInSessionUsd: policy.spentInSessionUsd,
+      remainingBudgetUsd: remainingBudget,
       evaluatedAt,
     };
   }
 
-  // Rule 6: Chain Whitelist (Source and Destination)
+  // Rule 8: Chain Whitelist (Layer: POLICY_ENGINE)
   const allowedChainsLower = policy.chainWhitelist.map((c) => c.toLowerCase().trim());
   const sourceAllowed = allowedChainsLower.includes(directive.sourceChain.toLowerCase().trim());
   const destAllowed = allowedChainsLower.includes(directive.destinationChain.toLowerCase().trim());
@@ -227,24 +312,28 @@ export function evaluatePolicy(
   rules.push({
     ruleId: 'CHAIN_WHITELIST',
     ruleName: 'Network Whitelist Guard',
+    layer: 'POLICY_ENGINE',
     passed: chainsAllowed,
     headline: 'Network not on your approved list',
     message: chainsAllowed
       ? `Routing path [${directive.sourceChain} -> ${directive.destinationChain}] is authorized.`
-      : `Network [${failedChain}] is not on your approved list. Allowed: ${policy.chainWhitelist.join(', ')}.`,
+      : `Policy engine rejected: network [${failedChain}] is not on approved list: ${policy.chainWhitelist.join(', ')}.`,
   });
 
   if (!chainsAllowed) {
     return {
       approved: false,
+      responsibleLayer: 'POLICY_ENGINE',
       blockReasonHeadline: 'Network not on your approved list',
-      blockReasonDetail: `Network [${failedChain}] is not on your approved list. Approved networks: ${policy.chainWhitelist.join(', ')}.`,
+      blockReasonDetail: `Policy engine rejected: network [${failedChain}] is not on approved list: ${policy.chainWhitelist.join(', ')}.`,
       rules,
+      updatedSpentInSessionUsd: policy.spentInSessionUsd,
+      remainingBudgetUsd: remainingBudget,
       evaluatedAt,
     };
   }
 
-  // Rule 7: Counterparty Risk & Receiver Scoring (Track 06)
+  // Rule 9: Counterparty Risk & Receiver Scoring (Layer: POLICY_ENGINE)
   if (counterparty) {
     const isCounterpartyBlocked = counterparty.overallStatus === 'BLOCK';
     const isCounterpartyWarnUnapproved =
@@ -259,15 +348,16 @@ export function evaluatePolicy(
 
     if (isCounterpartyBlocked) {
       headline = 'Receiver blocked by security intelligence';
-      message = `Counterparty [${counterparty.targetAddress}] is flagged: ${counterparty.reason}`;
+      message = `Policy engine rejected: counterparty [${counterparty.targetAddress}] is flagged: ${counterparty.reason}`;
     } else if (isCounterpartyWarnUnapproved) {
       headline = 'Receiver requires human approval';
-      message = `Counterparty [${counterparty.targetAddress}] triggered a security warning: ${counterparty.reason}. Human approval required.`;
+      message = `Policy engine paused: counterparty [${counterparty.targetAddress}] triggered warning: ${counterparty.reason}. Human approval required.`;
     }
 
     rules.push({
       ruleId: 'COUNTERPARTY_CHECK',
       ruleName: 'Counterparty Risk Evaluation',
+      layer: 'POLICY_ENGINE',
       passed: counterpartyPassed,
       headline,
       message,
@@ -276,37 +366,46 @@ export function evaluatePolicy(
     if (!counterpartyPassed) {
       return {
         approved: false,
+        responsibleLayer: 'POLICY_ENGINE',
         blockReasonHeadline: headline,
         blockReasonDetail: message,
         rules,
+        updatedSpentInSessionUsd: policy.spentInSessionUsd,
+        remainingBudgetUsd: remainingBudget,
         evaluatedAt,
       };
     }
   }
 
-  // All rules passed
+  // Action authorized: update stateful cumulative spend
+  const updatedSpent = Number((policy.spentInSessionUsd + directive.amountUsd).toFixed(2));
+  const updatedRemaining = Math.max(0, Number((policy.sessionBudgetCapUsd - updatedSpent).toFixed(2)));
+
   return {
     approved: true,
+    responsibleLayer: null,
     blockReasonHeadline: null,
     blockReasonDetail: null,
     rules,
+    updatedSpentInSessionUsd: updatedSpent,
+    remainingBudgetUsd: updatedRemaining,
     evaluatedAt,
   };
 }
 
 /**
- * Evaluates counterparty receiver signals (Track 06).
+ * Evaluates counterparty receiver signals.
  */
 export function scoreCounterparty(
   destinationAddress: string | undefined,
   destinationChain: string,
-  isAttackDemo: boolean = false
+  isThreatAttack: boolean = false
 ): CounterpartyReport {
   const address = destinationAddress || (destinationChain === 'Solana' ? 'sol-treasury.sol' : '0x71c8...vanguard_vault');
 
-  if (isAttackDemo) {
+  if (isThreatAttack || KNOWN_BAD_ADDRESSES.some((bad) => address.toLowerCase().includes(bad.toLowerCase()))) {
     return {
-      targetAddress: '0xbad000...prompt_injected_drainer',
+      targetAddress: address,
       overallStatus: 'BLOCK',
       riskScore: 98,
       signals: [
@@ -333,11 +432,10 @@ export function scoreCounterparty(
         },
       ],
       requiresHumanApproval: false,
-      reason: 'Malicious drainer address identified on shared agent blocklist (Attack Demo Stopped).',
+      reason: 'Malicious drainer address identified on shared agent threat blocklist.',
     };
   }
 
-  // Standard safe receiver check
   return {
     targetAddress: address,
     overallStatus: 'ALLOW',
@@ -348,7 +446,7 @@ export function scoreCounterparty(
         name: 'Shared Agent Blocklist',
         score: 0,
         status: 'SAFE',
-        message: 'No reports or negative flags on shared decentralized threat registry.',
+        message: 'No negative flags on shared decentralized threat registry.',
       },
       {
         id: 'sig-code-change',
