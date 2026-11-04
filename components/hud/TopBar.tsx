@@ -5,12 +5,12 @@
  *
  * Primary navigation header for DarkWallet Vanguard.
  * Features:
- *  - Calm, sleek Fluence aesthetic
+ *  - Warm creamy, highly legible aesthetic
  *  - Interactive "How It Works / Guide (?)" tour launcher
  *  - Autonomous Daemon mode toggle
  *  - Audio mute toggle
  *  - Command Palette trigger (⌘K)
- *  - Wide screen layout
+ *  - Generous typography & wide screen layout
  */
 
 import { soundFx } from '@/components/AudioFeedback';
@@ -35,23 +35,23 @@ export function TopBar() {
   };
 
   return (
-    <header className="w-full bg-void/95 backdrop-blur-md border-b border-line px-4 sm:px-6 lg:px-8 xl:px-12 py-3 flex items-center justify-between select-none z-30 sticky top-0 shadow-lg">
+    <header className="w-full bg-panel/90 backdrop-blur-md border-b border-line px-4 sm:px-6 lg:px-8 xl:px-12 py-3.5 flex items-center justify-between select-none z-30 sticky top-0 shadow-xs">
       <div className="w-full max-w-[1720px] mx-auto flex items-center justify-between">
         {/* Brand & Hardware Status */}
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg border border-enclave/60 bg-enclave/15 flex items-center justify-center font-mono text-xs font-black text-enclave shadow-glow-enclave">
+        <div className="flex items-center gap-3.5">
+          <div className="w-9 h-9 rounded-xl border border-enclave/40 bg-enclave/10 flex items-center justify-center font-mono text-sm font-black text-enclave shadow-sm">
             DV
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-mono text-xs md:text-sm font-bold tracking-wider text-ink drop-shadow-sm">
+              <h1 className="font-mono text-sm sm:text-base font-black tracking-wider text-ink">
                 DARKWALLET VANGUARD
               </h1>
-              <span className="hidden sm:inline-block font-mono text-[9px] px-2 py-0.5 rounded-full bg-enclave/15 text-enclave border border-enclave/40 font-bold tracking-wider">
+              <span className="hidden sm:inline-block font-mono text-[11px] px-2.5 py-0.5 rounded-full bg-enclave/10 text-enclave border border-enclave/30 font-bold tracking-wider">
                 INTEL TDX TEE
               </span>
             </div>
-            <p className="font-mono text-[10px] text-mute tracking-tight hidden sm:block">
+            <p className="font-mono text-xs text-mute tracking-tight hidden sm:block">
               Confidential Autonomous AI Treasury & Policy Shield on NEAR
             </p>
           </div>
@@ -65,7 +65,7 @@ export function TopBar() {
               soundFx.playStepTick();
               setGuideModalOpen(true);
             }}
-            className="font-mono text-[11px] font-bold px-3 py-1.5 rounded-md border border-enclave/60 bg-enclave/15 text-enclave hover:bg-enclave/25 shadow-glow-enclave transition-all flex items-center gap-1.5 active:scale-95"
+            className="font-mono text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl border border-enclave/30 bg-enclave/10 text-enclave hover:bg-enclave/20 transition-all flex items-center gap-1.5 active:scale-95 shadow-sm"
             title="Open Interactive Navigation & Architectural Walkthrough"
           >
             <span className="w-2 h-2 rounded-full bg-enclave animate-pulse" />
@@ -76,15 +76,15 @@ export function TopBar() {
           {/* Autonomous Daemon Toggle */}
           <button
             onClick={handleToggleDaemon}
-            className={`font-mono text-[10px] font-semibold tracking-wider px-3 py-1.5 rounded-md border transition-all flex items-center gap-1.5 ${
+            className={`font-mono text-xs sm:text-sm font-semibold tracking-wider px-3.5 py-2 rounded-xl border transition-all flex items-center gap-2 shadow-sm ${
               daemonActive
-                ? 'bg-pass/15 border-pass text-pass shadow-glow-pass'
-                : 'bg-panel border-line text-mute hover:text-ink hover:border-line/80'
+                ? 'bg-pass/15 border-pass text-pass font-bold'
+                : 'bg-panel2 border-line text-mute hover:text-ink'
             }`}
             title="Toggle Background Autonomous Rebalancing Daemon"
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full ${
+              className={`w-2 h-2 rounded-full ${
                 daemonActive ? 'bg-pass animate-pulse' : 'bg-mute'
               }`}
             />
@@ -95,50 +95,24 @@ export function TopBar() {
           {/* Audio Mute Toggle */}
           <button
             onClick={handleToggleMute}
-            className="p-1.5 rounded-md border border-line bg-panel text-mute hover:text-ink hover:border-enclave/50 transition-colors"
+            className="p-2 rounded-xl border border-line bg-panel2 text-mute hover:text-ink transition-colors shadow-sm"
             title={muted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
           >
             {muted ? (
-              <svg
-                className="w-4 h-4 text-block/80"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
-                />
-              </svg>
+              <span className="text-xs">🔇</span>
             ) : (
-              <svg
-                className="w-4 h-4 text-ink"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-                />
-              </svg>
+              <span className="text-xs">🔊</span>
             )}
           </button>
 
-          {/* Command Palette Trigger */}
+          {/* Quick Command Palette Button */}
           <button
-            onClick={() => setCommandPaletteOpen(true)}
-            className="font-mono text-[10px] text-mute border border-line bg-panel px-2.5 py-1.5 rounded-md hover:text-ink hover:border-enclave/50 transition-colors hidden sm:flex items-center gap-1 font-semibold"
+            onClick={() => {
+              soundFx.playStepTick();
+              setCommandPaletteOpen(true);
+            }}
+            className="hidden sm:flex items-center gap-1.5 font-mono text-xs font-semibold px-3 py-2 rounded-xl border border-line bg-panel2 text-mute hover:text-ink transition-all shadow-sm"
+            title="Open Quick Command Palette (⌘K)"
           >
             <span>⌘K</span>
           </button>

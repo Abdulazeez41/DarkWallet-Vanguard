@@ -5,18 +5,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        void: "#010616",      // Fluence Deep Midnight Base
-        panel: "#0B1122",     // Fluence Dark Navy Card
-        panel2: "#101931",    // Fluence Raised Slate Card
-        line: "#1B2745",      // Calm structural border
-        ink: "#FFFFFF",       // Pure white primary text
-        mute: "#8F9CAE",      // Calm refined secondary text
-        pass: "#00EC97",      // Fluence / NEAR Calm Tech Green
-        warn: "#F3A953",      // Fluence Warm Accent Orange
-        block: "#F35365",     // Fluence Coral Alert Red
-        enclave: "#2D68FF",   // Fluence Primary Brand Blue
-        cyanGlow: "#38BDF8",  // Clean Sky/Cyan Accent
-        paper: "#FDFBF7",     // receipt only
+        void: "#F8F6F0",       // Warm Creamy Linen Base Background
+        panel: "#FFFFFF",      // Crisp Warm White Card
+        panel2: "#F3ECE2",     // Soft Warm Oat Sub-Panel / Pill
+        line: "#E5DDD0",       // Warm Parchment Structural Border
+        ink: "#1A1815",        // Deep Espresso Charcoal Primary Text
+        mute: "#665E55",       // Earthy Stone / Legible Secondary Text
+        pass: "#1B7340",       // Rich Forest Botanical Green
+        warn: "#C27803",       // Warm Golden Honey Amber
+        block: "#B91C1C",      // Deep Brick Crimson Alert Red
+        enclave: "#C25E2E",    // Warm Cognac / Terracotta Bronze Accent
+        brandDark: "#26211E",  // Deep Obsidian Espresso
+        paper: "#FDFBF7",      // Receipt Cream
         paperInk: "#1E1E1E",
       },
       fontFamily: {
@@ -24,16 +24,14 @@ export default {
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {
-        glowPass: "0 0 24px rgba(0,236,151,.35)",
-        "glow-pass": "0 0 24px rgba(0,236,151,.35)",
-        glowWarn: "0 0 24px rgba(243,169,83,.35)",
-        "glow-warn": "0 0 24px rgba(243,169,83,.35)",
-        glowBlock: "0 0 28px rgba(243,83,101,.4)",
-        "glow-block": "0 0 28px rgba(243,83,101,.4)",
-        glowEnclave: "0 0 32px rgba(45,104,255,.35)",
-        "glow-enclave": "0 0 32px rgba(45,104,255,.35)",
-        glowCyan: "0 0 32px rgba(56,189,248,.35)",
-        "glow-cyan": "0 0 32px rgba(56,189,248,.35)",
+        glowPass: "0 0 20px rgba(27,115,64,.2)",
+        "glow-pass": "0 0 20px rgba(27,115,64,.2)",
+        glowWarn: "0 0 20px rgba(194,120,3,.2)",
+        "glow-warn": "0 0 20px rgba(194,120,3,.2)",
+        glowBlock: "0 0 24px rgba(185,28,28,.2)",
+        "glow-block": "0 0 24px rgba(185,28,28,.2)",
+        glowEnclave: "0 0 24px rgba(194,94,46,.2)",
+        "glow-enclave": "0 0 24px rgba(194,94,46,.2)",
       },
       keyframes: {
         scan: { "0%": { transform: "translateY(-100%)" }, "100%": { transform: "translateY(100%)" } },

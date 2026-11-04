@@ -124,10 +124,10 @@ export default function VaultRoomPage() {
       </div>
 
       {/* 4. Footer Information Bar */}
-      <footer className="border-t border-line bg-panel/70 px-4 sm:px-6 lg:px-8 xl:px-12 py-4 select-none text-[11px] font-mono text-mute">
-        <div className="w-full max-w-[1720px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
-          <div className="flex items-center gap-2 text-white/90 font-medium">
-            <span className="w-2 h-2 rounded-full bg-pass shadow-glow-pass" />
+      <footer className="border-t border-line bg-panel2/80 px-4 sm:px-6 lg:px-8 xl:px-12 py-5 select-none text-xs sm:text-sm font-mono text-mute">
+        <div className="w-full max-w-[1720px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
+          <div className="flex items-center gap-2.5 text-ink font-bold">
+            <span className="w-2.5 h-2.5 rounded-full bg-pass" />
             <span>NEAR Protocol Chain Abstraction</span>
           </div>
           <div className="text-mute font-medium">

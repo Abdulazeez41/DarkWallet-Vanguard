@@ -31,12 +31,12 @@ function PipelineBackbone() {
         <boxGeometry
           args={[GATE_X_COORDS.nonce - ORIGIN_INTENT_X, 0.02, 0.02]}
         />
-        <meshBasicMaterial color="#2D68FF" transparent opacity={0.7} />
+        <meshBasicMaterial color="#C25E2E" transparent opacity={0.7} />
       </mesh>
 
       {/* Radiant floor grid */}
       <gridHelper
-        args={[30, 30, '#2D68FF', '#101931']}
+        args={[30, 30, '#C25E2E', '#3D332A']}
         position={[0, -1.8, 0]}
       />
     </group>
@@ -45,23 +45,23 @@ function PipelineBackbone() {
 
 export function VaultScene() {
   return (
-    <div className="relative w-full h-full min-h-[460px] bg-void overflow-hidden select-none">
+    <div className="relative w-full h-full min-h-[460px] bg-[#181512] overflow-hidden select-none">
       <Canvas
         camera={{ position: [0, 0, 8.5], fov: 44 }}
         gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
         dpr={[1, 1.5]}
       >
-        <color attach="background" args={['#010616']} />
+        <color attach="background" args={['#181512']} />
 
         <Suspense fallback={null}>
           <CameraRig />
 
-          {/* Calm Radiant Lighting Rig */}
-          <ambientLight intensity={0.85} />
-          <directionalLight position={[5, 12, 6]} intensity={1.3} color="#FFFFFF" />
-          <directionalLight position={[-6, -4, -3]} intensity={1.0} color="#2D68FF" />
-          <pointLight position={[0, 4, 3]} intensity={1.4} color="#00EC97" distance={15} />
-          <pointLight position={[6, -2, 2]} intensity={1.2} color="#2D68FF" distance={14} />
+          {/* Warm Architectural Lighting Rig */}
+          <ambientLight intensity={0.95} color="#FDF8EE" />
+          <directionalLight position={[5, 12, 6]} intensity={1.5} color="#FFF8E7" />
+          <directionalLight position={[-6, -4, -3]} intensity={1.0} color="#C25E2E" />
+          <pointLight position={[0, 4, 3]} intensity={1.5} color="#C25E2E" distance={15} />
+          <pointLight position={[6, -2, 2]} intensity={1.4} color="#D97706" distance={14} />
 
           {/* Background Stars Field */}
           <Stars
