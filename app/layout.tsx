@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'DarkWallet Vanguard // TEE-Sanitized Autonomous Agent Engine',
+  title: 'DarkWallet Vanguard // Intel TDX Confidential Agent Vault',
   description:
-    'Framework for deploying zero-knowledge, TEE-sanitized autonomous agents managing assets across Bitcoin, Ethereum, and Solana via NEAR Chain Signatures and NEAR Intents.',
+    'Hardware-isolated autonomous AI treasury and cross-chain execution vault on NEAR AI Cloud and NEAR Intents.',
 };
 
 export default function RootLayout({
@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-[#FDFBF7] text-[#1E1E1E]">
+    <html lang="en" className="dark">
+      <body className="min-h-screen bg-void text-ink antialiased selection:bg-enclave/30 selection:text-enclave font-display">
         {children}
       </body>
     </html>

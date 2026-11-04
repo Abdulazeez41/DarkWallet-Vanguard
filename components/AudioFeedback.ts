@@ -126,6 +126,61 @@ class SoundController {
   }
 
   /**
+   * Plays a resonant glass shattering impact sound on gate rejection.
+   */
+  public playShatterAlarm(): void {
+    if (this.isMuted) return;
+    try {
+      const ctx = this.getAudioContext();
+      if (!ctx) return;
+
+      // Noise buffer for shatter crunch
+      const bufferSize = ctx.sampleRate * 0.12;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = ctx.createBufferSource();
+      whiteNoise.buffer = buffer;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(1800, ctx.currentTime);
+      filter.Q.setValueAtTime(3, ctx.currentTime);
+
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.12, ctx.currentTime);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.11);
+
+      whiteNoise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+
+      whiteNoise.start(ctx.currentTime);
+
+      // Low bass impact
+      const osc = ctx.createOscillator();
+      const bassGain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(160, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.15);
+
+      bassGain.gain.setValueAtTime(0.15, ctx.currentTime);
+      bassGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+
+      osc.connect(bassGain);
+      bassGain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.16);
+    } catch {
+      // Audio playback safely ignored
+    }
+  }
+
+  /**
    * Triggers hardware haptic vibration if supported by device.
    */
   public triggerHaptic(pattern: number | number[] = 24): void {

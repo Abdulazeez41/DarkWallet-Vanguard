@@ -13,18 +13,25 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
+    "@react-three/postprocessing": "^3.2.2",
     "clsx": "^2.1.1",
+    "framer-motion": "^14.9.1",
     "next": "^15.5.28",
     "openai": "^4.104.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "tailwind-merge": "^2.6.1",
-    "zod": "^3.25.76"
+    "three": "^0.187.0",
+    "zod": "^3.25.76",
+    "zustand": "^5.0.16"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.187.0",
     "autoprefixer": "^10.6.2",
     "postcss": "^8.5.32",
     "tailwindcss": "^3.4.19",

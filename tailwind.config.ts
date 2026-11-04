@@ -1,82 +1,43 @@
-import type { Config } from 'tailwindcss';
+import type { Config } from "tailwindcss";
 
-const config: Config = {
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './lib/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+export default {
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        cream: {
-          50: '#FFFFFF',
-          100: '#FDFBF7',
-          200: '#FAF7F0',
-          300: '#F5EBE1',
-          400: '#EAD7C5',
-        },
-        pastel: {
-          mint: '#B8E3D2',
-          mintLight: '#D4F0E4',
-          yellow: '#FEF3C7',
-          yellowBright: '#FDE047',
-          tan: '#EAD7C5',
-          tanLight: '#F5EBE1',
-        },
-        charcoal: {
-          900: '#1E1E1E',
-          800: '#2A2A2A',
-          700: '#404040',
-        },
-        alarm: {
-          redTanBg: '#FCE8E6',
-          redTanBorder: '#E06A55',
-          redTanText: '#991B1B',
-        },
-      },
-      boxShadow: {
-        neo: '4px 4px 0px 0px #1E1E1E',
-        'neo-sm': '2px 2px 0px 0px #1E1E1E',
-        'neo-lg': '6px 6px 0px 0px #1E1E1E',
+        void: "#07090D",      // page background
+        panel: "#0E131B",     // cards
+        panel2: "#141B26",    // raised cards
+        line: "#1F2A37",      // borders
+        ink: "#E6EDF3",       // main text
+        mute: "#8B98A8",      // secondary text
+        pass: "#5EEAD4",      // pass / sealed / settled
+        warn: "#FBBF24",      // warnings / simulated
+        block: "#F43F5E",     // blocked / kill switch
+        enclave: "#7C9CFF",   // enclave core glow
+        paper: "#FDFBF7",     // receipt only
+        paperInk: "#1E1E1E",
       },
       fontFamily: {
-        mono: [
-          'ui-monospace',
-          'SFMono-Regular',
-          'Menlo',
-          'Monaco',
-          'Consolas',
-          '"Liberation Mono"',
-          '"Courier New"',
-          'monospace',
-        ],
+        display: ["var(--font-grotesk)", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+      },
+      boxShadow: {
+        glowPass: "0 0 24px rgba(94,234,212,.35)",
+        "glow-pass": "0 0 24px rgba(94,234,212,.35)",
+        glowWarn: "0 0 24px rgba(251,191,36,.35)",
+        "glow-warn": "0 0 24px rgba(251,191,36,.35)",
+        glowBlock: "0 0 24px rgba(244,63,94,.45)",
+        "glow-block": "0 0 24px rgba(244,63,94,.45)",
+        glowEnclave: "0 0 32px rgba(124,156,255,.4)",
+        "glow-enclave": "0 0 32px rgba(124,156,255,.4)",
       },
       keyframes: {
-        shake: {
-          '0%, 100%': { transform: 'translateX(0)' },
-          '20%, 60%': { transform: 'translateX(-6px)' },
-          '40%, 80%': { transform: 'translateX(6px)' },
-        },
-        'travel-line': {
-          '0%': { transform: 'translateX(-10%)' },
-          '50%': { transform: 'translateX(300%)' },
-          '100%': { transform: 'translateX(650%)' },
-        },
-        'redact-lock': {
-          '0%': { opacity: '0.2', transform: 'scaleY(0.4)' },
-          '100%': { opacity: '1', transform: 'scaleY(1)' },
-        },
+        scan: { "0%": { transform: "translateY(-100%)" }, "100%": { transform: "translateY(100%)" } },
+        flicker: { "0%,100%": { opacity: "1" }, "50%": { opacity: ".6" } },
       },
-      animation: {
-        shake: 'shake 0.4s ease-in-out',
-        'travel-line': 'travel-line 2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
-        'redact-lock': 'redact-lock 0.15s ease-out forwards',
-      },
+      animation: { scan: "scan 2.4s linear infinite", flicker: "flicker 1.6s ease-in-out infinite" },
     },
   },
   plugins: [],
-};
-
-export default config;
+} satisfies Config;
