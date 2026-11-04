@@ -36,8 +36,20 @@ export function VaultCanvas() {
   useEffect(() => {
     setMounted(true);
 
-    // Check reduced motion preference
     if (typeof window !== 'undefined') {
+      // Suppress Three.js r187 Clock deprecation noise from @react-three/fiber core
+      const originalWarn = console.warn;
+      console.warn = (...args: unknown[]) => {
+        if (
+          typeof args[0] === 'string' &&
+          (args[0].includes('THREE.Clock') || args[0].includes('Clock: This module has been deprecated'))
+        ) {
+          return;
+        }
+        originalWarn.apply(console, args);
+      };
+
+      // Check reduced motion preference
       const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
       if (mediaQuery.matches) {
         setUseFallback(true);

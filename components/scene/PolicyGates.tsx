@@ -8,16 +8,15 @@
  *  - Gate 2: Allowlist (x = 1.5)
  *  - Gate 3: Nonce Freshness (x = 4.0)
  *
- * Rings shift colors dynamically (luminous cyan idle -> solar gold checking -> mint pass / cyber crimson block)
- * and emit focused light on evaluation.
+ * Uses native WebGL canvas sprites for in-scene badges with zero DOM root overhead.
  */
 
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { GateId, GateStatus } from '@/lib/events';
 import { GATE_X_COORDS, useVaultStore } from '@/lib/store';
+import { InSceneBadge } from './SceneLabels';
 
 interface GateConfig {
   id: GateId;
@@ -50,6 +49,7 @@ const GATES_CONFIG: GateConfig[] = [
 function SingleGate({ config }: { config: GateConfig }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
+  const elapsedRef = useRef(0);
 
   const status = useVaultStore((s) => s.gates[config.id]);
   const activeGateId = useVaultStore((s) => s.activeGateId);
@@ -64,7 +64,10 @@ function SingleGate({ config }: { config: GateConfig }) {
 
   const currentTheme = colorMap[status];
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
+    elapsedRef.current += delta;
+    const time = elapsedRef.current;
+
     if (meshRef.current) {
       if (status === 'checking') {
         meshRef.current.rotation.z += delta * 2.8;
@@ -74,13 +77,14 @@ function SingleGate({ config }: { config: GateConfig }) {
     }
 
     if (lightRef.current) {
-      const pulse = status === 'checking'
-        ? 2.5 + Math.sin(state.clock.elapsedTime * 10) * 1.2
-        : status === 'failed'
-        ? 3.8 + Math.sin(state.clock.elapsedTime * 14) * 0.8
-        : status === 'passed'
-        ? 2.2
-        : 0.5;
+      const pulse =
+        status === 'checking'
+          ? 2.5 + Math.sin(time * 10) * 1.2
+          : status === 'failed'
+          ? 3.8 + Math.sin(time * 14) * 0.8
+          : status === 'passed'
+          ? 2.2
+          : 0.5;
 
       lightRef.current.intensity = THREE.MathUtils.lerp(
         lightRef.current.intensity,
@@ -133,31 +137,15 @@ function SingleGate({ config }: { config: GateConfig }) {
         />
       </mesh>
 
-      {/* HTML Metadata Label */}
-      <Html position={[0, -1.45, 0]} center distanceFactor={12}>
-        <div
-          className={`flex flex-col items-center pointer-events-none select-none text-center transition-all duration-300 ${
-            isTarget ? 'scale-110' : 'opacity-95'
-          }`}
-        >
-          <div
-            className={`font-mono text-[9px] uppercase tracking-wider font-black px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors duration-300 ${
-              status === 'failed'
-                ? 'bg-block/30 border-block text-white shadow-glow-block'
-                : status === 'passed'
-                ? 'bg-pass/30 border-pass text-pass shadow-glow-pass'
-                : status === 'checking'
-                ? 'bg-warn/30 border-warn text-warn shadow-glow-warn animate-pulse'
-                : 'bg-panel/95 border-enclave/40 text-enclave shadow-glow-enclave'
-            }`}
-          >
-            {config.label}
-          </div>
-          <span className="font-mono text-[8px] text-white/90 font-bold tracking-tight mt-0.5 whitespace-nowrap drop-shadow">
-            {config.sublabel}
-          </span>
-        </div>
-      </Html>
+      {/* High-Performance WebGL Canvas Sprite Badge (Zero DOM Roots) */}
+      <InSceneBadge
+        position={[0, -1.45, 0]}
+        title={config.label}
+        subtitle={config.sublabel}
+        color={currentTheme.base}
+        isPulsing={isTarget || status !== 'idle'}
+        scale={[1.7, 0.46, 1]}
+      />
     </group>
   );
 }

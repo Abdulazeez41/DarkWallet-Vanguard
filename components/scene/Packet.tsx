@@ -67,8 +67,11 @@ export function Packet() {
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const shatterInitialized = useRef(false);
   const shatterElapsed = useRef(0);
+  const elapsedRef = useRef(0);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
+    elapsedRef.current += delta;
+
     // 1. Normal Intact Packet Motion
     if (packetVisible && !packetShattered && meshRef.current) {
       meshRef.current.position.x = THREE.MathUtils.lerp(
@@ -76,7 +79,7 @@ export function Packet() {
         packetX,
         0.18
       );
-      meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 4) * 0.08;
+      meshRef.current.position.y = Math.sin(elapsedRef.current * 4) * 0.08;
       meshRef.current.rotation.x += delta * 2.2;
       meshRef.current.rotation.y += delta * 3.1;
 

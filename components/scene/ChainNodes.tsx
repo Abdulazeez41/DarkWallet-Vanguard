@@ -9,14 +9,15 @@
  *  - Solana (SOL)
  *  - NEAR (NEAR Intents Solver Mesh)
  *
- * Emits glowing settlement rail lines from Gate 3 and flashes beacon light on execution.
+ * Uses native WebGL canvas sprites for chain labels with zero DOM root overhead.
  */
 
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Html, Line } from '@react-three/drei';
+import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { GATE_X_COORDS, CHAIN_NODES_X, useVaultStore } from '@/lib/store';
+import { InSceneChainBadge } from './SceneLabels';
 
 interface ChainDef {
   name: string;
@@ -36,6 +37,7 @@ function SingleChainNode({ chain }: { chain: ChainDef }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const ringRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
+  const elapsedRef = useRef(0);
 
   const directive = useVaultStore((s) => s.directive);
   const stage = useVaultStore((s) => s.stage);
@@ -46,16 +48,19 @@ function SingleChainNode({ chain }: { chain: ChainDef }) {
   const isSettled = isTarget && stage === 'settled';
   const isSettling = isTarget && stage === 'settling';
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
+    elapsedRef.current += delta;
+    const time = elapsedRef.current;
+
     if (ringRef.current) {
       ringRef.current.rotation.z += delta * (isSettled ? 2.8 : 0.45);
     }
 
     if (lightRef.current) {
       const pulse = isSettled
-        ? 3.5 + Math.sin(state.clock.elapsedTime * 8) * 1.2
+        ? 3.5 + Math.sin(time * 8) * 1.2
         : isSettling
-        ? 1.8 + Math.sin(state.clock.elapsedTime * 6) * 0.6
+        ? 1.8 + Math.sin(time * 6) * 0.6
         : 0.4;
 
       lightRef.current.intensity = THREE.MathUtils.lerp(
@@ -114,25 +119,14 @@ function SingleChainNode({ chain }: { chain: ChainDef }) {
         />
       </mesh>
 
-      {/* HTML Metadata Label */}
-      <Html position={[0.55, 0, 0]} center distanceFactor={12}>
-        <div
-          className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border pointer-events-none select-none transition-all duration-300 font-mono ${
-            isSettled
-              ? 'bg-pass/30 border-pass text-pass shadow-glow-pass scale-110 font-bold'
-              : isSettling
-              ? 'bg-warn/30 border-warn text-warn animate-pulse font-bold'
-              : 'bg-panel/95 border-line text-white/90'
-          }`}
-        >
-          <span className="text-[10px] font-black tracking-wider text-white">
-            {chain.symbol}
-          </span>
-          <span className="text-[8px] font-semibold text-mute">
-            {isSettled ? 'SETTLED' : chain.name}
-          </span>
-        </div>
-      </Html>
+      {/* High-Performance WebGL Canvas Sprite Badge (Zero DOM Roots) */}
+      <InSceneChainBadge
+        position={[0.7, 0, 0]}
+        symbol={chain.symbol}
+        statusText={isSettled ? 'SETTLED' : chain.name}
+        color={chain.color}
+        isSettled={isSettled}
+      />
     </group>
   );
 }

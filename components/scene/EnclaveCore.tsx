@@ -10,19 +10,23 @@
 
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useVaultStore, ENCLAVE_CORE_X } from '@/lib/store';
+import { InSceneBadge } from './SceneLabels';
 
 export function EnclaveCore() {
   const outerBoxRef = useRef<THREE.Mesh>(null);
   const innerCoreRef = useRef<THREE.Mesh>(null);
   const pointLightRef = useRef<THREE.PointLight>(null);
+  const elapsedRef = useRef(0);
 
   const stage = useVaultStore((s) => s.stage);
   const isActive = stage === 'sealing' || stage === 'enclave';
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
+    elapsedRef.current += delta;
+    const time = elapsedRef.current;
+
     if (innerCoreRef.current) {
       innerCoreRef.current.rotation.x += delta * 0.7;
       innerCoreRef.current.rotation.y += delta * 1.1;
@@ -34,8 +38,8 @@ export function EnclaveCore() {
 
     if (pointLightRef.current) {
       const targetIntensity = isActive
-        ? 5.0 + Math.sin(state.clock.elapsedTime * 6) * 2.0
-        : 2.2 + Math.sin(state.clock.elapsedTime * 2) * 0.6;
+        ? 5.0 + Math.sin(time * 6) * 2.0
+        : 2.2 + Math.sin(time * 2) * 0.6;
       pointLightRef.current.intensity = THREE.MathUtils.lerp(
         pointLightRef.current.intensity,
         targetIntensity,
@@ -102,17 +106,15 @@ export function EnclaveCore() {
         />
       </mesh>
 
-      {/* 3D In-Scene Badge Label */}
-      <Html position={[0, -1.4, 0]} center distanceFactor={12}>
-        <div className="flex flex-col items-center pointer-events-none select-none text-center">
-          <span className="font-mono text-[9px] uppercase tracking-widest text-[#38BDF8] font-black px-2.5 py-0.5 rounded-full bg-[#121A2D]/95 border border-[#38BDF8] whitespace-nowrap shadow-glow-cyan">
-            INTEL TDX ENCLAVE
-          </span>
-          <span className="font-mono text-[8px] text-white/90 font-bold tracking-wider mt-0.5 drop-shadow">
-            {isActive ? 'MEMORY ISOLATION ACTIVE' : 'SEALED HARDWARE TEE'}
-          </span>
-        </div>
-      </Html>
+      {/* High-Performance WebGL Canvas Sprite Badge (Zero DOM Roots) */}
+      <InSceneBadge
+        position={[0, -1.45, 0]}
+        title="INTEL TDX ENCLAVE"
+        subtitle={isActive ? 'MEMORY ISOLATION ACTIVE' : 'SEALED HARDWARE TEE'}
+        color="#38BDF8"
+        isPulsing={isActive}
+        scale={[1.8, 0.48, 1]}
+      />
     </group>
   );
 }
