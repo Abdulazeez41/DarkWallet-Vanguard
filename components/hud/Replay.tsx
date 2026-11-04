@@ -138,37 +138,38 @@ export function Replay() {
   };
 
   return (
-    <div className="w-full bg-panel rounded-lg border border-line p-5 space-y-6 select-none">
+    <div className="w-full bg-panel rounded-xl border border-line p-6 space-y-6 select-none shadow-xl">
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="font-mono text-sm font-bold text-ink tracking-wider">
+          <div className="flex items-center gap-2.5">
+            <h2 className="font-mono text-base font-black text-white tracking-wider flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-enclave shadow-glow-enclave" />
               7-DAY AUTONOMOUS TREASURY STRESS TEST
             </h2>
-            <span className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-enclave/15 text-enclave border border-enclave/30">
+            <span className="font-mono text-[9px] px-2 py-0.5 rounded-full bg-enclave/20 text-enclave border border-enclave/40 font-bold uppercase shadow-glow-enclave">
               TRACK 04 BUSINESS
             </span>
           </div>
-          <p className="font-mono text-[10px] text-mute mt-1">
-            Simulate 7 days of autonomous rebalancing. Evaluates self-funded inference fees and 80/20 contributor revenue splits.
+          <p className="font-mono text-xs text-mute mt-1.5 leading-relaxed">
+            Simulate 7 days of autonomous rebalancing across Bitcoin, Ethereum, and Solana. Demonstrates self-funded compute fee deductions to NEAR AI Cloud and automated 80/20 contributor revenue splits.
           </p>
         </div>
 
         <button
           onClick={handlePlaySimulation}
           disabled={isPlaying}
-          className="font-mono text-xs font-bold px-4 py-2 rounded bg-enclave hover:bg-enclave/90 text-void border border-enclave shadow-glow-enclave transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 self-start sm:self-auto"
+          className="font-mono text-xs font-black px-5 py-2.5 rounded-lg bg-gradient-to-r from-enclave to-cyan-400 hover:from-cyan-400 hover:to-enclave text-void border border-enclave shadow-glow-cyan transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 self-start sm:self-auto"
         >
           <span>{isPlaying ? 'FAST-FORWARDING...' : 'RUN 7-DAY TIME-LAPSE ▶'}</span>
         </button>
       </div>
 
       {/* Scrubbable Time-Lapse Slider */}
-      <div className="bg-void/80 border border-line rounded-lg p-4">
-        <div className="flex items-center justify-between font-mono text-[11px] text-mute mb-2">
-          <span>TIMELINE SCRUBBER:</span>
-          <span className="text-ink font-bold">{currentDay.date} (Day {currentDay.day} of 7)</span>
+      <div className="bg-void/90 border border-line rounded-xl p-4.5 shadow-inner">
+        <div className="flex items-center justify-between font-mono text-xs text-mute mb-2">
+          <span className="text-white font-bold">TIMELINE SCRUBBER:</span>
+          <span className="text-enclave font-black">{currentDay.date} (Day {currentDay.day} of 7)</span>
         </div>
         <input
           type="range"
@@ -181,67 +182,71 @@ export function Replay() {
             setSelectedDayIndex(Number(e.target.value));
           }}
           disabled={isPlaying}
-          className="w-full accent-enclave h-2 bg-panel rounded appearance-none cursor-pointer"
+          className="w-full accent-enclave h-2.5 bg-panel2 rounded-lg appearance-none cursor-pointer"
         />
-        <div className="flex justify-between font-mono text-[9px] text-mute mt-1 px-1">
+        <div className="flex justify-between font-mono text-[10px] text-mute font-bold mt-2 px-1">
           {REPLAY_DATA.map((d, i) => (
             <span
               key={d.day}
-              className={`cursor-pointer ${i === selectedDayIndex ? 'text-enclave font-bold' : ''}`}
+              className={`cursor-pointer px-1.5 py-0.5 rounded transition-all ${
+                i === selectedDayIndex
+                  ? 'text-white bg-enclave/30 border border-enclave shadow-glow-enclave font-black scale-105'
+                  : 'text-mute hover:text-white'
+              }`}
               onClick={() => setSelectedDayIndex(i)}
             >
-              D{d.day}
+              Day {d.day}
             </span>
           ))}
         </div>
       </div>
 
       {/* Financial Metrics Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-panel2/60 border border-line rounded p-3">
-          <div className="font-mono text-[9px] text-mute uppercase">CUMULATIVE VOLUME</div>
-          <div className="font-mono text-base font-bold text-ink mt-1">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+        <div className="bg-panel2 border border-line rounded-xl p-4 shadow-sm">
+          <div className="font-mono text-[10px] text-mute uppercase font-bold">CUMULATIVE VOLUME</div>
+          <div className="font-mono text-lg font-black text-white mt-1">
             ${totalVolume.toFixed(2)}
           </div>
-          <div className="font-mono text-[9px] text-mute mt-0.5">{totalTrades} rebalances settled</div>
+          <div className="font-mono text-[10px] text-mute mt-0.5">{totalTrades} rebalances settled</div>
         </div>
 
-        <div className="bg-panel2/60 border border-line rounded p-3">
-          <div className="font-mono text-[9px] text-mute uppercase">NET FINANCIAL YIELD</div>
-          <div className="font-mono text-base font-bold text-pass mt-1">
+        <div className="bg-panel2 border border-pass/40 rounded-xl p-4 shadow-sm shadow-glow-pass">
+          <div className="font-mono text-[10px] text-pass uppercase font-bold">NET FINANCIAL YIELD</div>
+          <div className="font-mono text-lg font-black text-pass mt-1">
             +${totalYield.toFixed(2)}
           </div>
-          <div className="font-mono text-[9px] text-mute mt-0.5">Post-slippage spread</div>
+          <div className="font-mono text-[10px] text-white/80 mt-0.5">Post-slippage spread</div>
         </div>
 
-        <div className="bg-panel2/60 border border-line rounded p-3">
-          <div className="font-mono text-[9px] text-mute uppercase">80% TREASURY SHARE</div>
-          <div className="font-mono text-base font-bold text-enclave mt-1">
+        <div className="bg-panel2 border border-enclave/40 rounded-xl p-4 shadow-sm shadow-glow-enclave">
+          <div className="font-mono text-[10px] text-enclave uppercase font-bold">80% TREASURY SHARE</div>
+          <div className="font-mono text-lg font-black text-enclave mt-1">
             ${totalTreasurySplit.toFixed(2)}
           </div>
-          <div className="font-mono text-[9px] text-mute mt-0.5">Retained in multi-sig</div>
+          <div className="font-mono text-[10px] text-white/80 mt-0.5">Retained in multi-sig</div>
         </div>
 
-        <div className="bg-panel2/60 border border-line rounded p-3">
-          <div className="font-mono text-[9px] text-mute uppercase">20% CONTRIBUTOR POOL</div>
-          <div className="font-mono text-base font-bold text-warn mt-1">
+        <div className="bg-panel2 border border-warn/40 rounded-xl p-4 shadow-sm shadow-glow-warn">
+          <div className="font-mono text-[10px] text-warn uppercase font-bold">20% CONTRIBUTOR POOL</div>
+          <div className="font-mono text-lg font-black text-warn mt-1">
             ${totalContributorSplit.toFixed(2)}
           </div>
-          <div className="font-mono text-[9px] text-mute mt-0.5">contributors.vanguard.near</div>
+          <div className="font-mono text-[10px] text-white/80 mt-0.5">contributors.vanguard.near</div>
         </div>
       </div>
 
       {/* Autonomous Compute Self-Funding Banner */}
-      <div className="bg-void border border-line rounded-lg p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-enclave" />
-          <span className="text-mute">Autonomous Compute Deduction:</span>
-          <span className="text-ink font-semibold">
+      <div className="bg-void border border-enclave/30 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono shadow-inner">
+        <div className="flex items-center gap-2.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-enclave shadow-glow-enclave" />
+          <span className="text-mute font-semibold">Autonomous Compute Fee:</span>
+          <span className="text-white font-bold">
             ${totalInferenceCost.toFixed(4)} self-funded to NEAR AI Cloud ($0.003 / prompt)
           </span>
         </div>
-        <div className="text-[10px] text-mute">
-          Net Treasury Margin: <span className="text-pass font-bold">98.9%</span>
+        <div className="text-[11px] text-mute">
+          Net Treasury Margin: <span className="text-pass font-black">98.9%</span>
         </div>
       </div>
     </div>

@@ -13,43 +13,43 @@ export function ConfidentialityStrip() {
     {
       actor: 'YOU (CLIENT)',
       access: 'SEEN',
-      statusClass: 'text-pass border-pass/40 bg-pass/10',
+      statusClass: 'text-pass border-pass bg-pass/20 shadow-glow-pass',
       description: 'Full unredacted prompt & private directive visibility',
     },
     {
       actor: 'HOST & HYPERVISOR',
       access: 'SEALED',
-      statusClass: 'text-enclave border-enclave/40 bg-enclave/10',
+      statusClass: 'text-enclave border-enclave bg-enclave/20 shadow-glow-enclave',
       description: 'Physical RAM & CPU bus encrypted via Intel TDX MKTME',
     },
     {
       actor: 'NEAR AI CLOUD',
       access: 'SEALED',
-      statusClass: 'text-enclave border-enclave/40 bg-enclave/10',
+      statusClass: 'text-enclave border-enclave bg-enclave/20 shadow-glow-enclave',
       description: 'Stateless confidential inference · Zero server-side retention',
     },
     {
       actor: 'PUBLIC BLOCKCHAIN',
       access: 'SEALED',
-      statusClass: 'text-enclave border-enclave/40 bg-enclave/10',
+      statusClass: 'text-enclave border-enclave bg-enclave/20 shadow-glow-enclave',
       description: 'Gasless settlement via NEAR MPC chain signatures',
     },
   ];
 
   return (
-    <div className="w-full bg-panel/70 border-b border-line px-4 py-1.5 select-none text-[10px] font-mono">
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-1 gap-x-4">
-        <div className="flex items-center gap-1.5 text-mute font-medium">
-          <span className="w-1.5 h-1.5 rounded-full bg-enclave animate-pulse" />
+    <div className="w-full bg-panel/90 backdrop-blur-sm border-b border-line px-4 py-2 select-none text-[11px] font-mono">
+      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-1.5 gap-x-4">
+        <div className="flex items-center gap-2 text-white font-bold">
+          <span className="w-2 h-2 rounded-full bg-enclave shadow-glow-enclave animate-pulse" />
           <span>CONFIDENTIALITY ARCHITECTURE:</span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3.5">
           {guarantees.map((g) => (
             <div key={g.actor} className="flex items-center gap-1.5" title={g.description}>
-              <span className="text-mute">{g.actor}:</span>
+              <span className="text-white/80 font-medium">{g.actor}:</span>
               <span
-                className={`px-1.5 py-0.2 rounded border text-[9px] font-bold tracking-wider ${g.statusClass}`}
+                className={`px-2 py-0.5 rounded-full border text-[10px] font-black tracking-wider ${g.statusClass}`}
               >
                 [{g.access}]
               </span>

@@ -9,7 +9,7 @@
  *  - Packet (traveling intent packet & 60-shard shatter)
  *  - ChainNodes (multi-chain settlement targets)
  *  - CameraRig (parallax cursor + decaying camera shake)
- *  - Postprocessing Bloom & cosmic background
+ *  - Vibrant neon lighting, cosmic starfield, and postprocessing Bloom
  */
 
 import { Suspense } from 'react';
@@ -26,17 +26,17 @@ import { ORIGIN_INTENT_X, GATE_X_COORDS } from '@/lib/store';
 function PipelineBackbone() {
   return (
     <group>
-      {/* Central horizontal laser track */}
+      {/* Central luminous laser track */}
       <mesh position={[(ORIGIN_INTENT_X + GATE_X_COORDS.nonce) / 2, 0, 0]}>
         <boxGeometry
-          args={[GATE_X_COORDS.nonce - ORIGIN_INTENT_X, 0.015, 0.015]}
+          args={[GATE_X_COORDS.nonce - ORIGIN_INTENT_X, 0.02, 0.02]}
         />
-        <meshBasicMaterial color="#1F2A37" transparent opacity={0.6} />
+        <meshBasicMaterial color="#38BDF8" transparent opacity={0.7} />
       </mesh>
 
-      {/* Subtle floor grid */}
+      {/* Radiant floor grid */}
       <gridHelper
-        args={[30, 30, '#141B26', '#0E131B']}
+        args={[30, 30, '#38BDF8', '#1E293B']}
         position={[0, -1.8, 0]}
       />
     </group>
@@ -51,25 +51,27 @@ export function VaultScene() {
         gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
         dpr={[1, 1.5]}
       >
-        <color attach="background" args={['#07090D']} />
+        <color attach="background" args={['#0B101D']} />
 
         <Suspense fallback={null}>
           <CameraRig />
 
-          {/* Lighting Rig */}
-          <ambientLight intensity={0.4} />
-          <directionalLight position={[5, 10, 5]} intensity={0.6} color="#E6EDF3" />
-          <directionalLight position={[-5, -5, -2]} intensity={0.3} color="#7C9CFF" />
+          {/* Vibrant Lighting Rig */}
+          <ambientLight intensity={0.8} />
+          <directionalLight position={[5, 12, 6]} intensity={1.4} color="#FFFFFF" />
+          <directionalLight position={[-6, -4, -3]} intensity={1.1} color="#38BDF8" />
+          <pointLight position={[0, 4, 3]} intensity={1.5} color="#00F5A0" distance={15} />
+          <pointLight position={[6, -2, 2]} intensity={1.2} color="#A855F7" distance={14} />
 
           {/* Background Stars Field */}
           <Stars
-            radius={40}
-            depth={30}
-            count={1400}
-            factor={3}
-            saturation={0}
+            radius={45}
+            depth={35}
+            count={1800}
+            factor={4}
+            saturation={1}
             fade
-            speed={0.6}
+            speed={0.8}
           />
 
           {/* Pipeline Elements */}
@@ -79,12 +81,12 @@ export function VaultScene() {
           <Packet />
           <ChainNodes />
 
-          {/* Subtle Bloom Effect */}
+          {/* Radiant Bloom Effect */}
           <EffectComposer enableNormalPass={false}>
             <Bloom
-              luminanceThreshold={0.65}
-              luminanceSmoothing={0.4}
-              intensity={0.8}
+              luminanceThreshold={0.55}
+              luminanceSmoothing={0.5}
+              intensity={1.2}
               mipmapBlur
             />
           </EffectComposer>
@@ -92,7 +94,7 @@ export function VaultScene() {
       </Canvas>
 
       {/* Subtle Corner Vignette */}
-      <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_120px_rgba(7,9,13,0.85)]" />
+      <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_100px_rgba(11,16,29,0.7)]" />
     </div>
   );
 }

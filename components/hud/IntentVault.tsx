@@ -80,22 +80,23 @@ export function IntentVault() {
     : '████████████████████████';
 
   return (
-    <div className="w-full bg-panel rounded-lg border border-line p-5">
+    <div className="w-full bg-panel rounded-xl border border-line p-6 shadow-xl space-y-5">
       {/* Quick Tag Pills */}
-      <div className="mb-4">
+      <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="font-mono text-[10px] text-mute uppercase tracking-wider">
+          <span className="font-mono text-xs text-enclave font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-enclave shadow-glow-enclave" />
             PRE-CONFIGURED INTENT PRESETS:
           </span>
-          <span className="font-mono text-[9px] text-mute">Click to autofill</span>
+          <span className="font-mono text-[10px] text-mute font-semibold">Click to autofill</span>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5">
           {QUICK_TAGS.map((tag) => (
             <button
               key={tag.id}
               onClick={() => handleSelectTag(tag)}
               disabled={isRunning}
-              className="font-mono text-[11px] px-2.5 py-1.5 rounded border border-line bg-panel2/80 hover:bg-line/40 hover:border-enclave/50 text-ink transition-colors disabled:opacity-50"
+              className="font-mono text-xs font-bold px-3 py-1.5 rounded-lg border border-line bg-panel2 hover:bg-enclave/20 hover:border-enclave text-ink transition-all shadow-sm disabled:opacity-50 active:scale-95"
               title={tag.description}
             >
               {tag.label}
@@ -107,7 +108,7 @@ export function IntentVault() {
       {/* Main Input Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block font-mono text-[10px] text-mute uppercase tracking-wider mb-1.5">
+          <label className="block font-mono text-xs text-white font-bold uppercase tracking-wider mb-2">
             NATURAL LANGUAGE TRADING / REBALANCING INTENT:
           </label>
           <div className="relative">
@@ -117,7 +118,7 @@ export function IntentVault() {
               onChange={(e) => setInputGoal(e.target.value)}
               disabled={isRunning}
               placeholder="e.g. Rebalance 25 USDC from Solana to Ethereum via NEAR Intents safely..."
-              className={`w-full bg-void border border-line rounded p-3 font-mono text-xs text-ink placeholder:text-mute/60 focus:outline-none focus:border-enclave transition-colors resize-none ${
+              className={`w-full bg-void/90 border-2 border-line rounded-lg p-3.5 font-mono text-xs text-white placeholder:text-mute focus:outline-none focus:border-enclave transition-colors resize-none shadow-inner leading-relaxed ${
                 isFlickering ? 'animate-pulse text-enclave' : ''
               }`}
             />
@@ -125,25 +126,27 @@ export function IntentVault() {
         </div>
 
         {/* Confidential Redaction Preview Strip */}
-        <div className="bg-void/80 border border-line/60 rounded p-2.5 font-mono text-[10px]">
-          <div className="flex items-center justify-between text-mute mb-1">
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-enclave" />
-              CLIENT-SIDE SEALED PREVIEW (WHAT HYPERVISOR SEES):
+        <div className="bg-void border border-enclave/30 rounded-lg p-3 font-mono text-xs shadow-inner">
+          <div className="flex items-center justify-between text-mute mb-1.5">
+            <span className="flex items-center gap-2 text-enclave font-bold text-[11px]">
+              <span className="w-2 h-2 rounded-full bg-enclave shadow-glow-enclave" />
+              CLIENT-SIDE SEALED PREVIEW (WHAT CLOUD & HYPERVISOR SEE):
             </span>
-            <span className="text-[9px] text-enclave">ZERO PERSISTENCE</span>
+            <span className="text-[10px] font-black text-pass px-2 py-0.5 rounded bg-pass/10 border border-pass/30">
+              ZERO PERSISTENCE
+            </span>
           </div>
-          <div className="text-mute/90 tracking-wider truncate select-all">
+          <div className="text-white/80 font-mono tracking-wider truncate select-all text-xs bg-panel2/60 p-2 rounded border border-line">
             {redactedPreview}
           </div>
         </div>
 
         {/* Policy Boundary Sliders */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-line/70">
-          <div>
-            <div className="flex items-center justify-between font-mono text-[10px] text-mute mb-1">
-              <span>SINGLE-TRADE CAP (GATE 1):</span>
-              <span className="text-ink font-bold">${policy.maxUsdPerTx}.00</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-3 border-t border-line">
+          <div className="bg-panel2/70 p-3.5 rounded-lg border border-line">
+            <div className="flex items-center justify-between font-mono text-xs text-mute mb-1.5">
+              <span className="font-bold text-white">SINGLE-TRADE CAP (GATE 1):</span>
+              <span className="text-enclave font-black text-sm">${policy.maxUsdPerTx}.00</span>
             </div>
             <input
               type="range"
@@ -153,14 +156,15 @@ export function IntentVault() {
               value={policy.maxUsdPerTx}
               onChange={(e) => setPolicy({ maxUsdPerTx: Number(e.target.value) })}
               disabled={isRunning}
-              className="w-full accent-enclave h-1.5 bg-void rounded appearance-none cursor-pointer"
+              className="w-full accent-enclave h-2 bg-void rounded appearance-none cursor-pointer"
             />
+            <span className="font-mono text-[9px] text-mute block mt-1">Rejects any single trade exceeding this value</span>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between font-mono text-[10px] text-mute mb-1">
-              <span>SESSION BUDGET CAP:</span>
-              <span className="text-ink font-bold">${policy.sessionBudgetCapUsd}.00</span>
+          <div className="bg-panel2/70 p-3.5 rounded-lg border border-line">
+            <div className="flex items-center justify-between font-mono text-xs text-mute mb-1.5">
+              <span className="font-bold text-white">SESSION BUDGET CAP:</span>
+              <span className="text-pass font-black text-sm">${policy.sessionBudgetCapUsd}.00</span>
             </div>
             <input
               type="range"
@@ -170,25 +174,27 @@ export function IntentVault() {
               value={policy.sessionBudgetCapUsd}
               onChange={(e) => setPolicy({ sessionBudgetCapUsd: Number(e.target.value) })}
               disabled={isRunning}
-              className="w-full accent-enclave h-1.5 bg-void rounded appearance-none cursor-pointer"
+              className="w-full accent-pass h-2 bg-void rounded appearance-none cursor-pointer"
             />
+            <span className="font-mono text-[9px] text-mute block mt-1">Stateful cumulative budget ceiling</span>
           </div>
         </div>
 
         {/* Submit Execution Button */}
-        <div className="pt-2 flex items-center justify-between">
-          <div className="font-mono text-[9px] text-mute hidden sm:block">
-            Intel TDX Encrypted Inference · Stateless API Route
+        <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="font-mono text-[10px] text-mute flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-pass" />
+            Intel TDX Encrypted Inference · Stateless Route
           </div>
 
           <button
             type="submit"
             disabled={isRunning || !inputGoal.trim()}
-            className="w-full sm:w-auto font-mono text-xs font-bold px-6 py-2.5 rounded bg-enclave hover:bg-enclave/90 text-void border border-enclave shadow-glow-enclave transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full sm:w-auto font-mono text-xs font-black px-7 py-3 rounded-lg bg-gradient-to-r from-enclave to-cyan-400 hover:from-cyan-400 hover:to-enclave text-void border border-enclave shadow-glow-cyan transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
           >
             {isRunning ? (
               <>
-                <div className="w-3.5 h-3.5 rounded-full border-2 border-void border-t-transparent animate-spin" />
+                <div className="w-4 h-4 rounded-full border-2 border-void border-t-transparent animate-spin" />
                 <span>PROCESSING INTENT...</span>
               </>
             ) : (

@@ -8,7 +8,7 @@
  *  - Gate 2: Allowlist (x = 1.5)
  *  - Gate 3: Nonce Freshness (x = 4.0)
  *
- * Rings shift colors dynamically (idle slate -> checking yellow -> pass teal / block red)
+ * Rings shift colors dynamically (luminous cyan idle -> solar gold checking -> mint pass / cyber crimson block)
  * and emit focused light on evaluation.
  */
 
@@ -56,10 +56,10 @@ function SingleGate({ config }: { config: GateConfig }) {
   const isTarget = activeGateId === config.id;
 
   const colorMap: Record<GateStatus, { base: string; emissive: string; intensity: number }> = {
-    idle: { base: '#1F2A37', emissive: '#0E131B', intensity: 0.1 },
-    checking: { base: '#FBBF24', emissive: '#D97706', intensity: 1.8 },
-    passed: { base: '#5EEAD4', emissive: '#14B8A6', intensity: 1.5 },
-    failed: { base: '#F43F5E', emissive: '#BE123C', intensity: 2.2 },
+    idle: { base: '#38BDF8', emissive: '#0284C7', intensity: 0.45 },
+    checking: { base: '#FBBF24', emissive: '#D97706', intensity: 2.8 },
+    passed: { base: '#00F5A0', emissive: '#059669', intensity: 2.6 },
+    failed: { base: '#FF3366', emissive: '#E11D48', intensity: 3.5 },
   };
 
   const currentTheme = colorMap[status];
@@ -67,20 +67,20 @@ function SingleGate({ config }: { config: GateConfig }) {
   useFrame((state, delta) => {
     if (meshRef.current) {
       if (status === 'checking') {
-        meshRef.current.rotation.z += delta * 2.5;
+        meshRef.current.rotation.z += delta * 2.8;
       } else {
-        meshRef.current.rotation.z += delta * 0.2;
+        meshRef.current.rotation.z += delta * 0.35;
       }
     }
 
     if (lightRef.current) {
       const pulse = status === 'checking'
-        ? 1.5 + Math.sin(state.clock.elapsedTime * 10) * 0.8
+        ? 2.5 + Math.sin(state.clock.elapsedTime * 10) * 1.2
         : status === 'failed'
-        ? 2.5 + Math.sin(state.clock.elapsedTime * 14) * 0.5
+        ? 3.8 + Math.sin(state.clock.elapsedTime * 14) * 0.8
         : status === 'passed'
-        ? 1.2
-        : 0.2;
+        ? 2.2
+        : 0.5;
 
       lightRef.current.intensity = THREE.MathUtils.lerp(
         lightRef.current.intensity,
@@ -97,39 +97,39 @@ function SingleGate({ config }: { config: GateConfig }) {
         ref={lightRef}
         color={currentTheme.base}
         intensity={currentTheme.intensity}
-        distance={4.5}
+        distance={6}
         decay={2}
       />
 
       {/* Main Outer Ring Torus */}
       <mesh ref={meshRef} rotation={[0, Math.PI / 2, 0]}>
-        <torusGeometry args={[0.9, 0.045, 16, 64]} />
+        <torusGeometry args={[0.9, 0.05, 16, 64]} />
         <meshStandardMaterial
           color={currentTheme.base}
           emissive={currentTheme.emissive}
           emissiveIntensity={currentTheme.intensity}
-          roughness={0.2}
-          metalness={0.8}
+          roughness={0.15}
+          metalness={0.85}
         />
       </mesh>
 
       {/* Subtle Inner Glow Ring */}
       <mesh rotation={[0, Math.PI / 2, 0]}>
-        <torusGeometry args={[0.78, 0.015, 16, 48]} />
+        <torusGeometry args={[0.78, 0.02, 16, 48]} />
         <meshBasicMaterial
           color={currentTheme.base}
           transparent
-          opacity={status === 'idle' ? 0.2 : 0.8}
+          opacity={status === 'idle' ? 0.4 : 0.9}
         />
       </mesh>
 
       {/* Ground Projection Ring */}
       <mesh position={[0, -1.2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.3, 0.8, 32]} />
+        <ringGeometry args={[0.3, 0.85, 32]} />
         <meshBasicMaterial
           color={currentTheme.base}
           transparent
-          opacity={status === 'idle' ? 0.05 : 0.25}
+          opacity={status === 'idle' ? 0.15 : 0.45}
         />
       </mesh>
 
@@ -137,23 +137,23 @@ function SingleGate({ config }: { config: GateConfig }) {
       <Html position={[0, -1.45, 0]} center distanceFactor={12}>
         <div
           className={`flex flex-col items-center pointer-events-none select-none text-center transition-all duration-300 ${
-            isTarget ? 'scale-105' : 'opacity-85'
+            isTarget ? 'scale-110' : 'opacity-95'
           }`}
         >
           <div
-            className={`font-mono text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded border whitespace-nowrap transition-colors duration-300 ${
+            className={`font-mono text-[9px] uppercase tracking-wider font-black px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors duration-300 ${
               status === 'failed'
-                ? 'bg-block/20 border-block text-block shadow-glow-block'
+                ? 'bg-block/30 border-block text-white shadow-glow-block'
                 : status === 'passed'
-                ? 'bg-pass/20 border-pass text-pass shadow-glow-pass'
+                ? 'bg-pass/30 border-pass text-pass shadow-glow-pass'
                 : status === 'checking'
-                ? 'bg-warn/20 border-warn text-warn shadow-glow-warn animate-pulse'
-                : 'bg-panel/90 border-line text-mute'
+                ? 'bg-warn/30 border-warn text-warn shadow-glow-warn animate-pulse'
+                : 'bg-panel/95 border-enclave/40 text-enclave shadow-glow-enclave'
             }`}
           >
             {config.label}
           </div>
-          <span className="font-mono text-[8px] text-mute/80 tracking-tight mt-0.5 whitespace-nowrap">
+          <span className="font-mono text-[8px] text-white/90 font-bold tracking-tight mt-0.5 whitespace-nowrap drop-shadow">
             {config.sublabel}
           </span>
         </div>

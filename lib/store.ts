@@ -81,6 +81,7 @@ export interface VaultState {
   // UI Overlays
   isProofModalOpen: boolean;
   isCommandPaletteOpen: boolean;
+  isGuideModalOpen: boolean;
   receiptVisible: boolean;
 
   // Actions
@@ -103,6 +104,7 @@ export interface VaultState {
   clearLogs: () => void;
   setProofModalOpen: (open: boolean) => void;
   setCommandPaletteOpen: (open: boolean) => void;
+  setGuideModalOpen: (open: boolean) => void;
   setReceiptVisible: (visible: boolean) => void;
   applyRunEvent: (event: RunEvent) => void;
   resetRun: (keepGoal?: boolean) => void;
@@ -178,6 +180,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
 
   isProofModalOpen: false,
   isCommandPaletteOpen: false,
+  isGuideModalOpen: false,
   receiptVisible: false,
 
   setStage: (stage) => set({ stage }),
@@ -235,6 +238,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   clearLogs: () => set({ logs: [] }),
   setProofModalOpen: (isProofModalOpen) => set({ isProofModalOpen }),
   setCommandPaletteOpen: (isCommandPaletteOpen) => set({ isCommandPaletteOpen }),
+  setGuideModalOpen: (isGuideModalOpen) => set({ isGuideModalOpen }),
   setReceiptVisible: (receiptVisible) => set({ receiptVisible }),
 
   resetRun: (keepGoal = true) => {

@@ -48,15 +48,15 @@ function SingleChainNode({ chain }: { chain: ChainDef }) {
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      ringRef.current.rotation.z += delta * (isSettled ? 2.5 : 0.4);
+      ringRef.current.rotation.z += delta * (isSettled ? 2.8 : 0.45);
     }
 
     if (lightRef.current) {
       const pulse = isSettled
-        ? 3.0 + Math.sin(state.clock.elapsedTime * 8) * 1.0
+        ? 3.5 + Math.sin(state.clock.elapsedTime * 8) * 1.2
         : isSettling
-        ? 1.5 + Math.sin(state.clock.elapsedTime * 6) * 0.5
-        : 0.2;
+        ? 1.8 + Math.sin(state.clock.elapsedTime * 6) * 0.6
+        : 0.4;
 
       lightRef.current.intensity = THREE.MathUtils.lerp(
         lightRef.current.intensity,
@@ -76,59 +76,59 @@ function SingleChainNode({ chain }: { chain: ChainDef }) {
           [gate3X - CHAIN_NODES_X, -chain.y, 0],
           [0, 0, 0],
         ]}
-        color={isSettled ? '#5EEAD4' : isSettling ? '#FBBF24' : '#1F2A37'}
-        lineWidth={isSettled ? 2.5 : 1}
+        color={isSettled ? '#00F5A0' : isSettling ? '#FBBF24' : '#253450'}
+        lineWidth={isSettled ? 3.0 : 1.2}
         transparent
-        opacity={isSettled ? 0.9 : 0.35}
+        opacity={isSettled ? 1.0 : 0.5}
       />
 
       {/* Point Light on Settlement */}
       <pointLight
         ref={lightRef}
-        color={isSettled ? '#5EEAD4' : chain.color}
-        intensity={0.2}
-        distance={4}
+        color={isSettled ? '#00F5A0' : chain.color}
+        intensity={0.6}
+        distance={6}
         decay={2}
       />
 
       {/* Outer Rotating Ring */}
       <mesh ref={ringRef}>
-        <ringGeometry args={[0.38, 0.42, 32]} />
+        <ringGeometry args={[0.38, 0.44, 32]} />
         <meshBasicMaterial
-          color={isSettled ? '#5EEAD4' : chain.color}
+          color={isSettled ? '#00F5A0' : chain.color}
           transparent
-          opacity={isSettled ? 0.9 : 0.4}
+          opacity={isSettled ? 1.0 : 0.6}
           side={THREE.DoubleSide}
         />
       </mesh>
 
       {/* Center Node Mesh */}
       <mesh ref={meshRef}>
-        <sphereGeometry args={[0.22, 24, 24]} />
+        <sphereGeometry args={[0.24, 24, 24]} />
         <meshStandardMaterial
-          color={isSettled ? '#5EEAD4' : chain.color}
-          emissive={isSettled ? '#14B8A6' : chain.color}
-          emissiveIntensity={isSettled ? 1.8 : 0.4}
-          roughness={0.2}
-          metalness={0.7}
+          color={isSettled ? '#00F5A0' : chain.color}
+          emissive={isSettled ? '#059669' : chain.color}
+          emissiveIntensity={isSettled ? 2.5 : 0.6}
+          roughness={0.15}
+          metalness={0.8}
         />
       </mesh>
 
       {/* HTML Metadata Label */}
       <Html position={[0.55, 0, 0]} center distanceFactor={12}>
         <div
-          className={`flex items-center gap-1.5 px-2 py-0.5 rounded border pointer-events-none select-none transition-all duration-300 ${
+          className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border pointer-events-none select-none transition-all duration-300 font-mono ${
             isSettled
-              ? 'bg-pass/20 border-pass text-pass shadow-glow-pass scale-105'
+              ? 'bg-pass/30 border-pass text-pass shadow-glow-pass scale-110 font-bold'
               : isSettling
-              ? 'bg-warn/20 border-warn text-warn animate-pulse'
-              : 'bg-panel/90 border-line text-mute'
+              ? 'bg-warn/30 border-warn text-warn animate-pulse font-bold'
+              : 'bg-panel/95 border-line text-white/90'
           }`}
         >
-          <span className="font-mono text-[9px] font-bold tracking-wider">
+          <span className="text-[10px] font-black tracking-wider text-white">
             {chain.symbol}
           </span>
-          <span className="font-mono text-[8px] opacity-75">
+          <span className="text-[8px] font-semibold text-mute">
             {isSettled ? 'SETTLED' : chain.name}
           </span>
         </div>

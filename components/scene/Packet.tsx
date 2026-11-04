@@ -129,7 +129,7 @@ export function Packet() {
     }
   });
 
-  const packetColor = stage === 'settled' ? '#5EEAD4' : '#7C9CFF';
+  const packetColor = stage === 'settled' ? '#00F5A0' : '#00F0FF';
 
   return (
     <group>
@@ -139,16 +139,16 @@ export function Packet() {
           <pointLight
             ref={pointLightRef}
             color={packetColor}
-            intensity={2.8}
-            distance={3.5}
+            intensity={4.0}
+            distance={5.0}
             decay={2}
           />
           <mesh ref={meshRef} position={[packetX, 0, 0]}>
-            <octahedronGeometry args={[0.26, 0]} />
+            <octahedronGeometry args={[0.28, 0]} />
             <meshStandardMaterial
               color={packetColor}
               emissive={packetColor}
-              emissiveIntensity={2.0}
+              emissiveIntensity={2.5}
               roughness={0.1}
               metalness={0.9}
             />
@@ -162,11 +162,11 @@ export function Packet() {
           ref={instancedShardsRef}
           args={[undefined, undefined, SHARD_COUNT]}
         >
-          <tetrahedronGeometry args={[0.07, 0]} />
+          <tetrahedronGeometry args={[0.08, 0]} />
           <meshStandardMaterial
-            color="#F43F5E"
-            emissive="#BE123C"
-            emissiveIntensity={2.5}
+            color="#FF3366"
+            emissive="#FF1744"
+            emissiveIntensity={3.2}
             roughness={0.2}
           />
         </instancedMesh>

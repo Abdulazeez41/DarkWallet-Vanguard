@@ -5,10 +5,12 @@
  *
  * DarkWallet Vanguard - Vault Room Experience
  *
- * A dark, 3D, gamified, judge-ready cyber-range:
+ * A vibrant, 3D, gamified, judge-ready cyber-range:
  *  - 3D Interactive WebGL Vault (Intel TDX Enclave core, 3 Policy Gates, Chain Settlement Rails)
  *  - Streaming NDJSON pipeline synchronization
  *  - 60-Second Guided Judge Demo
+ *  - Interactive 4-step Onboarding & Navigation Guide Modal
+ *  - 3-Step Quick-Start Ribbon
  *  - Financial Cyber-Range Threat Simulator ("Break the Vault")
  *  - 7-Day Autonomous Treasury Stress Test (Track 04 Business)
  *  - Physical torn-edge cream paper receipt emerging as classified evidence
@@ -17,6 +19,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { TopBar } from '@/components/hud/TopBar';
 import { ConfidentialityStrip } from '@/components/hud/ConfidentialityStrip';
+import { QuickStartBanner } from '@/components/hud/QuickStartBanner';
 import { ControlRail } from '@/components/hud/ControlRail';
 import { IntentVault } from '@/components/hud/IntentVault';
 import { Gauntlet } from '@/components/hud/Gauntlet';
@@ -26,6 +29,7 @@ import { Terminal } from '@/components/hud/Terminal';
 import { Receipt } from '@/components/hud/Receipt';
 import { ProofModal } from '@/components/hud/ProofModal';
 import { CommandPalette } from '@/components/hud/CommandPalette';
+import { GuideModal } from '@/components/hud/GuideModal';
 import { VaultCanvas } from '@/components/scene/VaultCanvas';
 import { runIntent } from '@/lib/runIntent';
 import { useVaultStore } from '@/lib/store';
@@ -107,47 +111,50 @@ export default function VaultRoomPage() {
       <ConfidentialityStrip />
 
       {/* 3. 3D WebGL Vault Canvas Stage */}
-      <section className="relative w-full h-[420px] md:h-[480px] bg-void border-b border-line overflow-hidden">
+      <section className="relative w-full h-[430px] md:h-[490px] bg-void border-b border-line overflow-hidden">
         <VaultCanvas />
 
         {/* Floating In-Scene Telemetry Pill */}
         <div className="absolute top-4 right-4 pointer-events-none z-10 flex items-center gap-2">
-          <div className="bg-panel/90 backdrop-blur-md border border-line rounded px-2.5 py-1 flex items-center gap-2 font-mono text-[10px] text-mute shadow-lg">
+          <div className="bg-panel/95 backdrop-blur-md border border-enclave/40 rounded-full px-3 py-1 flex items-center gap-2 font-mono text-[11px] text-mute shadow-glow-enclave">
             <span
-              className={`w-2 h-2 rounded-full ${
+              className={`w-2.5 h-2.5 rounded-full ${
                 stage === 'blocked'
-                  ? 'bg-block animate-pulse'
+                  ? 'bg-block animate-pulse shadow-glow-block'
                   : stage === 'settled'
-                  ? 'bg-pass'
+                  ? 'bg-pass shadow-glow-pass'
                   : stage === 'idle'
-                  ? 'bg-enclave'
-                  : 'bg-warn animate-pulse'
+                  ? 'bg-enclave shadow-glow-enclave'
+                  : 'bg-warn animate-pulse shadow-glow-warn'
               }`}
             />
-            <span className="uppercase text-ink font-semibold">
+            <span className="uppercase text-white font-black tracking-wider">
               STATUS: {stage}
             </span>
             <span className="text-line">|</span>
-            <span className="hidden sm:inline text-mute/80">PARALLAX RIG ACTIVE</span>
+            <span className="hidden sm:inline text-white/90 font-bold">PARALLAX RIG ACTIVE</span>
           </div>
         </div>
 
         {/* Floating Axis Labels */}
-        <div className="absolute bottom-3 left-4 pointer-events-none z-10 hidden sm:flex items-center gap-4 font-mono text-[9px] text-mute/60">
-          <span>ORIGIN [X: -8.0]</span>
+        <div className="absolute bottom-3 left-4 pointer-events-none z-10 hidden sm:flex items-center gap-4 font-mono text-[10px] text-white/80 font-bold drop-shadow">
+          <span className="text-enclave">ORIGIN [X: -8.0]</span>
           <span>→</span>
-          <span>INTEL TDX [X: -4.5]</span>
+          <span className="text-enclave">INTEL TDX [X: -4.5]</span>
           <span>→</span>
-          <span>POLICY GATES [X: -1.0 .. 4.0]</span>
+          <span className="text-enclave">POLICY GATES [X: -1.0 .. 4.0]</span>
           <span>→</span>
-          <span>MULTI-CHAIN RAILS [X: 7.5]</span>
+          <span className="text-enclave">MULTI-CHAIN RAILS [X: 7.5]</span>
         </div>
       </section>
 
-      {/* 4. Tab Navigation Rail */}
+      {/* 4. Quick-Start 3-Step Navigation Ribbon */}
+      <QuickStartBanner />
+
+      {/* 5. Tab Navigation Rail */}
       <ControlRail />
 
-      {/* 5. Main Workspace Container */}
+      {/* 6. Main Workspace Container */}
       <div className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
         {/* Active Tab Workspace Panel */}
         <section>
@@ -166,23 +173,24 @@ export default function VaultRoomPage() {
         </section>
       </div>
 
-      {/* 6. Footer Information Bar */}
-      <footer className="border-t border-line bg-panel/50 px-4 py-3 select-none text-[10px] font-mono text-mute">
+      {/* 7. Footer Information Bar */}
+      <footer className="border-t border-line bg-panel/70 px-4 py-3 select-none text-[11px] font-mono text-mute">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-pass" />
+          <div className="flex items-center gap-2 text-white/90 font-medium">
+            <span className="w-2 h-2 rounded-full bg-pass shadow-glow-pass" />
             <span>NEAR HACKATHON 2026 // TRACK 03 (PRIVACY) · TRACK 06 (SECURITY) · TRACK 04 (BUSINESS)</span>
           </div>
-          <div>
-            Built with Intel TDX Enclaves · OutLayer Policies · NEAR Intents & Chain Signatures
+          <div className="text-mute font-medium">
+            Intel TDX Enclaves · OutLayer Policies · NEAR Intents & Chain Signatures
           </div>
         </div>
       </footer>
 
-      {/* 7. Overlays & Modals */}
+      {/* 8. Overlays & Modals */}
       <Receipt />
       <ProofModal />
       <CommandPalette />
+      <GuideModal />
     </main>
   );
 }

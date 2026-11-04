@@ -5,7 +5,7 @@
  *
  * 3D representation of the Intel TDX hardware enclave.
  * Translucent frosted outer cube protecting a continuously rotating wireframe core,
- * pulsing in vivid electric blue when active.
+ * pulsing in vivid electric cyan and neon sky blue when active.
  */
 
 import { useRef } from 'react';
@@ -24,18 +24,18 @@ export function EnclaveCore() {
 
   useFrame((state, delta) => {
     if (innerCoreRef.current) {
-      innerCoreRef.current.rotation.x += delta * 0.6;
-      innerCoreRef.current.rotation.y += delta * 0.9;
+      innerCoreRef.current.rotation.x += delta * 0.7;
+      innerCoreRef.current.rotation.y += delta * 1.1;
     }
 
     if (outerBoxRef.current) {
-      outerBoxRef.current.rotation.y += delta * 0.15;
+      outerBoxRef.current.rotation.y += delta * 0.2;
     }
 
     if (pointLightRef.current) {
       const targetIntensity = isActive
-        ? 3.5 + Math.sin(state.clock.elapsedTime * 6) * 1.5
-        : 1.0 + Math.sin(state.clock.elapsedTime * 2) * 0.3;
+        ? 5.0 + Math.sin(state.clock.elapsedTime * 6) * 2.0
+        : 2.2 + Math.sin(state.clock.elapsedTime * 2) * 0.6;
       pointLightRef.current.intensity = THREE.MathUtils.lerp(
         pointLightRef.current.intensity,
         targetIntensity,
@@ -49,9 +49,9 @@ export function EnclaveCore() {
       {/* Dynamic Enclave Point Light */}
       <pointLight
         ref={pointLightRef}
-        color="#7C9CFF"
-        intensity={1.2}
-        distance={6}
+        color="#38BDF8"
+        intensity={2.2}
+        distance={8}
         decay={2}
       />
 
@@ -59,15 +59,15 @@ export function EnclaveCore() {
       <mesh ref={outerBoxRef}>
         <boxGeometry args={[1.5, 1.5, 1.5]} />
         <meshPhysicalMaterial
-          color="#141B26"
-          roughness={0.2}
-          transmission={0.65}
-          thickness={0.8}
+          color="#1A243D"
+          roughness={0.15}
+          transmission={0.7}
+          thickness={0.9}
           transparent
-          opacity={0.7}
+          opacity={0.8}
           wireframe={false}
-          emissive="#7C9CFF"
-          emissiveIntensity={isActive ? 0.35 : 0.08}
+          emissive="#38BDF8"
+          emissiveIntensity={isActive ? 0.6 : 0.2}
         />
       </mesh>
 
@@ -75,9 +75,9 @@ export function EnclaveCore() {
       <lineSegments>
         <edgesGeometry args={[new THREE.BoxGeometry(1.5, 1.5, 1.5)]} />
         <lineBasicMaterial
-          color={isActive ? '#7C9CFF' : '#3B82F6'}
+          color={isActive ? '#00F0FF' : '#38BDF8'}
           transparent
-          opacity={isActive ? 0.9 : 0.4}
+          opacity={isActive ? 1.0 : 0.6}
         />
       </lineSegments>
 
@@ -85,10 +85,10 @@ export function EnclaveCore() {
       <mesh ref={innerCoreRef}>
         <icosahedronGeometry args={[0.7, 1]} />
         <meshStandardMaterial
-          color="#7C9CFF"
+          color="#00F0FF"
           wireframe
-          emissive="#3B82F6"
-          emissiveIntensity={isActive ? 0.8 : 0.25}
+          emissive="#38BDF8"
+          emissiveIntensity={isActive ? 1.5 : 0.6}
         />
       </mesh>
 
@@ -98,18 +98,18 @@ export function EnclaveCore() {
         <meshBasicMaterial
           color="#000000"
           transparent
-          opacity={0.5}
+          opacity={0.4}
         />
       </mesh>
 
       {/* 3D In-Scene Badge Label */}
       <Html position={[0, -1.4, 0]} center distanceFactor={12}>
         <div className="flex flex-col items-center pointer-events-none select-none text-center">
-          <span className="font-mono text-[9px] uppercase tracking-widest text-[#7C9CFF] font-semibold px-2 py-0.5 rounded bg-[#0E131B]/90 border border-[#7C9CFF]/30 whitespace-nowrap shadow-glow-enclave">
+          <span className="font-mono text-[9px] uppercase tracking-widest text-[#38BDF8] font-black px-2.5 py-0.5 rounded-full bg-[#121A2D]/95 border border-[#38BDF8] whitespace-nowrap shadow-glow-cyan">
             INTEL TDX ENCLAVE
           </span>
-          <span className="font-mono text-[8px] text-mute tracking-wider mt-0.5">
-            {isActive ? 'MEMORY ISOLATION ACTIVE' : 'SEALED HARDWARE'}
+          <span className="font-mono text-[8px] text-white/90 font-bold tracking-wider mt-0.5 drop-shadow">
+            {isActive ? 'MEMORY ISOLATION ACTIVE' : 'SEALED HARDWARE TEE'}
           </span>
         </div>
       </Html>
