@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #F8F6F0;
-  --foreground: #1A1815;
+  --background: #FAF7F2;
+  --foreground: #221E1C;
   --font-grotesk: 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 }
@@ -13,9 +13,9 @@ body {
   color: var(--foreground);
   background: var(--background);
   background-image:
-    radial-gradient(at 0% 0%, rgba(194, 94, 46, 0.05) 0px, transparent 55%),
-    radial-gradient(at 100% 0%, rgba(27, 115, 64, 0.04) 0px, transparent 55%),
-    radial-gradient(at 50% 50%, rgba(194, 120, 3, 0.03) 0px, transparent 65%);
+    radial-gradient(at 0% 0%, rgba(184, 106, 46, 0.04) 0px, transparent 55%),
+    radial-gradient(at 100% 0%, rgba(37, 107, 68, 0.03) 0px, transparent 55%),
+    radial-gradient(at 50% 50%, rgba(189, 118, 28, 0.02) 0px, transparent 65%);
   background-attachment: fixed;
   font-family: var(--font-grotesk);
   -webkit-font-smoothing: antialiased;
@@ -28,23 +28,23 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Custom warm creamy scrollbars */
+/* Custom warm Oreo ash scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F3ECE2;
+  background: #F2ECE2;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D9D1C2;
+  background: #D5CBBF;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #C25E2E;
+  background: #B86A2E;
 }
 
 /* Accessibility: respect prefers-reduced-motion */

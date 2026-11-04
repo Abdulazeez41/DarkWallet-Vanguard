@@ -5,12 +5,11 @@
  *
  * Section 3: Sleek "Live Shield Monitor & Activity".
  *
- * Combines the 3D WebGL Vault Canvas with a tabbed real-time activity center:
- *  - 3D WebGL Hardware Enclave & Gate Visualizer
- *  - Live Telemetry Stream (Terminal)
- *  - Cryptographic Settlement Receipt & Proofs
- *  - Interactive Attack Simulator (Financial Cyber-Range)
- *  - Large, highly legible typography and warm creamy card styling
+ * Features:
+ *  - Warm Oreo brownish ash & cream aesthetic
+ *  - Soft, friendly rounded shapes (rounded-3xl cards, rounded-full tabs)
+ *  - Framed obsidian/cocoa 3D vault viewport with warm lighting
+ *  - Tabbed real-time activity center (Logs, Simulator, Receipt)
  */
 
 import { useState } from 'react';
@@ -38,28 +37,28 @@ export function LiveShieldMonitor() {
   const getGateBadge = (status: string) => {
     switch (status) {
       case 'pass':
-        return 'text-pass border-pass/60 bg-pass/10 font-bold';
+        return 'text-pass border-pass/40 bg-pass/10 font-bold';
       case 'block':
-        return 'text-block border-block/60 bg-block/10 font-bold animate-pulse';
+        return 'text-block border-block/40 bg-block/10 font-bold animate-pulse';
       case 'active':
-        return 'text-warn border-warn/60 bg-warn/10 font-bold animate-pulse';
+        return 'text-warn border-warn/40 bg-warn/10 font-bold animate-pulse';
       default:
-        return 'text-mute border-line bg-panel2 font-semibold';
+        return 'text-mute border-line bg-panel font-medium';
     }
   };
 
   return (
-    <div className="w-full bg-panel rounded-2xl border border-line p-6 sm:p-8 shadow-sm space-y-6">
+    <div className="w-full bg-panel rounded-3xl border border-line p-6 sm:p-8 shadow-xs space-y-6">
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-5">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="font-mono text-sm sm:text-base font-bold text-ink uppercase tracking-wider flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-pass animate-pulse" />
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-mono text-xs sm:text-sm font-bold text-ink uppercase tracking-wider flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-pass" />
               LIVE SHIELD MONITOR & ACTIVITY
             </span>
-            <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-pass/10 text-pass border border-pass/30 font-bold uppercase">
-              REAL-TIME PIPELINE
+            <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-panel2 text-mute border border-line font-medium">
+              Real-Time Pipeline
             </span>
           </div>
           <p className="font-mono text-xs sm:text-sm text-mute">
@@ -67,17 +66,17 @@ export function LiveShieldMonitor() {
           </p>
         </div>
 
-        {/* Tab Switcher for Right Panel */}
-        <div className="flex items-center gap-1.5 p-1.5 bg-panel2 rounded-xl border border-line">
+        {/* Tab Switcher for Right Panel (Calm Rounded Pill Bar) */}
+        <div className="flex items-center gap-1.5 p-1 bg-panel2 rounded-full border border-line">
           <button
             type="button"
             onClick={() => {
               soundFx.playStepTick();
               setActiveSubTab('terminal');
             }}
-            className={`font-mono text-xs sm:text-sm font-bold px-4 py-2 rounded-lg transition-all ${
+            className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all ${
               activeSubTab === 'terminal'
-                ? 'bg-ink text-white shadow-sm'
+                ? 'bg-ink text-white shadow-xs font-semibold'
                 : 'text-mute hover:text-ink'
             }`}
           >
@@ -89,9 +88,9 @@ export function LiveShieldMonitor() {
               soundFx.playStepTick();
               setActiveSubTab('simulator');
             }}
-            className={`font-mono text-xs sm:text-sm font-bold px-4 py-2 rounded-lg transition-all ${
+            className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all ${
               activeSubTab === 'simulator'
-                ? 'bg-block text-white shadow-sm'
+                ? 'bg-block text-white shadow-xs font-semibold'
                 : 'text-mute hover:text-ink'
             }`}
           >
@@ -103,9 +102,9 @@ export function LiveShieldMonitor() {
               soundFx.playStepTick();
               setActiveSubTab('receipt');
             }}
-            className={`font-mono text-xs sm:text-sm font-bold px-4 py-2 rounded-lg transition-all ${
+            className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all ${
               activeSubTab === 'receipt'
-                ? 'bg-pass text-white shadow-sm'
+                ? 'bg-pass text-white shadow-xs font-semibold'
                 : 'text-mute hover:text-ink'
             }`}
           >
@@ -118,24 +117,24 @@ export function LiveShieldMonitor() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         {/* Left Column: 3D Live Shield Monitor (7 cols) */}
         <div className="lg:col-span-7 flex flex-col space-y-3.5">
-          <div className="relative w-full h-[400px] sm:h-[440px] rounded-2xl border border-line bg-[#181512] overflow-hidden shadow-inner">
+          <div className="relative w-full h-[400px] sm:h-[440px] rounded-3xl border border-line bg-[#1E1917] overflow-hidden shadow-inner">
             <VaultCanvas />
 
-            {/* In-Scene Top Overlay */}
+            {/* In-Scene Top Overlay (Calm Rounded Pill) */}
             <div className="absolute top-4 left-4 pointer-events-none z-10 flex items-center gap-2">
-              <div className="bg-[#181512]/90 backdrop-blur-md border border-[#3D332A] rounded-xl px-3 py-1.5 font-mono text-xs text-white font-bold flex items-center gap-2 shadow-sm">
+              <div className="bg-[#1E1917]/90 backdrop-blur-md border border-[#3A332E] rounded-full px-3.5 py-1.5 font-mono text-xs text-white font-medium flex items-center gap-2 shadow-xs">
                 <span className="w-2 h-2 rounded-full bg-enclave" />
-                <span>INTEL TDX ENCLAVE CORE</span>
+                <span>Intel TDX Enclave</span>
               </div>
             </div>
 
-            {/* In-Scene Status Pill */}
+            {/* In-Scene Status Pill (Calm Rounded Capsule) */}
             <div className="absolute top-4 right-4 pointer-events-none z-10 flex items-center gap-2">
-              <div className="bg-[#181512]/90 backdrop-blur-md border border-[#3D332A] rounded-full px-3.5 py-1.5 flex items-center gap-2 font-mono text-xs text-white font-bold shadow-sm">
+              <div className="bg-[#1E1917]/90 backdrop-blur-md border border-[#3A332E] rounded-full px-3.5 py-1.5 flex items-center gap-2 font-mono text-xs text-white font-medium shadow-xs">
                 <span
-                  className={`w-2.5 h-2.5 rounded-full ${
+                  className={`w-2 h-2 rounded-full ${
                     stage === 'blocked'
-                      ? 'bg-block animate-pulse'
+                      ? 'bg-block'
                       : stage === 'settled'
                         ? 'bg-pass'
                         : stage === 'idle'
@@ -143,7 +142,7 @@ export function LiveShieldMonitor() {
                           : 'bg-warn animate-pulse'
                   }`}
                 />
-                <span className="uppercase">STATUS: {stage}</span>
+                <span className="uppercase">{stage}</span>
               </div>
             </div>
 
@@ -155,9 +154,9 @@ export function LiveShieldMonitor() {
                   soundFx.playStepTick();
                   setProofModalOpen(true);
                 }}
-                className="bg-[#181512]/90 backdrop-blur-md border border-[#3D332A] hover:border-enclave rounded-xl px-3.5 py-2 font-mono text-xs text-enclave font-bold shadow-sm transition-all active:scale-95 flex items-center gap-1.5"
+                className="bg-[#1E1917]/90 backdrop-blur-md border border-[#3A332E] hover:border-enclave rounded-full px-3.5 py-1.5 font-mono text-xs text-enclave font-medium shadow-xs transition-all active:scale-95 flex items-center gap-1.5"
               >
-                <span>INSPECT TDX ATTESTATION</span>
+                <span>Inspect Attestation</span>
                 <span>↗</span>
               </button>
             </div>
@@ -165,10 +164,10 @@ export function LiveShieldMonitor() {
 
           {/* Policy Gates Status Strip */}
           <div className="grid grid-cols-3 gap-3">
-            <div className="p-3 rounded-xl bg-panel2 border border-line font-mono text-center">
-              <div className="text-xs text-mute font-medium mb-1">GATE 1: SPEND CAP</div>
+            <div className="p-3 rounded-2xl bg-panel2 border border-line font-mono text-center">
+              <div className="text-xs text-mute font-medium mb-1">Gate 1: Spend Cap</div>
               <span
-                className={`text-xs font-black px-2.5 py-0.5 rounded border uppercase inline-block ${getGateBadge(
+                className={`text-xs font-bold px-2.5 py-0.5 rounded-full border uppercase inline-block ${getGateBadge(
                   gates.spend
                 )}`}
               >
@@ -176,10 +175,10 @@ export function LiveShieldMonitor() {
               </span>
             </div>
 
-            <div className="p-3 rounded-xl bg-panel2 border border-line font-mono text-center">
-              <div className="text-xs text-mute font-medium mb-1">GATE 2: WHITELIST</div>
+            <div className="p-3 rounded-2xl bg-panel2 border border-line font-mono text-center">
+              <div className="text-xs text-mute font-medium mb-1">Gate 2: Whitelist</div>
               <span
-                className={`text-xs font-black px-2.5 py-0.5 rounded border uppercase inline-block ${getGateBadge(
+                className={`text-xs font-bold px-2.5 py-0.5 rounded-full border uppercase inline-block ${getGateBadge(
                   gates.allowlist
                 )}`}
               >
@@ -187,14 +186,14 @@ export function LiveShieldMonitor() {
               </span>
             </div>
 
-            <div className="p-3 rounded-xl bg-panel2 border border-line font-mono text-center">
-              <div className="text-xs text-mute font-medium mb-1">GATE 3: REPLAY NONCE</div>
+            <div className="p-3 rounded-2xl bg-panel2 border border-line font-mono text-center">
+              <div className="text-xs text-mute font-medium mb-1">Gate 3: Anti-Replay</div>
               <span
-                className={`text-xs font-black px-2.5 py-0.5 rounded border uppercase inline-block ${getGateBadge(
+                className={`text-xs font-bold px-2.5 py-0.5 rounded-full border uppercase inline-block ${getGateBadge(
                   gates.nonce
                 )}`}
               >
-                {gates.nonce.toUpperCase()} (ANTI-REPLAY)
+                {gates.nonce.toUpperCase()} (NONCE)
               </span>
             </div>
           </div>
@@ -215,16 +214,16 @@ export function LiveShieldMonitor() {
           )}
 
           {activeSubTab === 'receipt' && (
-            <div className="flex-1 flex flex-col bg-void rounded-2xl border border-line p-6 font-mono text-sm text-ink justify-between space-y-4">
+            <div className="flex-1 flex flex-col bg-panel2 rounded-3xl border border-line p-6 font-mono text-sm text-ink justify-between space-y-4">
               <div>
                 <div className="flex items-center justify-between border-b border-line pb-3 mb-4">
-                  <span className="font-bold text-base flex items-center gap-2">
+                  <span className="font-bold text-sm sm:text-base flex items-center gap-2">
                     <span
                       className={`w-2.5 h-2.5 rounded-full ${
                         isBlocked ? 'bg-block' : 'bg-pass'
                       }`}
                     />
-                    {isBlocked ? 'SECURITY INTERCEPTION RECEIPT' : 'VERIFIED SETTLEMENT RECEIPT'}
+                    {isBlocked ? 'Interception Receipt' : 'Settlement Receipt'}
                   </span>
                   <span className="text-xs text-mute font-mono uppercase">
                     {settlement ? 'SETTLED' : stage === 'blocked' ? 'BLOCKED' : 'READY'}
@@ -233,7 +232,7 @@ export function LiveShieldMonitor() {
 
                 {settlement || directive ? (
                   <div className="space-y-3.5 text-mute">
-                    <div className="p-4 rounded-xl bg-panel border border-line space-y-1.5 shadow-sm">
+                    <div className="p-4 rounded-2xl bg-panel border border-line space-y-1.5 shadow-xs">
                       <div className="text-ink font-bold flex items-center gap-2 text-sm">
                         <CryptoChainIcon chain={settlement?.destinationChain || directive?.destinationChain || 'NEAR'} size={18} />
                         <span>Route: {directive?.sourceChain || 'Multi-Chain'} → {directive?.destinationChain || 'NEAR'}</span>
@@ -246,7 +245,7 @@ export function LiveShieldMonitor() {
                       </div>
                     </div>
 
-                    <div className="p-4 rounded-xl bg-panel border border-line space-y-1.5 text-xs sm:text-sm shadow-sm">
+                    <div className="p-4 rounded-2xl bg-panel border border-line space-y-1.5 text-xs sm:text-sm shadow-xs">
                       <div className="flex items-center justify-between">
                         <span>Attestation:</span>
                         <span className="text-pass font-bold">Intel TDX Verified</span>
@@ -285,7 +284,7 @@ export function LiveShieldMonitor() {
                     soundFx.playStepTick();
                     setReceiptVisible(true);
                   }}
-                  className="font-mono text-xs sm:text-sm font-bold text-enclave hover:underline"
+                  className="font-mono text-xs sm:text-sm font-semibold text-enclave hover:underline"
                 >
                   Pop-out Paper Receipt ↗
                 </button>
@@ -295,7 +294,7 @@ export function LiveShieldMonitor() {
                     soundFx.playStepTick();
                     setProofModalOpen(true);
                   }}
-                  className="font-mono text-xs sm:text-sm font-bold text-ink hover:text-enclave"
+                  className="font-mono text-xs sm:text-sm font-medium text-ink hover:text-enclave"
                 >
                   View Intel TDX Quote →
                 </button>

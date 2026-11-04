@@ -24,6 +24,7 @@ import { Receipt } from "@/components/hud/Receipt";
 import { ProofModal } from "@/components/hud/ProofModal";
 import { CommandPalette } from "@/components/hud/CommandPalette";
 import { GuideModal } from "@/components/hud/GuideModal";
+import { WalletModal } from "@/components/hud/WalletModal";
 import { runIntent } from "@/lib/runIntent";
 import { useVaultStore } from "@/lib/store";
 
@@ -141,6 +142,7 @@ export default function VaultRoomPage() {
       <ProofModal />
       <CommandPalette />
       <GuideModal />
+      <WalletModal />
     </main>
   );
 }

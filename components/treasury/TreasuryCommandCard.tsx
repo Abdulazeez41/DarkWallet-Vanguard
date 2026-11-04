@@ -3,10 +3,10 @@
 /**
  * components/treasury/TreasuryCommandCard.tsx
  *
- * Top Section: Clean, warm creamy Treasury Overview & Agent Command Card.
+ * Top Section: Warm Oreo brownish ash & cream Treasury Overview & Agent Command Card.
  *
- * Designed with large legible text, warm natural tones, human balances,
- * quick one-click actions, official crypto vector logos, and instant reassurance.
+ * Designed with calm, friendly human shapes (no robotic AI boxes), soft rounded capsules,
+ * large legible typography, human balances, and official crypto vector logos.
  */
 
 import { useState } from 'react';
@@ -114,86 +114,81 @@ export function TreasuryCommandCard() {
   );
 
   return (
-    <div className="w-full bg-panel rounded-2xl border border-line p-6 sm:p-8 shadow-sm space-y-6">
+    <div className="w-full bg-panel rounded-3xl border border-line p-6 sm:p-8 shadow-xs space-y-6">
       {/* 1. Treasury Balance & Shield Reassurance Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-line">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="font-mono text-xs font-bold text-enclave tracking-wider uppercase flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-enclave" />
-              PROTECTED AGENT TREASURY
+            <span className="font-mono text-xs font-semibold text-mute uppercase tracking-wider">
+              Protected Agent Treasury
             </span>
             <span className="text-line">·</span>
-            <span className="font-mono text-xs text-mute font-medium">Multi-Chain Yield & Reserves</span>
+            <span className="font-mono text-xs text-mute">Multi-Chain Reserves</span>
           </div>
           <div className="flex items-baseline gap-3">
-            <span className="text-4xl sm:text-5xl font-mono font-black text-ink tracking-tight">
+            <span className="text-4xl sm:text-5xl font-mono font-bold text-ink tracking-tight">
               ${currentBalance}
             </span>
-            <span className="font-mono text-sm text-pass font-bold flex items-center gap-1.5">
+            <span className="font-mono text-sm text-pass font-medium flex items-center gap-1.5">
               <span>▲ +2.4%</span>
-              <span className="text-mute font-normal text-xs">(24h yield)</span>
+              <span className="text-mute text-xs font-normal">(24h yield)</span>
             </span>
           </div>
-          <p className="font-mono text-sm text-mute mt-2">
-            Protected across 4 blockchains via NEAR Chain Signatures & Intel TDX hardware.
+          <p className="font-mono text-xs sm:text-sm text-mute mt-2">
+            Secured across 4 blockchains via NEAR Chain Signatures & Intel TDX hardware isolation.
           </p>
         </div>
 
-        {/* Protection Reassurance Badge & Proof Link */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-panel2 border border-pass/30 text-sm font-mono text-ink shadow-sm">
-            <span className="w-2.5 h-2.5 rounded-full bg-pass animate-pulse" />
-            <div>
-              <div className="font-bold text-pass leading-tight">VANGUARD SHIELD ACTIVE</div>
-              <div className="text-xs text-mute">Hardware Policy Isolation</div>
-            </div>
-          </div>
-
+        {/* Calm Human Trust Capsule (Replacing AI-Generated Tech Boxes) */}
+        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-panel2 border border-line text-xs sm:text-sm font-mono text-ink shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-pass shrink-0" />
+          <span className="font-medium">Hardware Shield Active</span>
+          <span className="text-mute/40">|</span>
           <button
+            type="button"
             onClick={() => {
               soundFx.playStepTick();
               setProofModalOpen(true);
             }}
-            className="font-mono text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl border border-enclave/40 bg-enclave/10 hover:bg-enclave/20 text-enclave transition-all shadow-sm flex items-center gap-1.5 active:scale-95"
+            className="text-xs text-mute hover:text-ink font-semibold transition-colors flex items-center gap-1 active:scale-95"
             title="Inspect Cryptographic Intel TDX Attestation Quote"
           >
-            <span>INSPECT PROOF</span>
-            <span className="text-xs">↗</span>
+            <span>Verify proof</span>
+            <span className="text-[10px]">↗</span>
           </button>
         </div>
       </div>
 
-      {/* 2. Chain Distribution Pills */}
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="font-mono text-sm text-mute font-semibold">Protected Assets:</span>
-        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-panel2 border border-line text-sm font-mono text-ink font-medium">
-          <BitcoinLogo size={18} />
+      {/* 2. Chain Distribution Pills (Calm Rounded Shapes) */}
+      <div className="flex flex-wrap items-center gap-2.5">
+        <span className="font-mono text-xs sm:text-sm text-mute font-medium">Protected Assets:</span>
+        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-panel2 border border-line text-xs sm:text-sm font-mono text-ink">
+          <BitcoinLogo size={16} />
           <span>BTC: $340.00</span>
         </div>
-        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-panel2 border border-line text-sm font-mono text-ink font-medium">
-          <EthereumLogo size={18} />
+        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-panel2 border border-line text-xs sm:text-sm font-mono text-ink">
+          <EthereumLogo size={16} />
           <span>ETH: $480.00</span>
         </div>
-        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-panel2 border border-line text-sm font-mono text-ink font-medium">
-          <SolanaLogo size={18} />
+        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-panel2 border border-line text-xs sm:text-sm font-mono text-ink">
+          <SolanaLogo size={16} />
           <span>SOL: $310.50</span>
         </div>
-        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-panel2 border border-line text-sm font-mono text-ink font-medium">
-          <NearLogo size={18} />
+        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-panel2 border border-line text-xs sm:text-sm font-mono text-ink">
+          <NearLogo size={16} />
           <span>NEAR: $290.00</span>
         </div>
       </div>
 
       {/* 3. Agent Command Input Form */}
-      <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+      <form onSubmit={handleSubmit} className="space-y-4 pt-1">
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="font-mono text-sm font-bold text-ink uppercase tracking-wider flex items-center gap-2">
+            <label className="font-mono text-xs sm:text-sm font-bold text-ink uppercase tracking-wider flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-enclave" />
               TELL YOUR AI AGENT WHAT TO DO:
             </label>
-            <span className="font-mono text-xs text-mute font-medium">
+            <span className="font-mono text-xs text-mute">
               Natural English · Automatic policy check
             </span>
           </div>
@@ -205,24 +200,24 @@ export function TreasuryCommandCard() {
               onChange={(e) => setInputGoal(e.target.value)}
               disabled={isRunning}
               placeholder="e.g. Rebalance 25 USDC from Solana to Ethereum via NEAR Intents safely..."
-              className="w-full bg-void border border-line rounded-xl p-4 font-mono text-base text-ink placeholder:text-mute/60 focus:outline-none focus:border-enclave transition-colors resize-none shadow-inner leading-relaxed"
+              className="w-full bg-void border border-line rounded-2xl p-4 font-mono text-sm sm:text-base text-ink placeholder:text-mute/60 focus:outline-none focus:border-ink/50 transition-colors resize-none shadow-xs leading-relaxed"
             />
           </div>
         </div>
 
-        {/* Quick One-Click Action Pills */}
+        {/* Quick One-Click Action Pills (Calm Rounded Shapes) */}
         <div>
-          <span className="font-mono text-xs sm:text-sm text-mute font-semibold block mb-2">
+          <span className="font-mono text-xs text-mute font-medium block mb-2">
             Or choose a quick 1-click action:
           </span>
-          <div className="flex flex-wrap gap-2.5">
+          <div className="flex flex-wrap gap-2">
             {QUICK_ACTIONS.map((action) => (
               <button
                 key={action.id}
                 type="button"
                 onClick={() => handleSelectAction(action)}
                 disabled={isRunning}
-                className="font-mono text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl border border-line bg-panel2 hover:bg-enclave/10 hover:border-enclave text-ink transition-all shadow-sm disabled:opacity-50 active:scale-95 flex items-center gap-2"
+                className="font-mono text-xs sm:text-sm font-medium px-4 py-2 rounded-full border border-line bg-panel2 hover:bg-panel hover:border-ink/40 text-ink transition-all shadow-xs disabled:opacity-50 active:scale-95 flex items-center gap-2"
                 title={action.description}
               >
                 {action.icons}
@@ -235,39 +230,39 @@ export function TreasuryCommandCard() {
         {/* Footer Status & Primary Submit Button */}
         <div className="pt-4 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Status Message */}
-          <div className="font-mono text-sm flex items-center gap-2">
+          <div className="font-mono text-xs sm:text-sm flex items-center gap-2">
             {isRunning ? (
               <span className="text-enclave font-bold flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full border-2 border-enclave border-t-transparent animate-spin" />
+                <span className="w-2.5 h-2.5 rounded-full border-2 border-enclave border-t-transparent animate-spin" />
                 Evaluating intent in Intel TDX Hardware Enclave...
               </span>
             ) : stage === 'settled' ? (
               <span className="text-pass font-bold flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-pass" />
+                <span className="w-2 h-2 rounded-full bg-pass" />
                 ✓ Intent verified & settled successfully on-chain
               </span>
             ) : stage === 'blocked' ? (
               <span className="text-block font-bold flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-block" />
+                <span className="w-2 h-2 rounded-full bg-block" />
                 ✕ Intercepted: Blocked by your safety guardrail
               </span>
             ) : (
               <span className="text-mute flex items-center gap-2 font-medium">
-                <span className="w-2.5 h-2.5 rounded-full bg-pass" />
+                <span className="w-2 h-2 rounded-full bg-pass" />
                 Single-transaction limit: ${policy.maxUsdPerTx}.00 · Guardrails active
               </span>
             )}
           </div>
 
-          {/* Primary Action Button */}
+          {/* Primary Action Button (Calm Rounded Pill) */}
           <button
             type="submit"
             disabled={isRunning || !inputGoal.trim()}
-            className="font-mono text-sm sm:text-base font-black px-8 py-3.5 rounded-xl bg-ink hover:bg-black text-white border border-ink shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="font-mono text-xs sm:text-sm font-bold px-7 py-3 rounded-full bg-ink hover:bg-black text-white shadow-xs transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isRunning ? (
               <>
-                <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
                 <span>PROCESSING...</span>
               </>
             ) : (

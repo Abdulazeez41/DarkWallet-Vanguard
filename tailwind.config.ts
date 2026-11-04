@@ -5,18 +5,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        void: "#F8F6F0",       // Warm Creamy Linen Base Background
-        panel: "#FFFFFF",      // Crisp Warm White Card
-        panel2: "#F3ECE2",     // Soft Warm Oat Sub-Panel / Pill
-        line: "#E5DDD0",       // Warm Parchment Structural Border
-        ink: "#1A1815",        // Deep Espresso Charcoal Primary Text
-        mute: "#665E55",       // Earthy Stone / Legible Secondary Text
-        pass: "#1B7340",       // Rich Forest Botanical Green
-        warn: "#C27803",       // Warm Golden Honey Amber
-        block: "#B91C1C",      // Deep Brick Crimson Alert Red
-        enclave: "#C25E2E",    // Warm Cognac / Terracotta Bronze Accent
-        brandDark: "#26211E",  // Deep Obsidian Espresso
-        paper: "#FDFBF7",      // Receipt Cream
+        void: "#FAF7F2",       // Soft Oreo Cream Filling Base
+        panel: "#FFFFFF",      // Clean Warm Porcelain Card
+        panel2: "#F2ECE2",     // Warm Oat Ash Subsurface / Pill
+        line: "#DDD4C7",       // Soft Oreo Ash Crumb Border
+        ink: "#221E1C",        // Deep Oreo Cocoa Ash Primary Text
+        mute: "#766C63",       // Refined Cocoa Ash Secondary Text
+        pass: "#256B44",       // Natural Botanical Forest Green
+        warn: "#BD761C",       // Warm Honey Amber
+        block: "#B23D3D",      // Warm Cocoa Crimson Alert
+        enclave: "#B86A2E",    // Warm Salted Caramel / Cocoa Bronze
+        brandDark: "#221E1C",  // Deep Oreo Biscuit Ash
+        paper: "#FDFBF7",
         paperInk: "#1E1E1E",
       },
       fontFamily: {
@@ -24,14 +24,14 @@ export default {
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {
-        glowPass: "0 0 20px rgba(27,115,64,.2)",
-        "glow-pass": "0 0 20px rgba(27,115,64,.2)",
-        glowWarn: "0 0 20px rgba(194,120,3,.2)",
-        "glow-warn": "0 0 20px rgba(194,120,3,.2)",
-        glowBlock: "0 0 24px rgba(185,28,28,.2)",
-        "glow-block": "0 0 24px rgba(185,28,28,.2)",
-        glowEnclave: "0 0 24px rgba(194,94,46,.2)",
-        "glow-enclave": "0 0 24px rgba(194,94,46,.2)",
+        glowPass: "0 0 20px rgba(37,107,68,.15)",
+        "glow-pass": "0 0 20px rgba(37,107,68,.15)",
+        glowWarn: "0 0 20px rgba(189,118,28,.15)",
+        "glow-warn": "0 0 20px rgba(189,118,28,.15)",
+        glowBlock: "0 0 24px rgba(178,61,61,.18)",
+        "glow-block": "0 0 24px rgba(178,61,61,.18)",
+        glowEnclave: "0 0 24px rgba(184,106,46,.18)",
+        "glow-enclave": "0 0 24px rgba(184,106,46,.18)",
       },
       keyframes: {
         scan: { "0%": { transform: "translateY(-100%)" }, "100%": { transform: "translateY(100%)" } },

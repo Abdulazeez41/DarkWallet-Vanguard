@@ -78,13 +78,19 @@ export interface VaultState {
     totalRuns: number;
   };
 
-  // UI Overlays
+  // UI Overlays & Wallet State
+  walletConnected: boolean;
+  walletAddress: string;
+  agentAddress: string;
+  isWalletModalOpen: boolean;
   isProofModalOpen: boolean;
   isCommandPaletteOpen: boolean;
   isGuideModalOpen: boolean;
   receiptVisible: boolean;
 
   // Actions
+  toggleWallet: () => void;
+  setWalletModalOpen: (open: boolean) => void;
   setStage: (stage: Stage) => void;
   setRunMode: (mode: 'idle' | 'user' | 'gauntlet' | 'daemon') => void;
   setActiveTab: (tab: 'intent' | 'gauntlet' | 'replay') => void;
@@ -178,11 +184,17 @@ export const useVaultStore = create<VaultState>((set, get) => ({
     totalRuns: 16,
   },
 
+  walletConnected: true,
+  walletAddress: 'operator.near',
+  agentAddress: 'vanguard-agent.near',
+  isWalletModalOpen: false,
   isProofModalOpen: false,
   isCommandPaletteOpen: false,
   isGuideModalOpen: false,
   receiptVisible: false,
 
+  toggleWallet: () => set((state) => ({ walletConnected: !state.walletConnected })),
+  setWalletModalOpen: (isWalletModalOpen) => set({ isWalletModalOpen }),
   setStage: (stage) => set({ stage }),
   setRunMode: (runMode) => set({ runMode }),
   setActiveTab: (activeTab) => set({ activeTab }),
