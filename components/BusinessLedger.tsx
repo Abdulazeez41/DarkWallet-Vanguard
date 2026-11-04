@@ -20,7 +20,7 @@ export function BusinessLedger({ entries }: BusinessLedgerProps) {
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-[#1E1E1E]" />
           <h2 className="text-sm font-black uppercase tracking-wider text-[#1E1E1E]">
-            Autonomous Business Ledger // Track 04
+            Autonomous Business Ledger
           </h2>
         </div>
         <span className="text-[10px] font-bold bg-[#FEF3C7] text-[#1E1E1E] px-2 py-0.5 rounded-full border border-[#1E1E1E]">

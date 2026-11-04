@@ -83,7 +83,7 @@ export function Gauntlet() {
         policy,
         threatType: scenario.id,
       },
-      { isJudgeDemo: false }
+      { runMode: 'gauntlet' }
     );
   };
 
@@ -92,11 +92,14 @@ export function Gauntlet() {
     if (!customPrompt.trim() || isRunning) return;
 
     soundFx.playStepTick();
-    await runIntent({
-      goal: customPrompt.trim(),
-      policy,
-      threatType: 'UNAUTHORIZED_RECIPIENT',
-    });
+    await runIntent(
+      {
+        goal: customPrompt.trim(),
+        policy,
+        threatType: 'UNAUTHORIZED_RECIPIENT',
+      },
+      { runMode: 'gauntlet' }
+    );
   };
 
   return (

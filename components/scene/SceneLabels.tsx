@@ -4,10 +4,7 @@
  * components/scene/SceneLabels.tsx
  *
  * High-performance WebGL Canvas-backed 3D Sprites for in-scene labels.
- * Replaces @react-three/drei <Html> to completely eliminate:
- *  - "Attempted to synchronously unmount a root while React was already rendering" (React 19)
- *  - Layout thrashing & DOM node sync overhead
- *  - External font network fetch errors
+ * Draws official vector logos for Bitcoin, Ethereum, Solana, and NEAR Protocol.
  */
 
 import { useMemo } from 'react';
@@ -34,11 +31,157 @@ function drawRoundedRect(
   ctx.closePath();
 }
 
+/**
+ * Draws official vector Bitcoin logo on canvas
+ */
+function drawBitcoinSymbol(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
+  ctx.save();
+  // Orange coin base
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#F7931A';
+  ctx.fill();
+
+  // White B symbol with double strokes
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = `900 ${Math.round(r * 1.35)}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('₿', cx + 1, cy + 1);
+  ctx.restore();
+}
+
+/**
+ * Draws official vector Ethereum diamond on canvas
+ */
+function drawEthereumSymbol(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
+  ctx.save();
+  // Blue circle base
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#627EEA';
+  ctx.fill();
+
+  const s = r * 0.75;
+  // Top-left facet
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - s);
+  ctx.lineTo(cx - s * 0.6, cy + s * 0.1);
+  ctx.lineTo(cx, cy + s * 0.4);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+  ctx.fill();
+
+  // Top-right facet
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - s);
+  ctx.lineTo(cx + s * 0.6, cy + s * 0.1);
+  ctx.lineTo(cx, cy + s * 0.4);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+  ctx.fill();
+
+  // Bottom-left facet
+  ctx.beginPath();
+  ctx.moveTo(cx, cy + s * 0.5);
+  ctx.lineTo(cx - s * 0.6, cy + s * 0.2);
+  ctx.lineTo(cx, cy + s);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+  ctx.fill();
+
+  // Bottom-right facet
+  ctx.beginPath();
+  ctx.moveTo(cx, cy + s * 0.5);
+  ctx.lineTo(cx + s * 0.6, cy + s * 0.2);
+  ctx.lineTo(cx, cy + s);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+  ctx.fill();
+
+  ctx.restore();
+}
+
+/**
+ * Draws official vector Solana stacked gradient bars on canvas
+ */
+function drawSolanaSymbol(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
+  ctx.save();
+  // Dark circle base
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#0C0E14';
+  ctx.fill();
+  ctx.strokeStyle = '#253450';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  const w = r * 1.1;
+  const h = r * 0.22;
+  const skew = r * 0.25;
+
+  const grad = ctx.createLinearGradient(cx - w / 2, cy - r, cx + w / 2, cy + r);
+  grad.addColorStop(0, '#00FFA3');
+  grad.addColorStop(1, '#DC1FFF');
+  ctx.fillStyle = grad;
+
+  // 3 stacked angled bars
+  const offsets = [-r * 0.48, 0, r * 0.48];
+  offsets.forEach((dy, idx) => {
+    ctx.beginPath();
+    const dir = idx === 1 ? -1 : 1;
+    const startX = cx - w / 2 + (dir === 1 ? 0 : skew);
+    const y = cy + dy - h / 2;
+    ctx.moveTo(startX, y);
+    ctx.lineTo(startX + w - skew, y);
+    ctx.lineTo(startX + w, y + h);
+    ctx.lineTo(startX + skew, y + h);
+    ctx.closePath();
+    ctx.fill();
+  });
+
+  ctx.restore();
+}
+
+/**
+ * Draws official vector NEAR geometric N logo on canvas
+ */
+function drawNearSymbol(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
+  ctx.save();
+  // Black circle base with green border
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#000000';
+  ctx.fill();
+  ctx.strokeStyle = '#00EC97';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // NEAR geometric N
+  ctx.fillStyle = '#00EC97';
+  const s = r * 0.65;
+  ctx.beginPath();
+  ctx.moveTo(cx - s, cy + s);
+  ctx.lineTo(cx - s, cy - s);
+  ctx.lineTo(cx - s * 0.4, cy - s);
+  ctx.lineTo(cx + s * 0.4, cy + s * 0.2);
+  ctx.lineTo(cx + s * 0.4, cy - s);
+  ctx.lineTo(cx + s, cy - s);
+  ctx.lineTo(cx + s, cy + s);
+  ctx.lineTo(cx + s * 0.4, cy + s);
+  ctx.lineTo(cx - s * 0.4, cy - s * 0.2);
+  ctx.lineTo(cx - s * 0.4, cy + s);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+}
+
 export function createBadgeTexture(
   title: string,
   subtitle: string,
   accentColor: string,
-  bgColor = '#121A2D',
+  bgColor = '#0B1122',
   scaleGlow = false
 ): THREE.CanvasTexture {
   if (typeof document === 'undefined') {
@@ -56,34 +199,33 @@ export function createBadgeTexture(
 
   ctx.clearRect(0, 0, 512, 140);
 
-  // Outer glow
   if (scaleGlow) {
     ctx.shadowColor = accentColor;
-    ctx.shadowBlur = 24;
+    ctx.shadowBlur = 20;
   }
 
-  // Background rounded pill
+  // Rounded pill background
   ctx.fillStyle = bgColor;
-  drawRoundedRect(ctx, 16, 16, 480, 108, 20);
+  drawRoundedRect(ctx, 14, 14, 484, 112, 22);
   ctx.fill();
 
   // Border outline
   ctx.shadowBlur = 0;
   ctx.strokeStyle = accentColor;
   ctx.lineWidth = 4;
-  drawRoundedRect(ctx, 16, 16, 480, 108, 20);
+  drawRoundedRect(ctx, 14, 14, 484, 112, 22);
   ctx.stroke();
 
   // Primary Title
   ctx.fillStyle = accentColor;
-  ctx.font = 'bold 32px monospace';
+  ctx.font = 'bold 30px monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(title, 256, 52);
+  ctx.fillText(title, 256, 50);
 
   // Subtitle
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = 'bold 22px monospace';
+  ctx.font = 'bold 20px monospace';
   ctx.fillText(subtitle, 256, 88);
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -103,44 +245,61 @@ export function createChainBadgeTexture(
   }
 
   const canvas = document.createElement('canvas');
-  canvas.width = 360;
-  canvas.height = 100;
+  canvas.width = 420;
+  canvas.height = 110;
   const ctx = canvas.getContext('2d');
 
   if (!ctx) {
     return new THREE.CanvasTexture(canvas);
   }
 
-  ctx.clearRect(0, 0, 360, 100);
+  ctx.clearRect(0, 0, 420, 110);
 
   if (isSettled) {
-    ctx.shadowColor = '#00F5A0';
-    ctx.shadowBlur = 20;
+    ctx.shadowColor = '#00EC97';
+    ctx.shadowBlur = 24;
   }
 
-  // Background
-  ctx.fillStyle = '#121A2D';
-  drawRoundedRect(ctx, 10, 10, 340, 80, 40);
+  // Pill background
+  ctx.fillStyle = '#0B1122';
+  drawRoundedRect(ctx, 10, 10, 400, 90, 45);
   ctx.fill();
 
   // Outline
   ctx.shadowBlur = 0;
-  ctx.strokeStyle = isSettled ? '#00F5A0' : accentColor;
+  ctx.strokeStyle = isSettled ? '#00EC97' : accentColor;
   ctx.lineWidth = isSettled ? 5 : 3;
-  drawRoundedRect(ctx, 10, 10, 340, 80, 40);
+  drawRoundedRect(ctx, 10, 10, 400, 90, 45);
   ctx.stroke();
 
-  // Symbol
-  ctx.fillStyle = isSettled ? '#00F5A0' : accentColor;
-  ctx.font = '900 32px monospace';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(symbol, 110, 50);
+  // Draw authentic vector logo on the left
+  const logoRadius = 32;
+  const logoCenterX = 56;
+  const logoCenterY = 55;
 
-  // Status
-  ctx.fillStyle = isSettled ? '#FFFFFF' : '#94A3B8';
+  const s = symbol.toUpperCase();
+  if (s.includes('BTC') || s.includes('BITCOIN')) {
+    drawBitcoinSymbol(ctx, logoCenterX, logoCenterY, logoRadius);
+  } else if (s.includes('ETH') || s.includes('ETHEREUM')) {
+    drawEthereumSymbol(ctx, logoCenterX, logoCenterY, logoRadius);
+  } else if (s.includes('SOL') || s.includes('SOLANA')) {
+    drawSolanaSymbol(ctx, logoCenterX, logoCenterY, logoRadius);
+  } else if (s.includes('NEAR')) {
+    drawNearSymbol(ctx, logoCenterX, logoCenterY, logoRadius);
+  }
+
+  // Symbol text
+  ctx.fillStyle = isSettled ? '#00EC97' : '#FFFFFF';
+  ctx.font = '900 32px monospace';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(symbol, 106, 55);
+
+  // Status text on right
+  ctx.fillStyle = isSettled ? '#AAFE97' : '#8F9CAE';
   ctx.font = 'bold 22px monospace';
-  ctx.fillText(statusText, 220, 50);
+  ctx.textAlign = 'right';
+  ctx.fillText(statusText, 390, 55);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.needsUpdate = true;
@@ -166,7 +325,7 @@ export function InSceneBadge({
   scale = [1.6, 0.44, 1],
 }: InSceneBadgeProps) {
   const texture = useMemo(() => {
-    return createBadgeTexture(title, subtitle, color, '#121A2D', isPulsing);
+    return createBadgeTexture(title, subtitle, color, '#0B1122', isPulsing);
   }, [title, subtitle, color, isPulsing]);
 
   return (
@@ -196,7 +355,7 @@ export function InSceneChainBadge({
   }, [symbol, statusText, color, isSettled]);
 
   return (
-    <sprite position={position} scale={[1.2, 0.34, 1]}>
+    <sprite position={position} scale={[1.4, 0.38, 1]}>
       <spriteMaterial map={texture} transparent opacity={0.96} />
     </sprite>
   );

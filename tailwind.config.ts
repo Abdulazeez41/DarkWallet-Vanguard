@@ -5,18 +5,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        void: "#0B101D",      // modern vibrant deep cyber-navy (replaces murky black)
-        panel: "#121A2D",     // rich luminous slate card
-        panel2: "#1A243D",    // elevated vibrant card
-        line: "#253450",      // crisp luminous structural borders
-        ink: "#FFFFFF",       // pure radiant white text
-        mute: "#94A3B8",      // crisp readable cool silver text
-        pass: "#00F5A0",      // luminous electric emerald / mint
-        warn: "#FBBF24",      // radiant solar gold
-        block: "#FF3366",     // vivid laser crimson
-        enclave: "#38BDF8",   // vibrant high-energy electric cyan
-        cyanGlow: "#00F0FF",  // ultra-bright cyan accent
-        purpleGlow: "#A855F7",// vivid violet accent
+        void: "#010616",      // Fluence Deep Midnight Base
+        panel: "#0B1122",     // Fluence Dark Navy Card
+        panel2: "#101931",    // Fluence Raised Slate Card
+        line: "#1B2745",      // Calm structural border
+        ink: "#FFFFFF",       // Pure white primary text
+        mute: "#8F9CAE",      // Calm refined secondary text
+        pass: "#00EC97",      // Fluence / NEAR Calm Tech Green
+        warn: "#F3A953",      // Fluence Warm Accent Orange
+        block: "#F35365",     // Fluence Coral Alert Red
+        enclave: "#2D68FF",   // Fluence Primary Brand Blue
+        cyanGlow: "#38BDF8",  // Clean Sky/Cyan Accent
         paper: "#FDFBF7",     // receipt only
         paperInk: "#1E1E1E",
       },
@@ -25,16 +24,16 @@ export default {
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {
-        glowPass: "0 0 28px rgba(0,245,160,.45)",
-        "glow-pass": "0 0 28px rgba(0,245,160,.45)",
-        glowWarn: "0 0 28px rgba(251,191,36,.45)",
-        "glow-warn": "0 0 28px rgba(251,191,36,.45)",
-        glowBlock: "0 0 32px rgba(255,51,102,.55)",
-        "glow-block": "0 0 32px rgba(255,51,102,.55)",
-        glowEnclave: "0 0 36px rgba(56,189,248,.5)",
-        "glow-enclave": "0 0 36px rgba(56,189,248,.5)",
-        glowCyan: "0 0 36px rgba(0,240,255,.55)",
-        "glow-cyan": "0 0 36px rgba(0,240,255,.55)",
+        glowPass: "0 0 24px rgba(0,236,151,.35)",
+        "glow-pass": "0 0 24px rgba(0,236,151,.35)",
+        glowWarn: "0 0 24px rgba(243,169,83,.35)",
+        "glow-warn": "0 0 24px rgba(243,169,83,.35)",
+        glowBlock: "0 0 28px rgba(243,83,101,.4)",
+        "glow-block": "0 0 28px rgba(243,83,101,.4)",
+        glowEnclave: "0 0 32px rgba(45,104,255,.35)",
+        "glow-enclave": "0 0 32px rgba(45,104,255,.35)",
+        glowCyan: "0 0 32px rgba(56,189,248,.35)",
+        "glow-cyan": "0 0 32px rgba(56,189,248,.35)",
       },
       keyframes: {
         scan: { "0%": { transform: "translateY(-100%)" }, "100%": { transform: "translateY(100%)" } },

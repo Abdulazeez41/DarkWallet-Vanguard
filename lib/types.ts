@@ -8,9 +8,9 @@
  *  - Track 04: Autonomous Business Ledger with Realistic P&L & Contributor Revenue Split
  */
 
-export type SupportedChain = 'Ethereum' | 'Solana' | 'Bitcoin' | 'NEAR';
+export type SupportedChain = "Ethereum" | "Solana" | "Bitcoin" | "NEAR";
 
-export type SupportedToken = 'USDC' | 'USDT' | 'NEAR' | 'SOL' | 'ETH' | 'BTC';
+export type SupportedToken = "USDC" | "USDT" | "NEAR" | "SOL" | "ETH" | "BTC";
 
 export interface ExecutionDirective {
   readonly directiveId: string;
@@ -36,21 +36,21 @@ export interface AgentPolicy {
 
 // Layer Attribution: Explicitly separates which component in the stack makes the defense decision
 export type SecurityLayer =
-  | 'TEE_ATTESTATION_VERIFIER'
-  | 'POLICY_ENGINE'
-  | 'EXECUTION_COORDINATOR'
-  | 'EMERGENCY_CONTROL';
+  | "TEE_ATTESTATION_VERIFIER"
+  | "POLICY_ENGINE"
+  | "EXECUTION_COORDINATOR"
+  | "EMERGENCY_CONTROL";
 
 export type PolicyRuleIdentifier =
-  | 'REVOCATION_CHECK'
-  | 'EXPIRY_CHECK'
-  | 'DIRECTIVE_VALIDITY'
-  | 'PER_ACTION_LIMIT'
-  | 'CUMULATIVE_BUDGET_CAP'
-  | 'TOKEN_WHITELIST'
-  | 'CHAIN_WHITELIST'
-  | 'COUNTERPARTY_CHECK'
-  | 'IDEMPOTENCY_DUPLICATE_CHECK';
+  | "REVOCATION_CHECK"
+  | "EXPIRY_CHECK"
+  | "DIRECTIVE_VALIDITY"
+  | "PER_ACTION_LIMIT"
+  | "CUMULATIVE_BUDGET_CAP"
+  | "TOKEN_WHITELIST"
+  | "CHAIN_WHITELIST"
+  | "COUNTERPARTY_CHECK"
+  | "IDEMPOTENCY_DUPLICATE_CHECK";
 
 export interface PolicyRuleResult {
   readonly ruleId: PolicyRuleIdentifier;
@@ -72,14 +72,13 @@ export interface PolicyEvaluationResult {
   readonly evaluatedAt: string;
 }
 
-// Track 06: Counterparty Risk Engine Types
-export type CounterpartyStatus = 'ALLOW' | 'WARN' | 'BLOCK';
+export type CounterpartyStatus = "ALLOW" | "WARN" | "BLOCK";
 
 export interface CounterpartySignal {
   readonly id: string;
   readonly name: string;
   readonly score: number; // 0 (safest) to 100 (highest risk)
-  readonly status: 'SAFE' | 'SUSPICIOUS' | 'FLAGGED';
+  readonly status: "SAFE" | "SUSPICIOUS" | "FLAGGED";
   readonly message: string;
 }
 
@@ -92,7 +91,6 @@ export interface CounterpartyReport {
   readonly reason: string;
 }
 
-// Track 03: Hardware Attestation Verification Types
 export interface VerificationCheckItem {
   readonly id: string;
   readonly title: string;
@@ -114,7 +112,7 @@ export interface EnclaveAttestation {
   readonly verificationChecks: VerificationCheckItem[];
 }
 
-export type SettlementStatus = 'settled' | 'pending' | 'blocked' | 'simulated';
+export type SettlementStatus = "settled" | "pending" | "blocked" | "simulated";
 
 export interface SettlementResult {
   readonly intentHash: string;
@@ -130,7 +128,6 @@ export interface SettlementResult {
   readonly executedAt: string;
 }
 
-// Track 04: Autonomous Business Treasury Ledger Types
 export interface TreasuryLedgerEntry {
   readonly entryId: string;
   readonly directiveId: string;
@@ -143,21 +140,25 @@ export interface TreasuryLedgerEntry {
   readonly treasuryShareUsd: number; // e.g. 80% retained
   readonly contributorPayoutUsd: number; // e.g. 20% distributed
   readonly contributorAccount: string;
-  readonly status: 'SETTLED' | 'BLOCKED';
+  readonly status: "SETTLED" | "BLOCKED";
   readonly isSlippageLoss?: boolean;
 }
 
 // Operational Security Posture (Replaces Vanity Defense Rating)
 export interface SecurityPosture {
-  readonly agentState: 'ACTIVE' | 'PAUSED' | 'REVOKED';
-  readonly attestationEvidence: 'VERIFIED' | 'EXPIRED' | 'UNVERIFIED' | 'SIMULATED';
+  readonly agentState: "ACTIVE" | "PAUSED" | "REVOKED";
+  readonly attestationEvidence:
+    | "VERIFIED"
+    | "EXPIRED"
+    | "UNVERIFIED"
+    | "SIMULATED";
   readonly perActionCapUsd: number;
   readonly sessionBudgetCapUsd: number;
   readonly spentInSessionUsd: number;
   readonly remainingBudgetUsd: number;
-  readonly counterpartyPolicy: 'STRICT_ALLOWLIST';
-  readonly idempotencyProtection: 'ACTIVE';
-  readonly operationalReadiness: 'READY' | 'AWAITING_APPROVAL' | 'BLOCKED';
+  readonly counterpartyPolicy: "STRICT_ALLOWLIST";
+  readonly idempotencyProtection: "ACTIVE";
+  readonly operationalReadiness: "READY" | "AWAITING_APPROVAL" | "BLOCKED";
   readonly scenarioPerformance: {
     readonly tasksAuthorized: number;
     readonly threatsDeflected: number;
@@ -166,19 +167,19 @@ export interface SecurityPosture {
 }
 
 export type TelemetryStepStatus =
-  | 'pending'
-  | 'running'
-  | 'success'
-  | 'blocked'
-  | 'failed';
+  | "pending"
+  | "running"
+  | "success"
+  | "blocked"
+  | "failed";
 
 export interface AgentStepTelemetry {
   readonly stepIndex: number;
   readonly stepId:
-    | 'TEE_DECRYPT'
-    | 'HARDWARE_ATTESTATION'
-    | 'POLICY_VERIFICATION'
-    | 'INTENTS_SETTLEMENT';
+    | "TEE_DECRYPT"
+    | "HARDWARE_ATTESTATION"
+    | "POLICY_VERIFICATION"
+    | "INTENTS_SETTLEMENT";
   readonly layer: SecurityLayer;
   readonly title: string;
   readonly subtitle: string;
@@ -191,10 +192,10 @@ export interface AgentStepTelemetry {
 }
 
 export type GauntletThreatType =
-  | 'UNAUTHORIZED_RECIPIENT'
-  | 'CUMULATIVE_BUDGET_EXHAUSTION'
-  | 'STALE_ATTESTATION_NONCE'
-  | 'DUPLICATE_DIRECTIVE_REPLAY';
+  | "UNAUTHORIZED_RECIPIENT"
+  | "CUMULATIVE_BUDGET_EXHAUSTION"
+  | "STALE_ATTESTATION_NONCE"
+  | "DUPLICATE_DIRECTIVE_REPLAY";
 
 export interface AgentRunRequest {
   readonly goal: string;

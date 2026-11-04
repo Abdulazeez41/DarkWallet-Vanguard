@@ -14,13 +14,13 @@ import { AgentRunRequest } from './types';
 
 export async function runIntent(
   request: AgentRunRequest,
-  options?: { isJudgeDemo?: boolean }
+  options?: { runMode?: 'user' | 'gauntlet' | 'daemon' }
 ): Promise<void> {
   const store = useVaultStore.getState();
 
   // Reset previous state
   store.resetRun(true);
-  store.setRunMode(options?.isJudgeDemo ? 'judge-demo' : 'user');
+  store.setRunMode(options?.runMode || 'user');
 
   soundFx.playStepTick();
 

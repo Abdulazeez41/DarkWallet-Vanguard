@@ -37,7 +37,7 @@ export const CHAIN_NODES_X = 7.5;
 export interface VaultState {
   // Pipeline Stage
   stage: Stage;
-  runMode: 'idle' | 'judge-demo' | 'user' | 'gauntlet' | 'daemon';
+  runMode: 'idle' | 'user' | 'gauntlet' | 'daemon';
   activeTab: 'intent' | 'gauntlet' | 'replay';
   daemonActive: boolean;
   muted: boolean;
@@ -86,7 +86,7 @@ export interface VaultState {
 
   // Actions
   setStage: (stage: Stage) => void;
-  setRunMode: (mode: 'idle' | 'judge-demo' | 'user' | 'gauntlet' | 'daemon') => void;
+  setRunMode: (mode: 'idle' | 'user' | 'gauntlet' | 'daemon') => void;
   setActiveTab: (tab: 'intent' | 'gauntlet' | 'replay') => void;
   setDaemonActive: (active: boolean) => void;
   toggleMute: () => void;

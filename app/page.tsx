@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * app/page.tsx
@@ -16,23 +16,23 @@
  *  - Physical torn-edge cream paper receipt emerging as classified evidence
  */
 
-import { useEffect, useRef, useState } from 'react';
-import { TopBar } from '@/components/hud/TopBar';
-import { ConfidentialityStrip } from '@/components/hud/ConfidentialityStrip';
-import { QuickStartBanner } from '@/components/hud/QuickStartBanner';
-import { ControlRail } from '@/components/hud/ControlRail';
-import { IntentVault } from '@/components/hud/IntentVault';
-import { Gauntlet } from '@/components/hud/Gauntlet';
-import { Replay } from '@/components/hud/Replay';
-import { PipelineTimeline } from '@/components/hud/PipelineTimeline';
-import { Terminal } from '@/components/hud/Terminal';
-import { Receipt } from '@/components/hud/Receipt';
-import { ProofModal } from '@/components/hud/ProofModal';
-import { CommandPalette } from '@/components/hud/CommandPalette';
-import { GuideModal } from '@/components/hud/GuideModal';
-import { VaultCanvas } from '@/components/scene/VaultCanvas';
-import { runIntent } from '@/lib/runIntent';
-import { useVaultStore } from '@/lib/store';
+import { useEffect, useRef, useState } from "react";
+import { TopBar } from "@/components/hud/TopBar";
+import { ConfidentialityStrip } from "@/components/hud/ConfidentialityStrip";
+import { QuickStartBanner } from "@/components/hud/QuickStartBanner";
+import { ControlRail } from "@/components/hud/ControlRail";
+import { IntentVault } from "@/components/hud/IntentVault";
+import { Gauntlet } from "@/components/hud/Gauntlet";
+import { Replay } from "@/components/hud/Replay";
+import { PipelineTimeline } from "@/components/hud/PipelineTimeline";
+import { Terminal } from "@/components/hud/Terminal";
+import { Receipt } from "@/components/hud/Receipt";
+import { ProofModal } from "@/components/hud/ProofModal";
+import { CommandPalette } from "@/components/hud/CommandPalette";
+import { GuideModal } from "@/components/hud/GuideModal";
+import { VaultCanvas } from "@/components/scene/VaultCanvas";
+import { runIntent } from "@/lib/runIntent";
+import { useVaultStore } from "@/lib/store";
 
 export default function VaultRoomPage() {
   const [mounted, setMounted] = useState(false);
@@ -52,31 +52,32 @@ export default function VaultRoomPage() {
   useEffect(() => {
     if (daemonActive) {
       addLog({
-        level: 'enclave',
-        source: 'ENCLAVE',
-        message: 'AUTONOMOUS REBALANCE DAEMON ACTIVE: Periodic cross-chain monitoring started.',
+        level: "enclave",
+        source: "ENCLAVE",
+        message:
+          "AUTONOMOUS REBALANCE DAEMON ACTIVE: Periodic cross-chain monitoring started.",
       });
 
       daemonTimerRef.current = setInterval(() => {
         const currentStage = useVaultStore.getState().stage;
         const currentRevoked = useVaultStore.getState().policy.isRevoked;
 
-        if (currentStage === 'idle' && !currentRevoked) {
+        if (currentStage === "idle" && !currentRevoked) {
           const spreadPct = (0.6 + Math.random() * 0.8).toFixed(2);
           addLog({
-            level: 'info',
-            source: 'ENCLAVE',
+            level: "info",
+            source: "ENCLAVE",
             message: `[Daemon Pulse] Detected cross-chain spread: ${spreadPct}%. Threshold: 1.00%.`,
           });
 
           if (Number(spreadPct) >= 1.0) {
             addLog({
-              level: 'pass',
-              source: 'ENCLAVE',
-              message: 'Threshold met. Triggering autonomous rebalance cycle.',
+              level: "pass",
+              source: "ENCLAVE",
+              message: "Threshold met. Triggering autonomous rebalance cycle.",
             });
             runIntent({
-              goal: 'Autonomous daemon: Rebalance 25 USDC from Solana to Ethereum via NEAR Intents',
+              goal: "Autonomous daemon: Rebalance 25 USDC from Solana to Ethereum via NEAR Intents",
               policy,
             });
           }
@@ -119,20 +120,22 @@ export default function VaultRoomPage() {
           <div className="bg-panel/95 backdrop-blur-md border border-enclave/40 rounded-full px-3 py-1 flex items-center gap-2 font-mono text-[11px] text-mute shadow-glow-enclave">
             <span
               className={`w-2.5 h-2.5 rounded-full ${
-                stage === 'blocked'
-                  ? 'bg-block animate-pulse shadow-glow-block'
-                  : stage === 'settled'
-                  ? 'bg-pass shadow-glow-pass'
-                  : stage === 'idle'
-                  ? 'bg-enclave shadow-glow-enclave'
-                  : 'bg-warn animate-pulse shadow-glow-warn'
+                stage === "blocked"
+                  ? "bg-block animate-pulse shadow-glow-block"
+                  : stage === "settled"
+                    ? "bg-pass shadow-glow-pass"
+                    : stage === "idle"
+                      ? "bg-enclave shadow-glow-enclave"
+                      : "bg-warn animate-pulse shadow-glow-warn"
               }`}
             />
             <span className="uppercase text-white font-black tracking-wider">
               STATUS: {stage}
             </span>
             <span className="text-line">|</span>
-            <span className="hidden sm:inline text-white/90 font-bold">PARALLAX RIG ACTIVE</span>
+            <span className="hidden sm:inline text-white/90 font-bold">
+              PARALLAX RIG ACTIVE
+            </span>
           </div>
         </div>
 
@@ -154,17 +157,17 @@ export default function VaultRoomPage() {
       {/* 5. Tab Navigation Rail */}
       <ControlRail />
 
-      {/* 6. Main Workspace Container */}
-      <div className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
+      {/* 6. Main Workspace Container (Wide Desktop Responsive Fit) */}
+      <div className="flex-1 w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 space-y-6">
         {/* Active Tab Workspace Panel */}
         <section>
-          {activeTab === 'intent' && <IntentVault />}
-          {activeTab === 'gauntlet' && <Gauntlet />}
-          {activeTab === 'replay' && <Replay />}
+          {activeTab === "intent" && <IntentVault />}
+          {activeTab === "gauntlet" && <Gauntlet />}
+          {activeTab === "replay" && <Replay />}
         </section>
 
         {/* Real-Time Dual Monitoring Grid */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {/* Left Column: 4-Step Pipeline Stepper */}
           <PipelineTimeline />
 
@@ -174,14 +177,15 @@ export default function VaultRoomPage() {
       </div>
 
       {/* 7. Footer Information Bar */}
-      <footer className="border-t border-line bg-panel/70 px-4 py-3 select-none text-[11px] font-mono text-mute">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+      <footer className="border-t border-line bg-panel/70 px-4 sm:px-6 lg:px-8 xl:px-12 py-3.5 select-none text-[11px] font-mono text-mute">
+        <div className="w-full max-w-[1720px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <div className="flex items-center gap-2 text-white/90 font-medium">
             <span className="w-2 h-2 rounded-full bg-pass shadow-glow-pass" />
-            <span>NEAR HACKATHON 2026 // TRACK 03 (PRIVACY) · TRACK 06 (SECURITY) · TRACK 04 (BUSINESS)</span>
+            <span>NEAR</span>
           </div>
           <div className="text-mute font-medium">
-            Intel TDX Enclaves · OutLayer Policies · NEAR Intents & Chain Signatures
+            Intel TDX Enclaves · OutLayer Policies · NEAR Intents & Chain
+            Signatures
           </div>
         </div>
       </footer>

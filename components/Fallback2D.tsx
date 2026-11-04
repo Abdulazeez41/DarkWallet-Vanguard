@@ -8,6 +8,7 @@
  */
 
 import { useVaultStore } from '@/lib/store';
+import { CryptoChainIcon } from '@/components/icons/CryptoLogos';
 
 export function Fallback2D() {
   const stage = useVaultStore((s) => s.stage);
@@ -126,7 +127,7 @@ export function Fallback2D() {
         {/* Step 6: Settlement Rails */}
         <div className="flex flex-col items-center min-w-[120px] text-center">
           <div
-            className={`w-14 h-14 rounded border flex flex-col items-center justify-center font-mono text-xs transition-colors duration-300 ${
+            className={`w-14 h-14 rounded-lg border flex flex-col items-center justify-center font-mono text-xs transition-colors duration-300 gap-1 ${
               stage === 'settled'
                 ? 'border-pass bg-pass/10 text-pass shadow-glow-pass'
                 : stage === 'settling'
@@ -134,8 +135,8 @@ export function Fallback2D() {
                 : 'border-line bg-panel text-mute'
             }`}
           >
-            <span className="font-bold">SETTLE</span>
-            <span className="text-[9px]">{directive?.destinationChain || 'NEAR'}</span>
+            <CryptoChainIcon chain={directive?.destinationChain || 'NEAR'} size={20} />
+            <span className="text-[8px] font-bold">{directive?.destinationChain || 'NEAR'}</span>
           </div>
           <span className="font-mono text-[9px] text-mute mt-2">NEAR INTENTS</span>
         </div>

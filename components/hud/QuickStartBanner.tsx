@@ -3,30 +3,21 @@
 /**
  * components/hud/QuickStartBanner.tsx
  *
- * Prominent 3-step navigation ribbon helping first-time visitors and hackathon judges
- * immediately understand how to navigate and interact with the application.
+ * Prominent 3-step navigation ribbon helping operators and users
+ * quickly understand the core flow of the application.
  */
 
 import { soundFx } from '@/components/AudioFeedback';
 import { useVaultStore } from '@/lib/store';
-import { runIntent } from '@/lib/runIntent';
-import { JUDGE_DEMO_SCENARIOS } from '@/lib/demoScript';
 
 export function QuickStartBanner() {
   const activeTab = useVaultStore((s) => s.activeTab);
   const setActiveTab = useVaultStore((s) => s.setActiveTab);
   const setGuideModalOpen = useVaultStore((s) => s.setGuideModalOpen);
   const stage = useVaultStore((s) => s.stage);
-  const policy = useVaultStore((s) => s.policy);
 
   const isRunning =
     stage === 'sealing' || stage === 'enclave' || stage === 'evaluating' || stage === 'settling';
-
-  const handleLaunchDemo = async () => {
-    soundFx.playStepTick();
-    const demo = JUDGE_DEMO_SCENARIOS[0];
-    await runIntent({ goal: demo.goal, policy }, { isJudgeDemo: true });
-  };
 
   const steps = [
     {
@@ -45,7 +36,8 @@ export function QuickStartBanner() {
       desc: 'Packet traverses 3 security toruses',
       active: isRunning,
       action: () => {
-        if (!isRunning) handleLaunchDemo();
+        soundFx.playStepTick();
+        setActiveTab('intent');
       },
     },
     {
@@ -61,8 +53,8 @@ export function QuickStartBanner() {
   ];
 
   return (
-    <div className="w-full bg-panel2/80 backdrop-blur-md border-y border-line/80 px-4 py-2.5 select-none">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3 font-mono">
+    <div className="w-full bg-panel2/80 backdrop-blur-md border-y border-line px-4 sm:px-6 lg:px-8 xl:px-12 py-2.5 select-none">
+      <div className="w-full max-w-[1720px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3 font-mono">
         {/* Navigation Step Pills */}
         <div className="flex items-center gap-2 overflow-x-auto">
           <span className="text-[10px] text-mute uppercase font-bold tracking-wider shrink-0 flex items-center gap-1.5 mr-1">
@@ -75,16 +67,16 @@ export function QuickStartBanner() {
               <div key={st.num} className="flex items-center gap-2">
                 <button
                   onClick={st.action}
-                  className={`flex items-center gap-2 px-2.5 py-1.5 rounded border text-left transition-all ${
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-left transition-all ${
                     st.active
                       ? 'bg-enclave/20 border-enclave text-ink shadow-glow-enclave scale-[1.02]'
                       : 'bg-panel/90 border-line hover:border-enclave/40 text-mute hover:text-ink'
                   }`}
                 >
                   <span
-                    className={`text-[10px] font-black px-1.5 py-0.2 rounded ${
+                    className={`text-[10px] font-black px-1.5 py-0.5 rounded ${
                       st.active
-                        ? 'bg-enclave text-void'
+                        ? 'bg-enclave text-white'
                         : 'bg-void text-mute border border-line'
                     }`}
                   >
@@ -114,7 +106,7 @@ export function QuickStartBanner() {
               soundFx.playStepTick();
               setGuideModalOpen(true);
             }}
-            className="w-full md:w-auto font-mono text-[11px] font-bold px-3 py-1.5 rounded bg-panel hover:bg-enclave/15 text-enclave border border-enclave/50 hover:border-enclave shadow-glow-enclave transition-all flex items-center justify-center gap-1.5 active:scale-95"
+            className="w-full md:w-auto font-mono text-[11px] font-bold px-3 py-1.5 rounded-md bg-panel hover:bg-enclave/15 text-enclave border border-enclave/50 hover:border-enclave shadow-glow-enclave transition-all flex items-center justify-center gap-1.5 active:scale-95"
             title="Open Interactive Navigation & Architectural Walkthrough"
           >
             <span className="w-2 h-2 rounded-full bg-enclave animate-ping" />

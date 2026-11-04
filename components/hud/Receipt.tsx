@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { soundFx } from '@/components/AudioFeedback';
 import { getAttestationBadge } from '@/lib/attestation';
 import { useVaultStore } from '@/lib/store';
+import { CryptoChainIcon } from '@/components/icons/CryptoLogos';
 
 export function Receipt() {
   const receiptVisible = useVaultStore((s) => s.receiptVisible);
@@ -122,11 +123,15 @@ export function Receipt() {
                   <span className="opacity-70">DIRECTIVE ID:</span>
                   <span className="font-bold">{directive.directiveId}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex items-center justify-between">
                   <span className="opacity-70">ROUTE:</span>
-                  <span className="font-bold">
-                    {directive.sourceChain} → {directive.destinationChain}
-                  </span>
+                  <div className="flex items-center gap-1.5 font-bold">
+                    <CryptoChainIcon chain={directive.sourceChain} size={14} />
+                    <span>{directive.sourceChain}</span>
+                    <span className="opacity-60">→</span>
+                    <CryptoChainIcon chain={directive.destinationChain} size={14} />
+                    <span>{directive.destinationChain}</span>
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-70">AMOUNT / ASSET:</span>

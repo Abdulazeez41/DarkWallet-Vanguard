@@ -31,12 +31,12 @@ function PipelineBackbone() {
         <boxGeometry
           args={[GATE_X_COORDS.nonce - ORIGIN_INTENT_X, 0.02, 0.02]}
         />
-        <meshBasicMaterial color="#38BDF8" transparent opacity={0.7} />
+        <meshBasicMaterial color="#2D68FF" transparent opacity={0.7} />
       </mesh>
 
       {/* Radiant floor grid */}
       <gridHelper
-        args={[30, 30, '#38BDF8', '#1E293B']}
+        args={[30, 30, '#2D68FF', '#101931']}
         position={[0, -1.8, 0]}
       />
     </group>
@@ -51,17 +51,17 @@ export function VaultScene() {
         gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
         dpr={[1, 1.5]}
       >
-        <color attach="background" args={['#0B101D']} />
+        <color attach="background" args={['#010616']} />
 
         <Suspense fallback={null}>
           <CameraRig />
 
-          {/* Vibrant Lighting Rig */}
-          <ambientLight intensity={0.8} />
-          <directionalLight position={[5, 12, 6]} intensity={1.4} color="#FFFFFF" />
-          <directionalLight position={[-6, -4, -3]} intensity={1.1} color="#38BDF8" />
-          <pointLight position={[0, 4, 3]} intensity={1.5} color="#00F5A0" distance={15} />
-          <pointLight position={[6, -2, 2]} intensity={1.2} color="#A855F7" distance={14} />
+          {/* Calm Radiant Lighting Rig */}
+          <ambientLight intensity={0.85} />
+          <directionalLight position={[5, 12, 6]} intensity={1.3} color="#FFFFFF" />
+          <directionalLight position={[-6, -4, -3]} intensity={1.0} color="#2D68FF" />
+          <pointLight position={[0, 4, 3]} intensity={1.4} color="#00EC97" distance={15} />
+          <pointLight position={[6, -2, 2]} intensity={1.2} color="#2D68FF" distance={14} />
 
           {/* Background Stars Field */}
           <Stars

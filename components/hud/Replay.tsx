@@ -10,6 +10,7 @@
 
 import { useState } from 'react';
 import { soundFx } from '@/components/AudioFeedback';
+import { BitcoinLogo, EthereumLogo, SolanaLogo, NearLogo } from '@/components/icons/CryptoLogos';
 
 interface ReplayDay {
   day: number;
@@ -154,12 +155,29 @@ export function Replay() {
           <p className="font-mono text-xs text-mute mt-1.5 leading-relaxed">
             Simulate 7 days of autonomous rebalancing across Bitcoin, Ethereum, and Solana. Demonstrates self-funded compute fee deductions to NEAR AI Cloud and automated 80/20 contributor revenue splits.
           </p>
+          <div className="flex items-center gap-2 mt-2.5">
+            <span className="text-[10px] text-mute font-bold">SETTLEMENT RAILS:</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 text-[10px] text-white font-semibold bg-void px-2 py-0.5 rounded border border-line">
+                <BitcoinLogo size={13} /> <span>Bitcoin</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] text-white font-semibold bg-void px-2 py-0.5 rounded border border-line">
+                <EthereumLogo size={13} /> <span>Ethereum</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] text-white font-semibold bg-void px-2 py-0.5 rounded border border-line">
+                <SolanaLogo size={13} /> <span>Solana</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] text-white font-semibold bg-void px-2 py-0.5 rounded border border-line">
+                <NearLogo size={13} /> <span>NEAR</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <button
           onClick={handlePlaySimulation}
           disabled={isPlaying}
-          className="font-mono text-xs font-black px-5 py-2.5 rounded-lg bg-gradient-to-r from-enclave to-cyan-400 hover:from-cyan-400 hover:to-enclave text-void border border-enclave shadow-glow-cyan transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 self-start sm:self-auto"
+          className="font-mono text-xs font-black px-5 py-2.5 rounded-lg bg-enclave hover:bg-blue-600 text-white border border-enclave shadow-glow-enclave transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 self-start sm:self-auto"
         >
           <span>{isPlaying ? 'FAST-FORWARDING...' : 'RUN 7-DAY TIME-LAPSE ▶'}</span>
         </button>

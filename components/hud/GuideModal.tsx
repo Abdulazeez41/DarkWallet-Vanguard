@@ -76,14 +76,14 @@ const GUIDE_STEPS = [
       'Inspect Proofs Modal: View raw PCR0/MRTD hashes, 32-byte nonces, and Root CA verification checklist.',
       '7-Day Replay: Demonstrates realistic market slippage gains/losses, self-funded compute fee deductions to NEAR AI Cloud ($0.003/tx), and automated 80/20 contributor revenue splits.',
     ],
-    ctaText: 'Run 60-Second Judge Demo Now ▶',
+    ctaText: 'Start Rebalancing In Intent Vault →',
   },
 ];
 
 export function GuideModal() {
   const isGuideModalOpen = useVaultStore((s) => s.isGuideModalOpen);
   const setGuideModalOpen = useVaultStore((s) => s.setGuideModalOpen);
-  const policy = useVaultStore((s) => s.policy);
+  const setActiveTab = useVaultStore((s) => s.setActiveTab);
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
@@ -92,12 +92,11 @@ export function GuideModal() {
   const currentStep = GUIDE_STEPS[currentStepIndex];
   const isLastStep = currentStepIndex === GUIDE_STEPS.length - 1;
 
-  const handleNext = async () => {
+  const handleNext = () => {
     soundFx.playStepTick();
     if (isLastStep) {
       setGuideModalOpen(false);
-      const demo = JUDGE_DEMO_SCENARIOS[0];
-      await runIntent({ goal: demo.goal, policy }, { isJudgeDemo: true });
+      setActiveTab('intent');
     } else {
       setCurrentStepIndex((prev) => prev + 1);
     }

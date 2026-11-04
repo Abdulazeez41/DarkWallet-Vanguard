@@ -42,8 +42,8 @@ export function ControlRail() {
   ];
 
   return (
-    <div className="w-full bg-panel border-b border-line px-4 select-none shadow-md">
-      <div className="max-w-7xl mx-auto flex items-center justify-between overflow-x-auto gap-4">
+    <div className="w-full bg-panel border-b border-line px-4 sm:px-6 lg:px-8 xl:px-12 select-none shadow-md">
+      <div className="w-full max-w-[1720px] mx-auto flex items-center justify-between overflow-x-auto gap-4">
         <nav className="flex space-x-1" aria-label="Tabs">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;

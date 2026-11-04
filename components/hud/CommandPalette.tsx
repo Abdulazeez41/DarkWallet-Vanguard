@@ -45,13 +45,13 @@ export function CommandPalette() {
 
   const commands = [
     {
-      id: 'cmd_judge_demo',
-      label: 'Run 60-Second Judge Demo',
-      category: 'DEMO',
+      id: 'cmd_quick_swap',
+      label: 'Quick Swap: 25 USDC Solana → Ethereum',
+      category: 'REBALANCE',
       action: async () => {
         setCommandPaletteOpen(false);
         const demo = JUDGE_DEMO_SCENARIOS[0];
-        await runIntent({ goal: demo.goal, policy }, { isJudgeDemo: true });
+        await runIntent({ goal: demo.goal, policy });
       },
     },
     {

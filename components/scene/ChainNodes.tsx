@@ -119,9 +119,9 @@ function SingleChainNode({ chain }: { chain: ChainDef }) {
         />
       </mesh>
 
-      {/* High-Performance WebGL Canvas Sprite Badge (Zero DOM Roots) */}
+      {/* High-Performance WebGL Canvas Sprite Badge with Official Logo */}
       <InSceneChainBadge
-        position={[0.7, 0, 0]}
+        position={[0.85, 0, 0]}
         symbol={chain.symbol}
         statusText={isSettled ? 'SETTLED' : chain.name}
         color={chain.color}

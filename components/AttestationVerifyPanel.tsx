@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { EnclaveAttestation } from '@/lib/types';
-import { SimulatedBadge } from './SimulatedBadge';
+import React from "react";
+import { EnclaveAttestation } from "@/lib/types";
+import { SimulatedBadge } from "./SimulatedBadge";
 
 interface AttestationVerifyPanelProps {
   readonly attestation: EnclaveAttestation | null;
@@ -34,7 +34,7 @@ export function AttestationVerifyPanel({
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-[#1E1E1E]" />
             <h3 className="text-sm font-mono font-black uppercase tracking-wider text-[#1E1E1E]">
-              Intel TDX Attestation Verification // Track 03
+              Intel TDX Attestation Verification
             </h3>
           </div>
           <button
@@ -97,25 +97,33 @@ export function AttestationVerifyPanel({
               Cryptographic Enclave Nonce &amp; Digests:
             </div>
             <div>
-              <span className="text-[#888888] text-[10px]">Client Fresh Nonce: </span>
+              <span className="text-[#888888] text-[10px]">
+                Client Fresh Nonce:{" "}
+              </span>
               <span className="font-mono text-[10px] text-[#FEF3C7] break-all">
                 {attestation.clientNonce}
               </span>
             </div>
             <div>
-              <span className="text-[#888888] text-[10px]">Quote Report Nonce: </span>
+              <span className="text-[#888888] text-[10px]">
+                Quote Report Nonce:{" "}
+              </span>
               <span className="font-mono text-[10px] text-[#D4F0E4] break-all">
                 {attestation.quoteReportDataNonce}
               </span>
             </div>
             <div>
-              <span className="text-[#888888] text-[10px]">PCR0 / MRTD Code Digest: </span>
+              <span className="text-[#888888] text-[10px]">
+                PCR0 / MRTD Code Digest:{" "}
+              </span>
               <span className="font-mono text-[10px] text-[#B8E3D2] break-all">
                 {attestation.pcr0}
               </span>
             </div>
             <div>
-              <span className="text-[#888888] text-[10px]">Signing Key Digest: </span>
+              <span className="text-[#888888] text-[10px]">
+                Signing Key Digest:{" "}
+              </span>
               <span className="font-mono text-[10px] text-[#E0E0E0] break-all">
                 {attestation.signingKeyDigest}
               </span>
@@ -124,8 +132,12 @@ export function AttestationVerifyPanel({
 
           {/* Stateless Architecture Assurance */}
           <div className="p-2.5 bg-[#F5EBE1] border border-[#D5C0AC] rounded-xl text-[10px] text-[#555555] leading-relaxed">
-            <span className="font-bold text-[#1E1E1E]">Zero Server-Side Storage Guarantee: </span>
-            Prompt reasoning runs strictly within Intel TDX hardware encrypted RAM (MKTME). No SQLite, Postgres, or server cache retains prompt data or private keys after the response finishes.
+            <span className="font-bold text-[#1E1E1E]">
+              Zero Server-Side Storage Guarantee:{" "}
+            </span>
+            Prompt reasoning runs strictly within Intel TDX hardware encrypted
+            RAM (MKTME). No SQLite, Postgres, or server cache retains prompt
+            data or private keys after the response finishes.
           </div>
         </div>
 

@@ -3,7 +3,7 @@
 /**
  * components/hud/IntentVault.tsx
  *
- * Primary intent workspace for user input, quick preset tags,
+ * Primary intent workspace for user input, quick preset tags with real crypto logos,
  * confidential client-side prompt redaction preview, and policy limit controls.
  */
 
@@ -12,31 +12,56 @@ import { soundFx } from '@/components/AudioFeedback';
 import { runIntent } from '@/lib/runIntent';
 import { useVaultStore } from '@/lib/store';
 import { QuickPromptTag } from '@/lib/types';
+import { BitcoinLogo, EthereumLogo, SolanaLogo, NearLogo } from '@/components/icons/CryptoLogos';
 
-const QUICK_TAGS: QuickPromptTag[] = [
+interface EnhancedPromptTag extends QuickPromptTag {
+  icons: React.ReactNode;
+}
+
+const QUICK_TAGS: EnhancedPromptTag[] = [
   {
     id: 'sol_eth',
-    label: 'Solana → Eth $25',
+    label: 'Solana → Ethereum $25',
     goal: 'Rebalance 25 USDC from Solana to Ethereum via NEAR Intents',
     description: 'Safe inventory rebalance passing all policy gates.',
+    icons: (
+      <div className="flex items-center -space-x-1">
+        <SolanaLogo size={16} />
+        <EthereumLogo size={16} />
+      </div>
+    ),
   },
   {
     id: 'near_eth',
-    label: 'NEAR → Eth $20',
+    label: 'NEAR → Ethereum $20',
     goal: 'Swap 20 NEAR into Ethereum USDC to capture cross-chain yield spread',
     description: 'Multi-chain routing via NEAR MPC chain signatures.',
+    icons: (
+      <div className="flex items-center -space-x-1">
+        <NearLogo size={16} />
+        <EthereumLogo size={16} />
+      </div>
+    ),
   },
   {
     id: 'btc_rebalance',
-    label: 'Bitcoin Hub $45',
+    label: 'Bitcoin Treasury $45',
     goal: 'Rebalance 45 USD of Bitcoin liquidity into Ethereum treasury vault',
     description: 'Routes near maximum single transaction cap ($50.00).',
+    icons: <BitcoinLogo size={16} />,
   },
   {
     id: 'arbitrage',
-    label: 'Arbitrage Spread $35',
+    label: 'Arbitrage Loop $35',
     goal: 'Execute 35 USDC triangular arbitrage across Solana, NEAR, and Ethereum',
     description: 'Autonomous trading loop with self-funded compute fee deduction.',
+    icons: (
+      <div className="flex items-center -space-x-1">
+        <SolanaLogo size={16} />
+        <NearLogo size={16} />
+        <EthereumLogo size={16} />
+      </div>
+    ),
   },
 ];
 
@@ -81,14 +106,14 @@ export function IntentVault() {
 
   return (
     <div className="w-full bg-panel rounded-xl border border-line p-6 shadow-xl space-y-5">
-      {/* Quick Tag Pills */}
+      {/* Quick Tag Pills with Real Vector Logos */}
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2.5">
           <span className="font-mono text-xs text-enclave font-bold uppercase tracking-wider flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-enclave shadow-glow-enclave" />
-            PRE-CONFIGURED INTENT PRESETS:
+            SUPPORTED RAILS & QUICK PRESETS:
           </span>
-          <span className="font-mono text-[10px] text-mute font-semibold">Click to autofill</span>
+          <span className="font-mono text-[10px] text-mute font-semibold">Click preset to autofill</span>
         </div>
         <div className="flex flex-wrap gap-2.5">
           {QUICK_TAGS.map((tag) => (
@@ -96,10 +121,11 @@ export function IntentVault() {
               key={tag.id}
               onClick={() => handleSelectTag(tag)}
               disabled={isRunning}
-              className="font-mono text-xs font-bold px-3 py-1.5 rounded-lg border border-line bg-panel2 hover:bg-enclave/20 hover:border-enclave text-ink transition-all shadow-sm disabled:opacity-50 active:scale-95"
+              className="font-mono text-xs font-bold px-3 py-1.5 rounded-lg border border-line bg-panel2 hover:bg-enclave/15 hover:border-enclave text-ink transition-all shadow-sm disabled:opacity-50 active:scale-95 flex items-center gap-2"
               title={tag.description}
             >
-              {tag.label}
+              {tag.icons}
+              <span>{tag.label}</span>
             </button>
           ))}
         </div>
@@ -108,9 +134,20 @@ export function IntentVault() {
       {/* Main Input Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block font-mono text-xs text-white font-bold uppercase tracking-wider mb-2">
-            NATURAL LANGUAGE TRADING / REBALANCING INTENT:
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block font-mono text-xs text-white font-bold uppercase tracking-wider">
+              NATURAL LANGUAGE TRADING / REBALANCING INTENT:
+            </label>
+            <div className="flex items-center gap-2 text-[10px] text-mute">
+              <span>ACTIVE RAILS:</span>
+              <div className="flex items-center gap-1.5">
+                <span title="Bitcoin (BTC)"><BitcoinLogo size={14} /></span>
+                <span title="Ethereum (ETH)"><EthereumLogo size={14} /></span>
+                <span title="Solana (SOL)"><SolanaLogo size={14} /></span>
+                <span title="NEAR Protocol"><NearLogo size={14} /></span>
+              </div>
+            </div>
+          </div>
           <div className="relative">
             <textarea
               rows={3}
@@ -118,7 +155,7 @@ export function IntentVault() {
               onChange={(e) => setInputGoal(e.target.value)}
               disabled={isRunning}
               placeholder="e.g. Rebalance 25 USDC from Solana to Ethereum via NEAR Intents safely..."
-              className={`w-full bg-void/90 border-2 border-line rounded-lg p-3.5 font-mono text-xs text-white placeholder:text-mute focus:outline-none focus:border-enclave transition-colors resize-none shadow-inner leading-relaxed ${
+              className={`w-full bg-void/90 border border-line rounded-lg p-3.5 font-mono text-xs text-white placeholder:text-mute focus:outline-none focus:border-enclave transition-colors resize-none shadow-inner leading-relaxed ${
                 isFlickering ? 'animate-pulse text-enclave' : ''
               }`}
             />
@@ -190,11 +227,11 @@ export function IntentVault() {
           <button
             type="submit"
             disabled={isRunning || !inputGoal.trim()}
-            className="w-full sm:w-auto font-mono text-xs font-black px-7 py-3 rounded-lg bg-gradient-to-r from-enclave to-cyan-400 hover:from-cyan-400 hover:to-enclave text-void border border-enclave shadow-glow-cyan transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
+            className="w-full sm:w-auto font-mono text-xs font-black px-7 py-3 rounded-lg bg-enclave hover:bg-blue-600 text-white border border-enclave shadow-glow-enclave transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
           >
             {isRunning ? (
               <>
-                <div className="w-4 h-4 rounded-full border-2 border-void border-t-transparent animate-spin" />
+                <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
                 <span>PROCESSING INTENT...</span>
               </>
             ) : (

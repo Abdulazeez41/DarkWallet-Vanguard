@@ -33,7 +33,7 @@ export function CounterpartyBadge({
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-[#1E1E1E]" />
           <span className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E]">
-            Counterparty Risk Shield // Track 06
+            Counterparty Risk Shield
           </span>
         </div>
         <div className="flex items-center gap-1.5">
