@@ -28,7 +28,7 @@ export const DEFAULT_POLICY: AgentPolicy = {
   spentInSessionUsd: 0,
   tokenWhitelist: ['USDC', 'USDT', 'NEAR', 'SOL', 'ETH', 'BTC'],
   chainWhitelist: ['Ethereum', 'Solana', 'Bitcoin', 'NEAR'],
-  sessionExpiryMs: Date.now() + 60 * 60 * 1000, // 1 hour active window
+  sessionExpiryMs: Date.now() + 24 * 60 * 60 * 1000, // 24 hours active window
   isRevoked: false,
   requireHumanApprovalOnWarn: true,
 };
@@ -99,8 +99,16 @@ export function evaluatePolicy(
   }
 
   // Rule 2: Session Expiry Check (Layer: POLICY_ENGINE)
-  const sessionExpired = currentTimeMs > policy.sessionExpiryMs;
-  const expiryFormatted = new Date(policy.sessionExpiryMs).toLocaleTimeString([], {
+  // If sessionExpiryMs is provided as a relative duration (e.g. 24h = 86,400,000 ms),
+  // or timestamp is uninitialized, normalize against currentTimeMs.
+  const rawExpiry = Number(policy.sessionExpiryMs) || 0;
+  const effectiveExpiryMs: number =
+    rawExpiry > 0 && rawExpiry < 1_000_000_000_000
+      ? currentTimeMs + rawExpiry
+      : rawExpiry || (currentTimeMs + 24 * 60 * 60 * 1000);
+
+  const sessionExpired = currentTimeMs > effectiveExpiryMs;
+  const expiryFormatted = new Date(effectiveExpiryMs).toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',

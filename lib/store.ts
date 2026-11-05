@@ -137,7 +137,7 @@ export const DEFAULT_POLICY: AgentPolicy = {
   spentInSessionUsd: 0,
   tokenWhitelist: ['USDC', 'USDT', 'NEAR', 'SOL', 'ETH', 'BTC'],
   chainWhitelist: ['Ethereum', 'Solana', 'Bitcoin', 'NEAR'],
-  sessionExpiryMs: 24 * 60 * 60 * 1000,
+  sessionExpiryMs: Date.now() + 24 * 60 * 60 * 1000,
   isRevoked: false,
   requireHumanApprovalOnWarn: true,
 };

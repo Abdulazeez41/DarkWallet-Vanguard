@@ -562,15 +562,24 @@ export function generateDemoEventSequence(
     payload: { gateId: 'spend' },
   });
 
-  if (response.threatType === 'CUMULATIVE_BUDGET_EXHAUSTION') {
+  const failedSpendRule = response.policyResult?.rules?.find(
+    (r) =>
+      (r.ruleId === 'PER_ACTION_LIMIT' ||
+        r.ruleId === 'CUMULATIVE_BUDGET_CAP' ||
+        r.ruleId === 'REVOCATION_CHECK' ||
+        r.ruleId === 'EXPIRY_CHECK') &&
+      !r.passed
+  );
+
+  if (response.threatType === 'CUMULATIVE_BUDGET_EXHAUSTION' || failedSpendRule) {
     events.push({
       type: 'GATE_RESOLVED',
       timestamp: now + 650,
       payload: {
         gateId: 'spend',
         passed: false,
-        headline: 'Session Budget Exhausted',
-        detail: 'Requested order exceeds remaining session allowance.',
+        headline: failedSpendRule?.headline || 'Session Budget Exhausted',
+        detail: failedSpendRule?.message || 'Requested order exceeds remaining session allowance.',
         responsibleLayer: 'POLICY_ENGINE',
       },
     });

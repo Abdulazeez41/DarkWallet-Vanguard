@@ -21,7 +21,12 @@ export function PolicyVault({
   useEffect(() => {
     const updateCountdown = () => {
       const now = Date.now();
-      const diff = Math.max(0, Math.floor((policy.sessionExpiryMs - now) / 1000));
+      const rawExpiry = Number(policy.sessionExpiryMs) || 0;
+      const effectiveExpiryMs =
+        rawExpiry > 0 && rawExpiry < 1_000_000_000_000
+          ? now + rawExpiry
+          : rawExpiry || (now + 24 * 60 * 60 * 1000);
+      const diff = Math.max(0, Math.floor((effectiveExpiryMs - now) / 1000));
       setRemainingTimeSec(diff);
     };
 

@@ -645,7 +645,7 @@ function buildNdjsonStream(response: AgentRunResponse, goal: string): Response {
       });
 
       const failedSpendRule = response.policyResult.rules.find(
-        (r) => (r.ruleId === 'PER_ACTION_LIMIT' || r.ruleId === 'CUMULATIVE_BUDGET_CAP' || r.ruleId === 'REVOCATION_CHECK') && !r.passed
+        (r) => (r.ruleId === 'PER_ACTION_LIMIT' || r.ruleId === 'CUMULATIVE_BUDGET_CAP' || r.ruleId === 'REVOCATION_CHECK' || r.ruleId === 'EXPIRY_CHECK') && !r.passed
       );
 
       if (response.threatType === 'CUMULATIVE_BUDGET_EXHAUSTION' || failedSpendRule || response.policyResult.responsibleLayer === 'EMERGENCY_CONTROL') {
