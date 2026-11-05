@@ -637,23 +637,27 @@ function buildNdjsonStream(response: AgentRunResponse, goal: string): Response {
         return;
       }
 
-      // Gate 1: Spend Check
+      // Gate 1: Spend & Emergency Check
       send({
         type: 'GATE_CHECKING',
         timestamp: now + 450,
         payload: { gateId: 'spend' },
       });
 
-      if (response.threatType === 'CUMULATIVE_BUDGET_EXHAUSTION') {
+      const failedSpendRule = response.policyResult.rules.find(
+        (r) => (r.ruleId === 'PER_ACTION_LIMIT' || r.ruleId === 'CUMULATIVE_BUDGET_CAP' || r.ruleId === 'REVOCATION_CHECK') && !r.passed
+      );
+
+      if (response.threatType === 'CUMULATIVE_BUDGET_EXHAUSTION' || failedSpendRule || response.policyResult.responsibleLayer === 'EMERGENCY_CONTROL') {
         send({
           type: 'GATE_RESOLVED',
           timestamp: now + 600,
           payload: {
             gateId: 'spend',
             passed: false,
-            headline: 'Session Budget Exhausted',
-            detail: 'Requested order exceeds remaining session allowance.',
-            responsibleLayer: 'POLICY_ENGINE',
+            headline: failedSpendRule?.headline || response.policyResult.blockReasonHeadline || 'Session Budget Exhausted',
+            detail: failedSpendRule?.message || response.policyResult.blockReasonDetail || 'Requested order exceeds spending allowance.',
+            responsibleLayer: response.policyResult.responsibleLayer || 'POLICY_ENGINE',
           },
         });
         controller.close();
@@ -671,22 +675,26 @@ function buildNdjsonStream(response: AgentRunResponse, goal: string): Response {
         },
       });
 
-      // Gate 2: Allowlist Check
+      // Gate 2: Allowlist & Reputation Check
       send({
         type: 'GATE_CHECKING',
         timestamp: now + 750,
         payload: { gateId: 'allowlist' },
       });
 
-      if (response.threatType === 'UNAUTHORIZED_RECIPIENT') {
+      const failedAllowlistRule = response.policyResult.rules.find(
+        (r) => (r.ruleId === 'COUNTERPARTY_CHECK' || r.ruleId === 'TOKEN_WHITELIST' || r.ruleId === 'CHAIN_WHITELIST') && !r.passed
+      );
+
+      if (response.threatType === 'UNAUTHORIZED_RECIPIENT' || failedAllowlistRule) {
         send({
           type: 'GATE_RESOLVED',
           timestamp: now + 900,
           payload: {
             gateId: 'allowlist',
             passed: false,
-            headline: 'Destination Address Blocked',
-            detail: 'Target address is flagged as unauthorized drainer.',
+            headline: failedAllowlistRule?.headline || response.policyResult.blockReasonHeadline || 'Destination Address Blocked',
+            detail: failedAllowlistRule?.message || response.policyResult.blockReasonDetail || 'Target address is flagged as unauthorized drainer.',
             responsibleLayer: 'POLICY_ENGINE',
           },
         });
@@ -722,6 +730,56 @@ function buildNdjsonStream(response: AgentRunResponse, goal: string): Response {
           detail: 'Hardware quote report data matched fresh 32-byte client nonce.',
         },
       });
+
+      // Execution Layer Check: Idempotency / Double-Spend Replay Guard
+      if (
+        response.threatType === 'DUPLICATE_DIRECTIVE_REPLAY' ||
+        response.policyResult.responsibleLayer === 'EXECUTION_COORDINATOR'
+      ) {
+        send({
+          type: 'STAGE_CHANGE',
+          timestamp: now + 1350,
+          payload: { stage: 'blocked' },
+        });
+
+        send({
+          type: 'GATE_RESOLVED',
+          timestamp: now + 1450,
+          payload: {
+            gateId: 'nonce',
+            passed: false,
+            headline: 'Double-Spend Directive Replay Rejected',
+            detail:
+              'Adversary attempted replay of previously settled directive [dir_prev_executed_0x9a]. Execution coordinator blocked double-spend settlement.',
+            responsibleLayer: 'EXECUTION_COORDINATOR',
+          },
+        });
+        controller.close();
+        return;
+      }
+
+      // Any other policy block after gates:
+      if (!response.policyResult.approved || !response.settlement) {
+        send({
+          type: 'STAGE_CHANGE',
+          timestamp: now + 1350,
+          payload: { stage: 'blocked' },
+        });
+
+        send({
+          type: 'GATE_RESOLVED',
+          timestamp: now + 1450,
+          payload: {
+            gateId: 'nonce',
+            passed: false,
+            headline: response.policyResult.blockReasonHeadline || 'Transaction Blocked by Guardrails',
+            detail: response.policyResult.blockReasonDetail || 'Transaction could not be executed within safety bounds.',
+            responsibleLayer: response.policyResult.responsibleLayer || 'POLICY_ENGINE',
+          },
+        });
+        controller.close();
+        return;
+      }
 
       // Settlement
       if (response.settlement && response.directive) {

@@ -69,6 +69,7 @@ export async function runIntent(
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
+      const streamedEvents: RunEvent[] = [];
 
       while (true) {
         const { done, value } = await reader.read();
@@ -83,22 +84,7 @@ export async function runIntent(
           if (!trimmed) continue;
           try {
             const event = JSON.parse(trimmed) as RunEvent;
-            store.applyRunEvent(event);
-
-            // Audio cues
-            if (event.type === 'GATE_CHECKING') {
-              soundFx.playStepTick();
-            } else if (event.type === 'GATE_RESOLVED') {
-              if (event.payload.passed) {
-                soundFx.playStepTick();
-              } else {
-                soundFx.playShatterAlarm();
-                soundFx.triggerHaptic([40, 80, 40]);
-              }
-            } else if (event.type === 'SETTLEMENT_EVENT') {
-              soundFx.playSuccessTone();
-              soundFx.triggerHaptic(60);
-            }
+            streamedEvents.push(event);
           } catch {
             // Safe ignore JSON parse error in stream line
           }
@@ -108,10 +94,14 @@ export async function runIntent(
       if (buffer.trim()) {
         try {
           const event = JSON.parse(buffer.trim()) as RunEvent;
-          store.applyRunEvent(event);
+          streamedEvents.push(event);
         } catch {
           // Ignore
         }
+      }
+
+      if (streamedEvents.length > 0) {
+        await playbackEvents(streamedEvents);
       }
       return;
     }

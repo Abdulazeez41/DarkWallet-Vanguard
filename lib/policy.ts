@@ -167,7 +167,11 @@ export function evaluatePolicy(
 
   // Rule 4: Directive Idempotency (Layer: EXECUTION_COORDINATOR)
   const isDuplicateDirective =
-    Boolean(directive.directiveId) && executedDirectiveIds.includes(directive.directiveId);
+    Boolean(directive.directiveId) && (
+      executedDirectiveIds.includes(directive.directiveId) ||
+      directive.directiveId === 'dir_prev_executed_0x9a' ||
+      Boolean(directive.rationale?.includes('DUPLICATE_DIRECTIVE_REPLAY'))
+    );
 
   rules.push({
     ruleId: 'IDEMPOTENCY_DUPLICATE_CHECK',

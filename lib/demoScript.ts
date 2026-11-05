@@ -161,6 +161,198 @@ export function getCachedDemoResponse(
     };
   }
 
+  if (threatType === 'CUMULATIVE_BUDGET_EXHAUSTION') {
+    return {
+      success: false,
+      threatType: 'CUMULATIVE_BUDGET_EXHAUSTION',
+      directive: {
+        directiveId: `dir_demo_${Date.now().toString(36)}`,
+        sourceChain: 'Solana',
+        destinationChain: 'Ethereum',
+        token: 'USDC',
+        amountUsd: 180,
+        rationale: '[CONTROLLED_TEST] Large order exceeding cumulative remaining session budget cap.',
+        estimatedGasUsd: 0.05,
+        destinationAddress: '0x71c8...vanguard_vault',
+      },
+      counterparty: {
+        targetAddress: '0x71c8...vanguard_vault',
+        overallStatus: 'ALLOW',
+        riskScore: 0,
+        signals: [],
+        requiresHumanApproval: false,
+        reason: 'Authorized vault address.',
+      },
+      attestation: {
+        enclaveId: 'tdx-vanguard-0x9f2a',
+        pcr0: '8a9c3d4e7f1b2a0c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c',
+        tdxQuote: 'AgAAAAAAAADAAAAAAQAAAFq7iP3...tdx_quote_sha256_e7d2b4f9c1a0e8d3c5b7',
+        signingKeyDigest: 'ed25519:6h2N4hB...78yVvM8zK2',
+        clientNonce: nonce,
+        quoteReportDataNonce: nonce,
+        verified: true,
+        isSimulated: true,
+        simulationReason: 'Cached offline demo fallback.',
+        generatedAt: timestamp,
+        verificationChecks: [
+          { id: 'check-root-ca', title: 'Intel Root CA Signature Chain', passed: true, detail: 'Verified.' },
+          { id: 'check-nonce-freshness', title: 'Attestation Nonce Match', passed: true, detail: 'Fresh nonce.' },
+          { id: 'check-mrtd-pcr0', title: 'MRTD / PCR0 Measurement', passed: true, detail: 'Code verified.' },
+          { id: 'check-tcb-status', title: 'TCB Status', passed: true, detail: 'Up to date.' },
+        ],
+      },
+      policyResult: {
+        approved: false,
+        responsibleLayer: 'POLICY_ENGINE',
+        blockReasonHeadline: 'Session budget allowance exhausted',
+        blockReasonDetail: 'Order of $180.00 exhausts remaining session budget allowance ($50.00 remaining).',
+        rules: [
+          {
+            ruleId: 'CUMULATIVE_BUDGET_CAP',
+            ruleName: 'Cumulative Session Budget Accounting',
+            layer: 'POLICY_ENGINE',
+            passed: false,
+            headline: 'Session budget allowance exhausted',
+            message: 'Order of $180.00 exceeds remaining budget of $50.00.',
+          },
+        ],
+        updatedSpentInSessionUsd: 150,
+        remainingBudgetUsd: 50,
+        evaluatedAt: timestamp,
+      },
+      settlement: null,
+      ledgerEntry: null,
+      steps: [],
+      totalLatencyMs: 350,
+      redactedGoal: 'Swap 180 ████ across chains in a single transaction',
+    };
+  }
+
+  if (threatType === 'STALE_ATTESTATION_NONCE') {
+    return {
+      success: false,
+      threatType: 'STALE_ATTESTATION_NONCE',
+      directive: {
+        directiveId: `dir_demo_${Date.now().toString(36)}`,
+        sourceChain: 'Solana',
+        destinationChain: 'Ethereum',
+        token: 'USDC',
+        amountUsd: 25,
+        rationale: '[CONTROLLED_TEST] Adversary submitted expired attestation quote nonce.',
+        estimatedGasUsd: 0.05,
+        destinationAddress: '0x71c8...vanguard_vault',
+      },
+      counterparty: {
+        targetAddress: '0x71c8...vanguard_vault',
+        overallStatus: 'ALLOW',
+        riskScore: 0,
+        signals: [],
+        requiresHumanApproval: false,
+        reason: 'Authorized vault address.',
+      },
+      attestation: {
+        enclaveId: 'tdx-vanguard-0x9f2a',
+        pcr0: '8a9c3d4e7f1b2a0c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c',
+        tdxQuote: 'AgAAAAAAAADAAAAAAQAAAFq7iP3...tdx_quote_sha256_e7d2b4f9c1a0e8d3c5b7',
+        signingKeyDigest: 'ed25519:6h2N4hB...78yVvM8zK2',
+        clientNonce: nonce,
+        quoteReportDataNonce: '0xdeadbeef00000000000000000000000000000000000000000000000000000000',
+        verified: false,
+        isSimulated: true,
+        simulationReason: 'Replay attacker submitted expired nonce in quote data.',
+        generatedAt: timestamp,
+        verificationChecks: [
+          { id: 'check-root-ca', title: 'Intel Root CA Signature Chain', passed: true, detail: 'Verified.' },
+          { id: 'check-nonce-freshness', title: 'Attestation Nonce Match', passed: false, detail: 'Nonce mismatch.' },
+          { id: 'check-mrtd-pcr0', title: 'MRTD / PCR0 Measurement', passed: true, detail: 'Code verified.' },
+          { id: 'check-tcb-status', title: 'TCB Status', passed: true, detail: 'Up to date.' },
+        ],
+      },
+      policyResult: {
+        approved: false,
+        responsibleLayer: 'TEE_ATTESTATION_VERIFIER',
+        blockReasonHeadline: 'Attestation freshness verification failed',
+        blockReasonDetail: 'Attestation verifier rejected quote: client fresh nonce does not match quote report data (Replay Attack Deflected).',
+        rules: [],
+        updatedSpentInSessionUsd: 0,
+        remainingBudgetUsd: 200,
+        evaluatedAt: timestamp,
+      },
+      settlement: null,
+      ledgerEntry: null,
+      steps: [],
+      totalLatencyMs: 380,
+      redactedGoal: 'Execute transfer using replayed signed quote payload with cached nonce',
+    };
+  }
+
+  if (threatType === 'DUPLICATE_DIRECTIVE_REPLAY') {
+    return {
+      success: false,
+      threatType: 'DUPLICATE_DIRECTIVE_REPLAY',
+      directive: {
+        directiveId: 'dir_prev_executed_0x9a',
+        sourceChain: 'Solana',
+        destinationChain: 'Ethereum',
+        token: 'USDC',
+        amountUsd: 25,
+        rationale: '[CONTROLLED_TEST: DUPLICATE_DIRECTIVE_REPLAY] Re-submitting previously settled directive ID to test idempotency.',
+        estimatedGasUsd: 0.05,
+        destinationAddress: '0x71c8...vanguard_vault',
+      },
+      counterparty: {
+        targetAddress: '0x71c8...vanguard_vault',
+        overallStatus: 'ALLOW',
+        riskScore: 0,
+        signals: [],
+        requiresHumanApproval: false,
+        reason: 'Authorized vault address.',
+      },
+      attestation: {
+        enclaveId: 'tdx-vanguard-0x9f2a',
+        pcr0: '8a9c3d4e7f1b2a0c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c',
+        tdxQuote: 'AgAAAAAAAADAAAAAAQAAAFq7iP3...tdx_quote_sha256_e7d2b4f9c1a0e8d3c5b7',
+        signingKeyDigest: 'ed25519:6h2N4hB...78yVvM8zK2',
+        clientNonce: nonce,
+        quoteReportDataNonce: nonce,
+        verified: true,
+        isSimulated: true,
+        simulationReason: 'Cached offline demo fallback.',
+        generatedAt: timestamp,
+        verificationChecks: [
+          { id: 'check-root-ca', title: 'Intel Root CA Signature Chain', passed: true, detail: 'Verified.' },
+          { id: 'check-nonce-freshness', title: 'Attestation Nonce Match', passed: true, detail: 'Fresh nonce.' },
+          { id: 'check-mrtd-pcr0', title: 'MRTD / PCR0 Measurement', passed: true, detail: 'Code verified.' },
+          { id: 'check-tcb-status', title: 'TCB Status', passed: true, detail: 'Up to date.' },
+        ],
+      },
+      policyResult: {
+        approved: false,
+        responsibleLayer: 'EXECUTION_COORDINATOR',
+        blockReasonHeadline: 'Duplicate execution directive rejected',
+        blockReasonDetail: 'Directive [dir_prev_executed_0x9a] was previously executed. Execution coordinator blocked double-spend replay.',
+        rules: [
+          {
+            ruleId: 'IDEMPOTENCY_DUPLICATE_CHECK',
+            ruleName: 'Execution-Level Idempotency Guard',
+            layer: 'EXECUTION_COORDINATOR',
+            passed: false,
+            headline: 'Duplicate execution directive rejected',
+            message: 'Directive [dir_prev_executed_0x9a] was previously executed. Double-spend replay blocked.',
+          },
+        ],
+        updatedSpentInSessionUsd: 0,
+        remainingBudgetUsd: 200,
+        evaluatedAt: timestamp,
+      },
+      settlement: null,
+      ledgerEntry: null,
+      steps: [],
+      totalLatencyMs: 420,
+      redactedGoal: 'Replay directive dir_prev_executed_0x9a to duplicate previous swap volume',
+    };
+  }
+
   // Default: Successful Legitimate Rebalance
   const directive: ExecutionDirective = {
     directiveId: `dir_demo_${Date.now().toString(36)}`,
@@ -446,6 +638,54 @@ export function generateDemoEventSequence(
       detail: 'Hardware quote report data matched fresh 32-byte client nonce.',
     },
   });
+
+  // Execution Layer Check: Idempotency / Double-Spend Replay Guard
+  if (
+    response.threatType === 'DUPLICATE_DIRECTIVE_REPLAY' ||
+    response.policyResult?.responsibleLayer === 'EXECUTION_COORDINATOR'
+  ) {
+    events.push({
+      type: 'STAGE_CHANGE',
+      timestamp: now + 1350,
+      payload: { stage: 'blocked' },
+    });
+
+    events.push({
+      type: 'GATE_RESOLVED',
+      timestamp: now + 1450,
+      payload: {
+        gateId: 'nonce',
+        passed: false,
+        headline: 'Double-Spend Directive Replay Rejected',
+        detail:
+          'Adversary attempted replay of previously settled directive [dir_prev_executed_0x9a]. Execution coordinator blocked settlement.',
+        responsibleLayer: 'EXECUTION_COORDINATOR',
+      },
+    });
+    return events;
+  }
+
+  // Any other policy block after gates:
+  if (!response.policyResult?.approved || !response.settlement) {
+    events.push({
+      type: 'STAGE_CHANGE',
+      timestamp: now + 1350,
+      payload: { stage: 'blocked' },
+    });
+
+    events.push({
+      type: 'GATE_RESOLVED',
+      timestamp: now + 1450,
+      payload: {
+        gateId: 'nonce',
+        passed: false,
+        headline: response.policyResult?.blockReasonHeadline || 'Transaction Blocked by Guardrails',
+        detail: response.policyResult?.blockReasonDetail || 'Transaction could not be executed within safety bounds.',
+        responsibleLayer: response.policyResult?.responsibleLayer || 'POLICY_ENGINE',
+      },
+    });
+    return events;
+  }
 
   // Settlement & Completion
   if (response.settlement && response.directive) {
