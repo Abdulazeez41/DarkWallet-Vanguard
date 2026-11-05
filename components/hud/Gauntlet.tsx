@@ -174,7 +174,7 @@ export function Gauntlet() {
                 className={`w-full py-2.5 px-4 rounded-xl font-mono text-xs sm:text-sm font-black border transition-all flex items-center justify-center gap-2 ${
                   isCurrent
                     ? 'bg-block border-block text-white animate-pulse'
-                    : 'bg-ink hover:bg-block hover:border-block text-white border-ink shadow-sm active:scale-95'
+                    : 'bg-ink hover:bg-block hover:border-block text-void border-ink shadow-sm active:scale-95'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 <span>{isCurrent ? 'ATTACKING VAULT...' : 'LAUNCH ATTACK SCENARIO →'}</span>

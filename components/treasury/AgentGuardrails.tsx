@@ -153,7 +153,7 @@ export function AgentGuardrails() {
                   disabled={isRunning}
                   className={`flex-1 font-mono text-xs sm:text-sm font-bold py-1.5 rounded-full border transition-all ${
                     policy.maxUsdPerTx === val
-                      ? 'bg-ink text-white border-ink shadow-xs'
+                      ? 'bg-ink text-void border-ink shadow-xs'
                       : 'bg-panel border-line text-mute hover:text-ink'
                   }`}
                 >

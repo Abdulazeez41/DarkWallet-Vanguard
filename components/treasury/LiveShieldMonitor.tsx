@@ -33,6 +33,10 @@ export function LiveShieldMonitor() {
   const settlement = useVaultStore((s) => s.settlement);
   const directive = useVaultStore((s) => s.directive);
   const gateReason = useVaultStore((s) => s.gateReason);
+  const cameraFocus = useVaultStore((s) => s.cameraFocus);
+  const setCameraFocus = useVaultStore((s) => s.setCameraFocus);
+  const isStageExpanded = useVaultStore((s) => s.isStageExpanded);
+  const toggleStageExpanded = useVaultStore((s) => s.toggleStageExpanded);
 
   const isBlocked = stage === 'blocked' || Boolean(gateReason);
 
@@ -68,86 +72,106 @@ export function LiveShieldMonitor() {
           </p>
         </div>
 
-        {/* Tab Switcher for Right Panel (Calm Rounded Pill Bar) */}
-        <div className="flex items-center gap-1.5 p-1 bg-panel2 rounded-full border border-line">
+        {/* Tab Switcher for Right Panel & Panoramic Expand */}
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => {
               soundFx.playStepTick();
-              setActiveSubTab('terminal');
+              toggleStageExpanded();
             }}
-            className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all ${
-              activeSubTab === 'terminal'
-                ? 'bg-ink text-white shadow-xs font-semibold'
-                : 'text-mute hover:text-ink'
-            }`}
+            className="font-mono text-xs sm:text-sm font-medium px-3.5 py-1.5 rounded-full border border-line bg-panel2 hover:border-ink/40 text-ink transition-all flex items-center gap-1.5 shadow-xs"
+            title={isStageExpanded ? "Switch to Split View" : "Expand 3D Stage Full Width"}
           >
-            Live Logs
+            <span>{isStageExpanded ? "⇲ Split View" : "⛶ Panoramic"}</span>
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              soundFx.playStepTick();
-              setActiveSubTab('simulator');
-            }}
-            className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all ${
-              activeSubTab === 'simulator'
-                ? 'bg-block text-white shadow-xs font-semibold'
-                : 'text-mute hover:text-ink'
-            }`}
-          >
-            Attack Simulator
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              soundFx.playStepTick();
-              setActiveSubTab('receipt');
-            }}
-            className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all ${
-              activeSubTab === 'receipt'
-                ? 'bg-pass text-white shadow-xs font-semibold'
-                : 'text-mute hover:text-ink'
-            }`}
-          >
-            Receipt
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              soundFx.playStepTick();
-              setActiveSubTab('sdk');
-            }}
-            className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
-              activeSubTab === 'sdk'
-                ? 'bg-enclave text-white shadow-xs font-semibold'
-                : 'text-mute hover:text-ink'
-            }`}
-          >
-            <span>Developer SDK</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-enclave/20 text-enclave border border-enclave/40 font-bold uppercase">SDK</span>
-          </button>
+
+          <div className="flex items-center gap-1.5 p-1 bg-panel2 rounded-full border border-line">
+            <button
+              type="button"
+              onClick={() => {
+                soundFx.playStepTick();
+                setActiveSubTab('terminal');
+              }}
+              className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all ${
+                activeSubTab === 'terminal'
+                  ? 'bg-ink text-void shadow-xs font-semibold'
+                  : 'text-mute hover:text-ink'
+              }`}
+            >
+              Live Logs
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                soundFx.playStepTick();
+                setActiveSubTab('simulator');
+              }}
+              className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all ${
+                activeSubTab === 'simulator'
+                  ? 'bg-block text-white shadow-xs font-semibold'
+                  : 'text-mute hover:text-ink'
+              }`}
+            >
+              Attack Simulator
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                soundFx.playStepTick();
+                setActiveSubTab('receipt');
+              }}
+              className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all ${
+                activeSubTab === 'receipt'
+                  ? 'bg-pass text-white shadow-xs font-semibold'
+                  : 'text-mute hover:text-ink'
+              }`}
+            >
+              Receipt
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                soundFx.playStepTick();
+                setActiveSubTab('sdk');
+              }}
+              className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
+                activeSubTab === 'sdk'
+                  ? 'bg-enclave text-white shadow-xs font-semibold'
+                  : 'text-mute hover:text-ink'
+              }`}
+            >
+              <span>Developer SDK</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-enclave/20 text-enclave border border-enclave/40 font-bold uppercase">SDK</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Main Grid: Left 3D Viewport / Right Tabbed Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* Left Column: 3D Live Shield Monitor (7 cols) */}
-        <div className="lg:col-span-7 flex flex-col space-y-3.5">
-          <div className="relative w-full h-[400px] sm:h-[440px] rounded-3xl border border-line bg-[#1E1917] overflow-hidden shadow-inner">
+      <div className={`grid grid-cols-1 ${isStageExpanded ? 'lg:grid-cols-12 gap-8' : 'lg:grid-cols-12 gap-6'} items-stretch`}>
+        {/* 3D Live Shield Monitor Column */}
+        <div className={`${isStageExpanded ? 'lg:col-span-12' : 'lg:col-span-7 xl:col-span-8'} flex flex-col space-y-3.5`}>
+          <div
+            className={`relative w-full rounded-3xl border border-line bg-[#141110] overflow-hidden shadow-inner transition-all duration-300 ${
+              isStageExpanded
+                ? 'h-[520px] sm:h-[580px] lg:h-[620px]'
+                : 'h-[460px] sm:h-[500px] lg:h-[540px]'
+            }`}
+          >
             <VaultCanvas />
 
-            {/* In-Scene Top Overlay (Calm Rounded Pill) */}
+            {/* In-Scene Top Left: Enclave Status Pill */}
             <div className="absolute top-4 left-4 pointer-events-none z-10 flex items-center gap-2">
-              <div className="bg-[#1E1917]/90 backdrop-blur-md border border-[#3A332E] rounded-full px-3.5 py-1.5 font-mono text-xs text-white font-medium flex items-center gap-2 shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-enclave" />
+              <div className="bg-[#141110]/90 backdrop-blur-md border border-[#2E2521] rounded-full px-3.5 py-1.5 font-mono text-xs text-white font-medium flex items-center gap-2 shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-enclave animate-pulse" />
                 <span>Intel TDX Enclave</span>
               </div>
             </div>
 
-            {/* In-Scene Status Pill (Calm Rounded Capsule) */}
+            {/* In-Scene Top Right: Security Pipeline Status */}
             <div className="absolute top-4 right-4 pointer-events-none z-10 flex items-center gap-2">
-              <div className="bg-[#1E1917]/90 backdrop-blur-md border border-[#3A332E] rounded-full px-3.5 py-1.5 flex items-center gap-2 font-mono text-xs text-white font-medium shadow-xs">
+              <div className="bg-[#141110]/90 backdrop-blur-md border border-[#2E2521] rounded-full px-3.5 py-1.5 flex items-center gap-2 font-mono text-xs text-white font-medium shadow-xs">
                 <span
                   className={`w-2 h-2 rounded-full ${
                     stage === 'blocked'
@@ -163,7 +187,71 @@ export function LiveShieldMonitor() {
               </div>
             </div>
 
-            {/* In-Scene Bottom Attestation & MPC Keys Links */}
+            {/* In-Scene Bottom Left: Interactive Camera Focal Presets */}
+            <div className="absolute bottom-4 left-4 z-10 flex items-center gap-1.5 bg-[#141110]/90 backdrop-blur-md border border-[#2E2521] rounded-full p-1 shadow-md">
+              <button
+                type="button"
+                onClick={() => {
+                  soundFx.playStepTick();
+                  setCameraFocus('all');
+                }}
+                className={`font-mono text-[11px] px-3 py-1 rounded-full transition-all ${
+                  cameraFocus === 'all'
+                    ? 'bg-ink text-void font-bold shadow-xs'
+                    : 'text-mute hover:text-white'
+                }`}
+                title="Fit full pipeline (Enclave, Gates, Multi-Chain settlement rails)"
+              >
+                👁️ Full View
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  soundFx.playStepTick();
+                  setCameraFocus('enclave');
+                }}
+                className={`font-mono text-[11px] px-3 py-1 rounded-full transition-all ${
+                  cameraFocus === 'enclave'
+                    ? 'bg-enclave text-white font-bold shadow-xs'
+                    : 'text-mute hover:text-white'
+                }`}
+                title="Zoom into Intel TDX Hardware Enclave"
+              >
+                🛡️ Enclave
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  soundFx.playStepTick();
+                  setCameraFocus('gates');
+                }}
+                className={`font-mono text-[11px] px-3 py-1 rounded-full transition-all ${
+                  cameraFocus === 'gates'
+                    ? 'bg-warn text-white font-bold shadow-xs'
+                    : 'text-mute hover:text-white'
+                }`}
+                title="Zoom into 3 Policy Evaluation Gates"
+              >
+                ⚡ Gates
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  soundFx.playStepTick();
+                  setCameraFocus('chains');
+                }}
+                className={`font-mono text-[11px] px-3 py-1 rounded-full transition-all ${
+                  cameraFocus === 'chains'
+                    ? 'bg-pass text-white font-bold shadow-xs'
+                    : 'text-mute hover:text-white'
+                }`}
+                title="Zoom into Multi-Chain Settlement Rails (BTC, ETH, SOL, NEAR)"
+              >
+                🌐 Chains
+              </button>
+            </div>
+
+            {/* In-Scene Bottom Right: Attestation & MPC Keys Links */}
             <div className="absolute bottom-4 right-4 z-10 flex items-center gap-2">
               <button
                 type="button"
@@ -171,7 +259,7 @@ export function LiveShieldMonitor() {
                   soundFx.playStepTick();
                   setMpcModalOpen(true);
                 }}
-                className="bg-[#1E1917]/90 backdrop-blur-md border border-[#3A332E] hover:border-enclave rounded-full px-3.5 py-1.5 font-mono text-xs text-white hover:text-enclave font-medium shadow-xs transition-all active:scale-95 flex items-center gap-1.5"
+                className="bg-[#141110]/90 backdrop-blur-md border border-[#2E2521] hover:border-enclave rounded-full px-3.5 py-1.5 font-mono text-xs text-white hover:text-enclave font-medium shadow-xs transition-all active:scale-95 flex items-center gap-1.5"
                 title="Inspect NEAR Chain Signatures MPC Derivation"
               >
                 <span>NEAR MPC Keys</span>
@@ -184,7 +272,7 @@ export function LiveShieldMonitor() {
                   soundFx.playStepTick();
                   setProofModalOpen(true);
                 }}
-                className="bg-[#1E1917]/90 backdrop-blur-md border border-[#3A332E] hover:border-enclave rounded-full px-3.5 py-1.5 font-mono text-xs text-enclave font-medium shadow-xs transition-all active:scale-95 flex items-center gap-1.5"
+                className="bg-[#141110]/90 backdrop-blur-md border border-[#2E2521] hover:border-enclave rounded-full px-3.5 py-1.5 font-mono text-xs text-enclave font-medium shadow-xs transition-all active:scale-95 flex items-center gap-1.5"
               >
                 <span>Inspect Attestation</span>
                 <span>↗</span>
@@ -229,8 +317,8 @@ export function LiveShieldMonitor() {
           </div>
         </div>
 
-        {/* Right Column: Tabbed Activity View (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col min-h-[440px]">
+        {/* Right Column: Tabbed Activity View */}
+        <div className={`${isStageExpanded ? 'lg:col-span-12' : 'lg:col-span-5 xl:col-span-4'} flex flex-col min-h-[440px]`}>
           {activeSubTab === 'terminal' && (
             <div className="flex-1 flex flex-col">
               <Terminal />

@@ -26,7 +26,10 @@ export function TopBar() {
   const setGuideModalOpen = useVaultStore((s) => s.setGuideModalOpen);
   const walletConnected = useVaultStore((s) => s.walletConnected);
   const walletAddress = useVaultStore((s) => s.walletAddress);
+  const walletProvider = useVaultStore((s) => s.walletProvider);
   const setWalletModalOpen = useVaultStore((s) => s.setWalletModalOpen);
+  const theme = useVaultStore((s) => s.theme);
+  const toggleTheme = useVaultStore((s) => s.toggleTheme);
 
   const handleToggleDaemon = () => {
     soundFx.playStepTick();
@@ -43,7 +46,7 @@ export function TopBar() {
       <div className="w-full max-w-[1720px] mx-auto flex items-center justify-between">
         {/* Brand & Hardware Trust */}
         <div className="flex items-center gap-3.5">
-          <div className="w-9 h-9 rounded-2xl bg-ink text-white flex items-center justify-center font-mono text-sm font-black shadow-xs">
+          <div className="w-9 h-9 rounded-2xl bg-ink text-void flex items-center justify-center font-mono text-sm font-black shadow-xs">
             DV
           </div>
           <div>
@@ -62,28 +65,52 @@ export function TopBar() {
         </div>
 
         {/* Action Controls & Wallet Connection */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* NEAR Wallet Connection Pill */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Prominent NEAR Cloud & Web3 Wallet Connection Pill */}
           <button
             onClick={() => {
               soundFx.playStepTick();
               setWalletModalOpen(true);
             }}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-line bg-panel2 hover:border-ink/40 text-xs sm:text-sm font-mono text-ink transition-all shadow-xs active:scale-95"
-            title="Inspect Connected NEAR Account & Function-Call Keys"
+            className={`flex items-center gap-2.5 px-4 py-2 rounded-full border transition-all shadow-xs active:scale-95 font-mono text-xs sm:text-sm font-medium ${
+              walletConnected
+                ? 'border-pass/40 bg-pass/10 hover:bg-pass/15 text-ink'
+                : 'border-enclave/60 bg-enclave/10 hover:bg-enclave/20 text-ink font-semibold animate-pulse'
+            }`}
+            title="Connect or Inspect NEAR Cloud Wallet (FastAuth) / Web3 Normal Wallet"
           >
-            <NearLogo size={16} />
-            <span className="font-medium hidden sm:inline">
-              {walletConnected ? walletAddress : 'Connect Wallet'}
-            </span>
-            <span className="font-medium sm:hidden">
-              {walletConnected ? 'NEAR' : 'Connect'}
-            </span>
-            <span
-              className={`w-2 h-2 rounded-full ${
-                walletConnected ? 'bg-pass' : 'bg-mute'
-              }`}
-            />
+            <NearLogo size={17} />
+            <div className="flex items-center gap-2">
+              {walletConnected ? (
+                <>
+                  <span className="font-bold text-ink">{walletAddress}</span>
+                  <span className="hidden md:inline-block text-[11px] px-2 py-0.2 rounded-full bg-panel2 border border-line text-mute">
+                    {walletProvider || 'Cloud FastAuth'}
+                  </span>
+                  <span className="w-2 h-2 rounded-full bg-pass" />
+                </>
+              ) : (
+                <>
+                  <span className="font-bold text-ink">Connect Wallet</span>
+                  <span className="hidden md:inline-block text-[11px] text-mute">
+                    (Cloud / Web3)
+                  </span>
+                  <span className="w-2 h-2 rounded-full bg-enclave" />
+                </>
+              )}
+            </div>
+          </button>
+
+          {/* Dark / Cream Theme Switcher Button */}
+          <button
+            onClick={() => {
+              soundFx.playStepTick();
+              toggleTheme();
+            }}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-line bg-panel hover:bg-panel2 text-xs font-mono text-ink transition-all shadow-xs active:scale-95"
+            title={`Switch to ${theme === 'dark' ? 'Cream' : 'Dark'} Mode`}
+          >
+            <span>{theme === 'dark' ? '🌙 Dark' : '☀️ Cream'}</span>
           </button>
 
           {/* Interactive Guide Tour Button */}

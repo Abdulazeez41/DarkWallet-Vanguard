@@ -21,7 +21,7 @@ import { EnclaveCore } from './EnclaveCore';
 import { PolicyGates } from './PolicyGates';
 import { Packet } from './Packet';
 import { ChainNodes } from './ChainNodes';
-import { ORIGIN_INTENT_X, GATE_X_COORDS } from '@/lib/store';
+import { ORIGIN_INTENT_X, GATE_X_COORDS, useVaultStore } from '@/lib/store';
 
 function PipelineBackbone() {
   return (
@@ -44,14 +44,20 @@ function PipelineBackbone() {
 }
 
 export function VaultScene() {
+  const theme = useVaultStore((s) => s.theme);
+  const bgColor = theme === 'dark' ? '#0E0C0B' : '#181512';
+
   return (
-    <div className="relative w-full h-full min-h-[460px] bg-[#181512] overflow-hidden select-none">
+    <div
+      className="relative w-full h-full min-h-[460px] overflow-hidden select-none"
+      style={{ backgroundColor: bgColor }}
+    >
       <Canvas
-        camera={{ position: [0, 0, 8.5], fov: 44 }}
+        camera={{ position: [1.1, 0, 12], fov: 44 }}
         gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
         dpr={[1, 1.5]}
       >
-        <color attach="background" args={['#181512']} />
+        <color attach="background" args={[bgColor]} />
 
         <Suspense fallback={null}>
           <CameraRig />

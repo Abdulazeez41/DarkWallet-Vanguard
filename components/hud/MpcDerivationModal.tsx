@@ -185,7 +185,7 @@ export function MpcDerivationModal() {
                   onClick={() => setSelectedChain(chain)}
                   className={`px-2.5 py-0.5 rounded-full text-xs font-medium border transition-all ${
                     selectedChain === chain
-                      ? 'bg-ink text-white border-ink'
+                      ? 'bg-ink text-void border-ink'
                       : 'bg-panel border-line text-mute hover:text-ink'
                   }`}
                 >
@@ -232,7 +232,7 @@ export function MpcDerivationModal() {
               soundFx.playStepTick();
               setMpcModalOpen(false);
             }}
-            className="font-mono text-xs font-bold px-6 py-2.5 rounded-full bg-ink hover:bg-black text-white shadow-xs transition-all"
+            className="font-mono text-xs font-bold px-6 py-2.5 rounded-full bg-ink hover:opacity-90 text-void shadow-xs transition-all"
           >
             Done
           </button>

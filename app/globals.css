@@ -5,17 +5,61 @@
 :root {
   --background: #FAF7F2;
   --foreground: #221E1C;
+  --void: #FAF7F2;          /* Cream Filling Base */
+  --panel: #FFFFFF;         /* Warm Porcelain Card */
+  --panel2: #F2ECE2;        /* Warm Oat Ash Subsurface / Pill */
+  --line: #DDD4C7;          /* Soft Oreo Ash Crumb Border */
+  --ink: #221E1C;           /* Deep Oreo Cocoa Ash Primary Text */
+  --mute: #766C63;          /* Refined Cocoa Ash Secondary Text */
+  --pass: #256B44;          /* Natural Forest Green */
+  --warn: #BD761C;          /* Warm Honey Amber */
+  --block: #B23D3D;         /* Coral Crimson Alert */
+  --enclave: #B86A2E;       /* Salted Caramel Bronze */
+  --brand-dark: #221E1C;
+  --paper: #FDFBF7;
+  --paper-ink: #1E1E1E;
+  --scene-bg: #181512;
+  --scene-box: #1E1917;
+  --scene-border: #3A332E;
+  --scrollbar-track: #F2ECE2;
+  --scrollbar-thumb: #D5CBBF;
+  --scrollbar-thumb-hover: #B86A2E;
   --font-grotesk: 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 }
 
+[data-theme='dark'] {
+  --background: #0E0C0B;
+  --foreground: #F5EFEB;
+  --void: #0E0C0B;          /* Deep Obsidian Cocoa Base */
+  --panel: #181412;         /* Warm Roasted Dark Chocolate Card */
+  --panel2: #241E1A;        /* Dark Roasted Cocoa Ash Subsurface / Pill */
+  --line: #362D28;          /* Subtle Warm Cocoa Ash Border */
+  --ink: #F5EFEB;           /* Crisp Warm Milk Foam Primary Text */
+  --mute: #A3968C;          /* Soft Warm Biscuit Secondary Text */
+  --pass: #34D399;          /* Vivid Emerald Green */
+  --warn: #F59E0B;          /* Radiant Honey Amber */
+  --block: #F87171;         /* Crisp Coral Red Alert */
+  --enclave: #F59E0B;       /* Warm Honey Caramel / Enclave Gold */
+  --brand-dark: #0E0C0B;
+  --paper: #181412;
+  --paper-ink: #F5EFEB;
+  --scene-bg: #0E0C0B;
+  --scene-box: #141110;
+  --scene-border: #2E2521;
+  --scrollbar-track: #181412;
+  --scrollbar-thumb: #362D28;
+  --scrollbar-thumb-hover: #F59E0B;
+}
+
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--ink);
+  background: var(--void);
+  transition: background-color 0.25s ease, color 0.25s ease;
   background-image:
-    radial-gradient(at 0% 0%, rgba(184, 106, 46, 0.04) 0px, transparent 55%),
-    radial-gradient(at 100% 0%, rgba(37, 107, 68, 0.03) 0px, transparent 55%),
-    radial-gradient(at 50% 50%, rgba(189, 118, 28, 0.02) 0px, transparent 65%);
+    radial-gradient(at 0% 0%, rgba(184, 106, 46, 0.05) 0px, transparent 55%),
+    radial-gradient(at 100% 0%, rgba(37, 107, 68, 0.04) 0px, transparent 55%),
+    radial-gradient(at 50% 50%, rgba(189, 118, 28, 0.03) 0px, transparent 65%);
   background-attachment: fixed;
   font-family: var(--font-grotesk);
   -webkit-font-smoothing: antialiased;
@@ -35,16 +79,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F2ECE2;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D5CBBF;
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #B86A2E;
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Accessibility: respect prefers-reduced-motion */

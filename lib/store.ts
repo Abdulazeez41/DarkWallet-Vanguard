@@ -78,10 +78,17 @@ export interface VaultState {
     totalRuns: number;
   };
 
+  // Theme & 3D Stage Settings
+  theme: 'dark' | 'cream';
+  cameraFocus: 'all' | 'enclave' | 'gates' | 'chains';
+  isStageExpanded: boolean;
+
   // UI Overlays & Wallet State
   walletConnected: boolean;
   walletAddress: string;
   agentAddress: string;
+  walletType: 'cloud' | 'web3' | 'demo' | null;
+  walletProvider: string;
   isWalletModalOpen: boolean;
   isMpcModalOpen: boolean;
   isProofModalOpen: boolean;
@@ -90,6 +97,12 @@ export interface VaultState {
   receiptVisible: boolean;
 
   // Actions
+  toggleTheme: () => void;
+  setTheme: (theme: 'dark' | 'cream') => void;
+  setCameraFocus: (focus: 'all' | 'enclave' | 'gates' | 'chains') => void;
+  toggleStageExpanded: () => void;
+  connectWallet: (type: 'cloud' | 'web3' | 'demo', address?: string, provider?: string) => void;
+  disconnectWallet: () => void;
   toggleWallet: () => void;
   setWalletModalOpen: (open: boolean) => void;
   setMpcModalOpen: (open: boolean) => void;
@@ -186,9 +199,17 @@ export const useVaultStore = create<VaultState>((set, get) => ({
     totalRuns: 16,
   },
 
+  // Theme & 3D Camera Focus
+  theme: 'dark',
+  cameraFocus: 'all',
+  isStageExpanded: false,
+
+  // Account & Custody State
   walletConnected: true,
   walletAddress: 'operator.near',
   agentAddress: 'vanguard-agent.near',
+  walletType: 'cloud',
+  walletProvider: 'NEAR FastAuth Cloud',
   isWalletModalOpen: false,
   isMpcModalOpen: false,
   isProofModalOpen: false,
@@ -196,7 +217,49 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   isGuideModalOpen: false,
   receiptVisible: false,
 
-  toggleWallet: () => set((state) => ({ walletConnected: !state.walletConnected })),
+  toggleTheme: () =>
+    set((state) => {
+      const nextTheme = state.theme === 'dark' ? 'cream' : 'dark';
+      if (typeof document !== 'undefined') {
+        document.documentElement.setAttribute('data-theme', nextTheme);
+      }
+      return { theme: nextTheme };
+    }),
+
+  setTheme: (theme) => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    set({ theme });
+  },
+
+  setCameraFocus: (cameraFocus) => set({ cameraFocus }),
+
+  toggleStageExpanded: () => set((state) => ({ isStageExpanded: !state.isStageExpanded })),
+
+  connectWallet: (type, address = 'operator.near', provider = 'NEAR FastAuth Cloud') =>
+    set({
+      walletConnected: true,
+      walletType: type,
+      walletAddress: address,
+      walletProvider: provider,
+    }),
+
+  disconnectWallet: () =>
+    set({
+      walletConnected: false,
+      walletType: null,
+      walletAddress: 'disconnected.near',
+      walletProvider: 'None',
+    }),
+
+  toggleWallet: () =>
+    set((state) => ({
+      walletConnected: !state.walletConnected,
+      walletAddress: state.walletConnected ? 'disconnected.near' : 'operator.near',
+      walletType: state.walletConnected ? null : 'cloud',
+      walletProvider: state.walletConnected ? 'None' : 'NEAR FastAuth Cloud',
+    })),
   setWalletModalOpen: (isWalletModalOpen) => set({ isWalletModalOpen }),
   setMpcModalOpen: (isMpcModalOpen) => set({ isMpcModalOpen }),
   setStage: (stage) => set({ stage }),

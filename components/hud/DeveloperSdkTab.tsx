@@ -153,7 +153,7 @@ ${policy.tokenWhitelist.map((t) => `    - "${t}"`).join('\n')}
                 }}
                 className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition-all ${
                   activeLang === lang
-                    ? 'bg-ink text-white shadow-xs'
+                    ? 'bg-ink text-void shadow-xs'
                     : 'text-mute hover:text-ink'
                 }`}
               >
@@ -181,7 +181,7 @@ ${policy.tokenWhitelist.map((t) => `    - "${t}"`).join('\n')}
         <button
           type="button"
           onClick={handleCopy}
-          className="font-mono text-xs font-bold px-5 py-2 rounded-full bg-ink hover:bg-black text-white shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2"
+          className="font-mono text-xs font-bold px-5 py-2 rounded-full bg-ink hover:opacity-90 text-void shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2"
         >
           <span>{copied ? '✓ Copied to Clipboard' : 'Copy SDK Snippet'}</span>
         </button>

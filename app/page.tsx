@@ -34,12 +34,16 @@ export default function VaultRoomPage() {
   const daemonActive = useVaultStore((s) => s.daemonActive);
   const policy = useVaultStore((s) => s.policy);
   const addLog = useVaultStore((s) => s.addLog);
+  const theme = useVaultStore((s) => s.theme);
 
   const daemonTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+  }, [theme]);
 
   // Autonomous Daemon loop (Track 04 Autonomous Rebalance)
   useEffect(() => {

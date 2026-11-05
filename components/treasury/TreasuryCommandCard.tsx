@@ -81,6 +81,10 @@ export function TreasuryCommandCard() {
   const lastGoal = useVaultStore((s) => s.lastGoal);
   const stats = useVaultStore((s) => s.stats);
   const setProofModalOpen = useVaultStore((s) => s.setProofModalOpen);
+  const walletConnected = useVaultStore((s) => s.walletConnected);
+  const walletAddress = useVaultStore((s) => s.walletAddress);
+  const walletProvider = useVaultStore((s) => s.walletProvider);
+  const setWalletModalOpen = useVaultStore((s) => s.setWalletModalOpen);
 
   const [inputGoal, setInputGoal] = useState(lastGoal);
 
@@ -139,23 +143,47 @@ export function TreasuryCommandCard() {
           </p>
         </div>
 
-        {/* Calm Human Trust Capsule (Replacing AI-Generated Tech Boxes) */}
-        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-panel2 border border-line text-xs sm:text-sm font-mono text-ink shadow-xs">
-          <span className="w-2 h-2 rounded-full bg-pass shrink-0" />
-          <span className="font-medium">Hardware Shield Active</span>
-          <span className="text-mute/40">|</span>
+        {/* Account Delegation & Hardware Shield Capsules */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Prominent Connected Wallet & Signer Capsule */}
           <button
             type="button"
             onClick={() => {
               soundFx.playStepTick();
-              setProofModalOpen(true);
+              setWalletModalOpen(true);
             }}
-            className="text-xs text-mute hover:text-ink font-semibold transition-colors flex items-center gap-1 active:scale-95"
-            title="Inspect Cryptographic Intel TDX Attestation Quote"
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-panel2 border border-line hover:border-ink/40 text-xs sm:text-sm font-mono text-ink shadow-xs transition-all active:scale-95"
+            title="Inspect or Switch NEAR Cloud Wallet / Web3 Normal Wallet"
           >
-            <span>Verify proof</span>
-            <span className="text-[10px]">↗</span>
+            <NearLogo size={16} />
+            <span className="text-mute hidden sm:inline">Signer:</span>
+            <span className="font-bold text-ink">
+              {walletConnected ? walletAddress : 'Connect Wallet'}
+            </span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-panel text-mute border border-line font-medium">
+              {walletConnected ? (walletProvider || 'Cloud FastAuth') : 'Action Required'}
+            </span>
+            <span className={`w-2 h-2 rounded-full ${walletConnected ? 'bg-pass' : 'bg-warn animate-pulse'}`} />
           </button>
+
+          {/* Hardware Shield Active Capsule */}
+          <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-panel2 border border-line text-xs sm:text-sm font-mono text-ink shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-pass shrink-0" />
+            <span className="font-medium">Hardware Shield Active</span>
+            <span className="text-mute/40">|</span>
+            <button
+              type="button"
+              onClick={() => {
+                soundFx.playStepTick();
+                setProofModalOpen(true);
+              }}
+              className="text-xs text-mute hover:text-ink font-semibold transition-colors flex items-center gap-1 active:scale-95"
+              title="Inspect Cryptographic Intel TDX Attestation Quote"
+            >
+              <span>Verify proof</span>
+              <span className="text-[10px]">↗</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -258,11 +286,11 @@ export function TreasuryCommandCard() {
           <button
             type="submit"
             disabled={isRunning || !inputGoal.trim()}
-            className="font-mono text-xs sm:text-sm font-bold px-7 py-3 rounded-full bg-ink hover:bg-black text-white shadow-xs transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="font-mono text-xs sm:text-sm font-bold px-7 py-3 rounded-full bg-ink hover:opacity-90 text-void shadow-xs transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isRunning ? (
               <>
-                <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                <div className="w-3.5 h-3.5 rounded-full border-2 border-void border-t-transparent animate-spin" />
                 <span>PROCESSING...</span>
               </>
             ) : (

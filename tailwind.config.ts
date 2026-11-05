@@ -1,23 +1,27 @@
 import type { Config } from "tailwindcss";
 
 export default {
+  darkMode: ['class', '[data-theme="dark"]'],
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        void: "#FAF7F2",       // Soft Oreo Cream Filling Base
-        panel: "#FFFFFF",      // Clean Warm Porcelain Card
-        panel2: "#F2ECE2",     // Warm Oat Ash Subsurface / Pill
-        line: "#DDD4C7",       // Soft Oreo Ash Crumb Border
-        ink: "#221E1C",        // Deep Oreo Cocoa Ash Primary Text
-        mute: "#766C63",       // Refined Cocoa Ash Secondary Text
-        pass: "#256B44",       // Natural Botanical Forest Green
-        warn: "#BD761C",       // Warm Honey Amber
-        block: "#B23D3D",      // Warm Cocoa Crimson Alert
-        enclave: "#B86A2E",    // Warm Salted Caramel / Cocoa Bronze
-        brandDark: "#221E1C",  // Deep Oreo Biscuit Ash
-        paper: "#FDFBF7",
-        paperInk: "#1E1E1E",
+        void: "var(--void)",
+        panel: "var(--panel)",
+        panel2: "var(--panel2)",
+        line: "var(--line)",
+        ink: "var(--ink)",
+        mute: "var(--mute)",
+        pass: "var(--pass)",
+        warn: "var(--warn)",
+        block: "var(--block)",
+        enclave: "var(--enclave)",
+        brandDark: "var(--brand-dark)",
+        paper: "var(--paper)",
+        paperInk: "var(--paper-ink)",
+        sceneBg: "var(--scene-bg)",
+        sceneBox: "var(--scene-box)",
+        sceneBorder: "var(--scene-border)",
       },
       fontFamily: {
         display: ["var(--font-grotesk)", "system-ui", "sans-serif"],
