@@ -16,17 +16,19 @@ import { useState } from 'react';
 import { VaultCanvas } from '@/components/scene/VaultCanvas';
 import { Terminal } from '@/components/hud/Terminal';
 import { Gauntlet } from '@/components/hud/Gauntlet';
+import { DeveloperSdkTab } from '@/components/hud/DeveloperSdkTab';
 import { soundFx } from '@/components/AudioFeedback';
 import { useVaultStore } from '@/lib/store';
 import { CryptoChainIcon } from '@/components/icons/CryptoLogos';
 
 export function LiveShieldMonitor() {
-  const [activeSubTab, setActiveSubTab] = useState<'terminal' | 'simulator' | 'receipt'>('terminal');
+  const [activeSubTab, setActiveSubTab] = useState<'terminal' | 'simulator' | 'receipt' | 'sdk'>('terminal');
 
   const stage = useVaultStore((s) => s.stage);
   const gates = useVaultStore((s) => s.gates);
   const policy = useVaultStore((s) => s.policy);
   const setProofModalOpen = useVaultStore((s) => s.setProofModalOpen);
+  const setMpcModalOpen = useVaultStore((s) => s.setMpcModalOpen);
   const setReceiptVisible = useVaultStore((s) => s.setReceiptVisible);
   const settlement = useVaultStore((s) => s.settlement);
   const directive = useVaultStore((s) => s.directive);
@@ -110,6 +112,21 @@ export function LiveShieldMonitor() {
           >
             Receipt
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              soundFx.playStepTick();
+              setActiveSubTab('sdk');
+            }}
+            className={`font-mono text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
+              activeSubTab === 'sdk'
+                ? 'bg-enclave text-white shadow-xs font-semibold'
+                : 'text-mute hover:text-ink'
+            }`}
+          >
+            <span>Developer SDK</span>
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-enclave/20 text-enclave border border-enclave/40 font-bold uppercase">SDK</span>
+          </button>
         </div>
       </div>
 
@@ -146,8 +163,21 @@ export function LiveShieldMonitor() {
               </div>
             </div>
 
-            {/* In-Scene Bottom Attestation Link */}
-            <div className="absolute bottom-4 right-4 z-10">
+            {/* In-Scene Bottom Attestation & MPC Keys Links */}
+            <div className="absolute bottom-4 right-4 z-10 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  soundFx.playStepTick();
+                  setMpcModalOpen(true);
+                }}
+                className="bg-[#1E1917]/90 backdrop-blur-md border border-[#3A332E] hover:border-enclave rounded-full px-3.5 py-1.5 font-mono text-xs text-white hover:text-enclave font-medium shadow-xs transition-all active:scale-95 flex items-center gap-1.5"
+                title="Inspect NEAR Chain Signatures MPC Derivation"
+              >
+                <span>NEAR MPC Keys</span>
+                <span>↗</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => {
@@ -301,6 +331,8 @@ export function LiveShieldMonitor() {
               </div>
             </div>
           )}
+
+          {activeSubTab === 'sdk' && <DeveloperSdkTab />}
         </div>
       </div>
     </div>

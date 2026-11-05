@@ -19,6 +19,7 @@ import { NearLogo } from '@/components/icons/CryptoLogos';
 export function WalletModal() {
   const isWalletModalOpen = useVaultStore((s) => s.isWalletModalOpen);
   const setWalletModalOpen = useVaultStore((s) => s.setWalletModalOpen);
+  const setMpcModalOpen = useVaultStore((s) => s.setMpcModalOpen);
   const walletConnected = useVaultStore((s) => s.walletConnected);
   const toggleWallet = useVaultStore((s) => s.toggleWallet);
   const walletAddress = useVaultStore((s) => s.walletAddress);
@@ -95,6 +96,18 @@ export function WalletModal() {
             <p className="text-xs text-mute leading-relaxed pt-1">
               Operates exclusively inside the Intel TDX TEE with restricted function-call access. It has <strong>no full-access keys</strong> and cannot transfer funds outside pre-approved policy gates.
             </p>
+            <button
+              type="button"
+              onClick={() => {
+                soundFx.playStepTick();
+                setWalletModalOpen(false);
+                setMpcModalOpen(true);
+              }}
+              className="text-xs font-semibold text-enclave hover:underline flex items-center gap-1 pt-1.5"
+            >
+              <span>Inspect Derived Bitcoin, Ethereum & Solana Keys</span>
+              <span>↗</span>
+            </button>
           </div>
 
           {/* Security Safeguards Checklist */}

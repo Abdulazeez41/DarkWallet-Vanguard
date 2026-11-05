@@ -83,6 +83,7 @@ export interface VaultState {
   walletAddress: string;
   agentAddress: string;
   isWalletModalOpen: boolean;
+  isMpcModalOpen: boolean;
   isProofModalOpen: boolean;
   isCommandPaletteOpen: boolean;
   isGuideModalOpen: boolean;
@@ -91,6 +92,7 @@ export interface VaultState {
   // Actions
   toggleWallet: () => void;
   setWalletModalOpen: (open: boolean) => void;
+  setMpcModalOpen: (open: boolean) => void;
   setStage: (stage: Stage) => void;
   setRunMode: (mode: 'idle' | 'user' | 'gauntlet' | 'daemon') => void;
   setActiveTab: (tab: 'intent' | 'gauntlet' | 'replay') => void;
@@ -188,6 +190,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   walletAddress: 'operator.near',
   agentAddress: 'vanguard-agent.near',
   isWalletModalOpen: false,
+  isMpcModalOpen: false,
   isProofModalOpen: false,
   isCommandPaletteOpen: false,
   isGuideModalOpen: false,
@@ -195,6 +198,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
 
   toggleWallet: () => set((state) => ({ walletConnected: !state.walletConnected })),
   setWalletModalOpen: (isWalletModalOpen) => set({ isWalletModalOpen }),
+  setMpcModalOpen: (isMpcModalOpen) => set({ isMpcModalOpen }),
   setStage: (stage) => set({ stage }),
   setRunMode: (runMode) => set({ runMode }),
   setActiveTab: (activeTab) => set({ activeTab }),
