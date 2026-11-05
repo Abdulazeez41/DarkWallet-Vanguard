@@ -199,8 +199,8 @@ export const useVaultStore = create<VaultState>((set, get) => ({
     totalRuns: 16,
   },
 
-  // Theme & 3D Camera Focus
-  theme: 'dark',
+  // Theme & 3D Camera Focus (Default to signature Oreo Cream filling palette)
+  theme: 'cream',
   cameraFocus: 'all',
   isStageExpanded: false,
 
@@ -222,6 +222,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
       const nextTheme = state.theme === 'dark' ? 'cream' : 'dark';
       if (typeof document !== 'undefined') {
         document.documentElement.setAttribute('data-theme', nextTheme);
+        document.documentElement.classList.toggle('dark', nextTheme === 'dark');
       }
       return { theme: nextTheme };
     }),
@@ -229,6 +230,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   setTheme: (theme) => {
     if (typeof document !== 'undefined') {
       document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.classList.toggle('dark', theme === 'dark');
     }
     set({ theme });
   },

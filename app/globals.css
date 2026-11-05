@@ -5,22 +5,40 @@
 :root {
   --background: #FAF7F2;
   --foreground: #221E1C;
-  --void: #FAF7F2;          /* Cream Filling Base */
-  --panel: #FFFFFF;         /* Warm Porcelain Card */
-  --panel2: #F2ECE2;        /* Warm Oat Ash Subsurface / Pill */
-  --line: #DDD4C7;          /* Soft Oreo Ash Crumb Border */
-  --ink: #221E1C;           /* Deep Oreo Cocoa Ash Primary Text */
-  --mute: #766C63;          /* Refined Cocoa Ash Secondary Text */
-  --pass: #256B44;          /* Natural Forest Green */
-  --warn: #BD761C;          /* Warm Honey Amber */
-  --block: #B23D3D;         /* Coral Crimson Alert */
-  --enclave: #B86A2E;       /* Salted Caramel Bronze */
+
+  /* Oreo Brownish Ash & Cream Filling Core Palette (Space-separated RGB for Tailwind <alpha-value>) */
+  --void-rgb: 250 247 242;          /* #FAF7F2 Soft Oreo Cream Filling Base */
+  --panel-rgb: 255 255 255;         /* #FFFFFF Warm Porcelain Card */
+  --panel2-rgb: 242 236 226;        /* #F2ECE2 Warm Oat Ash Subsurface / Pill */
+  --line-rgb: 221 212 199;          /* #DDD4C7 Soft Oreo Ash Crumb Border */
+  --ink-rgb: 34 30 28;              /* #221E1C Deep Oreo Cocoa Ash Primary Text */
+  --mute-rgb: 118 108 99;           /* #766C63 Refined Cocoa Ash Secondary Text */
+  --pass-rgb: 37 107 68;            /* #256B44 Natural Botanical Forest Green */
+  --warn-rgb: 189 118 28;           /* #BD761C Warm Honey Amber */
+  --block-rgb: 178 61 61;           /* #B23D3D Warm Cocoa Crimson Alert */
+  --enclave-rgb: 184 106 46;        /* #B86A2E Warm Salted Caramel / Cocoa Bronze */
+  --brand-dark-rgb: 34 30 28;       /* #221E1C Deep Oreo Biscuit Ash */
+  --scene-bg-rgb: 24 21 18;         /* #181512 Obsidian Cocoa 3D Viewport */
+  --scene-box-rgb: 30 25 23;        /* #1E1917 Dark Cocoa Capsule */
+  --scene-border-rgb: 58 51 46;     /* #3A332E Subtle Cocoa Border */
+
+  --void: #FAF7F2;
+  --panel: #FFFFFF;
+  --panel2: #F2ECE2;
+  --line: #DDD4C7;
+  --ink: #221E1C;
+  --mute: #766C63;
+  --pass: #256B44;
+  --warn: #BD761C;
+  --block: #B23D3D;
+  --enclave: #B86A2E;
   --brand-dark: #221E1C;
   --paper: #FDFBF7;
   --paper-ink: #1E1E1E;
   --scene-bg: #181512;
   --scene-box: #1E1917;
   --scene-border: #3A332E;
+
   --scrollbar-track: #F2ECE2;
   --scrollbar-thumb: #D5CBBF;
   --scrollbar-thumb-hover: #B86A2E;
@@ -29,27 +47,45 @@
 }
 
 [data-theme='dark'] {
-  --background: #0E0C0B;
-  --foreground: #F5EFEB;
-  --void: #0E0C0B;          /* Deep Obsidian Cocoa Base */
-  --panel: #181412;         /* Warm Roasted Dark Chocolate Card */
-  --panel2: #241E1A;        /* Dark Roasted Cocoa Ash Subsurface / Pill */
-  --line: #362D28;          /* Subtle Warm Cocoa Ash Border */
-  --ink: #F5EFEB;           /* Crisp Warm Milk Foam Primary Text */
-  --mute: #A3968C;          /* Soft Warm Biscuit Secondary Text */
-  --pass: #34D399;          /* Vivid Emerald Green */
-  --warn: #F59E0B;          /* Radiant Honey Amber */
-  --block: #F87171;         /* Crisp Coral Red Alert */
-  --enclave: #F59E0B;       /* Warm Honey Caramel / Enclave Gold */
-  --brand-dark: #0E0C0B;
-  --paper: #181412;
-  --paper-ink: #F5EFEB;
-  --scene-bg: #0E0C0B;
-  --scene-box: #141110;
-  --scene-border: #2E2521;
-  --scrollbar-track: #181412;
-  --scrollbar-thumb: #362D28;
-  --scrollbar-thumb-hover: #F59E0B;
+  --background: #14110F;
+  --foreground: #F8F2EB;
+
+  /* Roasted Oreo Cocoa Biscuit Dark Palette */
+  --void-rgb: 20 17 15;             /* #14110F Deep Roasted Oreo Dark Base */
+  --panel-rgb: 28 23 21;            /* #1C1715 Warm Roasted Cocoa Card */
+  --panel2-rgb: 40 33 29;           /* #28211D Dark Roasted Cocoa Ash Subsurface / Pill */
+  --line-rgb: 64 53 47;             /* #40352F Warm Cocoa Ash Border */
+  --ink-rgb: 248 242 235;           /* #F8F2EB Crisp Warm Milk Foam Primary Text */
+  --mute-rgb: 172 158 147;          /* #AC9E93 Soft Biscuit Secondary Text */
+  --pass-rgb: 52 211 153;           /* #34D399 Vivid Emerald Green */
+  --warn-rgb: 245 158 11;           /* #F59E0B Radiant Honey Amber */
+  --block-rgb: 248 113 113;         /* #F87171 Crisp Coral Red Alert */
+  --enclave-rgb: 217 119 6;         /* #D97706 Warm Caramel Gold */
+  --brand-dark-rgb: 20 17 15;
+  --scene-bg-rgb: 16 14 13;
+  --scene-box-rgb: 24 20 18;
+  --scene-border-rgb: 51 41 36;
+
+  --void: #14110F;
+  --panel: #1C1715;
+  --panel2: #28211D;
+  --line: #40352F;
+  --ink: #F8F2EB;
+  --mute: #AC9E93;
+  --pass: #34D399;
+  --warn: #F59E0B;
+  --block: #F87171;
+  --enclave: #D97706;
+  --brand-dark: #14110F;
+  --paper: #1C1715;
+  --paper-ink: #F8F2EB;
+  --scene-bg: #100E0D;
+  --scene-box: #181412;
+  --scene-border: #332924;
+
+  --scrollbar-track: #1C1715;
+  --scrollbar-thumb: #40352F;
+  --scrollbar-thumb-hover: #D97706;
 }
 
 body {

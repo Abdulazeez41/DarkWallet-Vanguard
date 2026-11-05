@@ -101,16 +101,16 @@ export function TopBar() {
             </div>
           </button>
 
-          {/* Dark / Cream Theme Switcher Button */}
+          {/* Dark Cocoa / Oreo Cream Theme Switcher Button */}
           <button
             onClick={() => {
               soundFx.playStepTick();
               toggleTheme();
             }}
             className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-line bg-panel hover:bg-panel2 text-xs font-mono text-ink transition-all shadow-xs active:scale-95"
-            title={`Switch to ${theme === 'dark' ? 'Cream' : 'Dark'} Mode`}
+            title={`Switch to ${theme === 'dark' ? 'Oreo Cream' : 'Dark Cocoa'} Mode`}
           >
-            <span>{theme === 'dark' ? '🌙 Dark' : '☀️ Cream'}</span>
+            <span>{theme === 'dark' ? '🍪 Oreo Cream' : '🌙 Dark Cocoa'}</span>
           </button>
 
           {/* Interactive Guide Tour Button */}

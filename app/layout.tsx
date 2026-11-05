@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" data-theme="cream">
       <body className="min-h-screen bg-void text-ink antialiased selection:bg-enclave/30 selection:text-enclave font-display">
         {children}
       </body>
