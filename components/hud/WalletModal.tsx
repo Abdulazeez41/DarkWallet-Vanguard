@@ -26,6 +26,8 @@ export function WalletModal() {
   const walletProvider = useVaultStore((s) => s.walletProvider);
   const walletBalanceNear = useVaultStore((s) => s.walletBalanceNear);
   const setWalletBalanceNear = useVaultStore((s) => s.setWalletBalanceNear);
+  const nearPriceUsd = useVaultStore((s) => s.nearPriceUsd);
+  const setNearPriceUsd = useVaultStore((s) => s.setNearPriceUsd);
   const agentAddress = useVaultStore((s) => s.agentAddress);
   const connectWallet = useVaultStore((s) => s.connectWallet);
   const disconnectWallet = useVaultStore((s) => s.disconnectWallet);
@@ -42,13 +44,24 @@ export function WalletModal() {
     if (!accountId || accountId === 'disconnected.near') return;
     soundFx.playStepTick();
     setIsSyncing(true);
-    setSyncStatus('Querying NEAR RPC...');
+    setSyncStatus('Querying NEAR RPC & Live Price Oracle...');
     try {
-      const res = await fetch(`/api/near-balance?account=${encodeURIComponent(accountId.trim())}`);
-      const data = await res.json();
+      const [balanceRes, priceRes] = await Promise.all([
+        fetch(`/api/near-balance?account=${encodeURIComponent(accountId.trim())}`),
+        fetch('/api/near-price'),
+      ]);
+      const data = await balanceRes.json();
+      const priceData = await priceRes.json();
+
+      let currentPrice = nearPriceUsd;
+      if (priceData.success && typeof priceData.price === 'number') {
+        currentPrice = priceData.price;
+        setNearPriceUsd(priceData.price);
+      }
+
       if (data.success && data.balanceNear !== null) {
         setWalletBalanceNear(data.balanceNear);
-        setSyncStatus(`✓ Synced: ${data.balanceNear.toFixed(4)} NEAR`);
+        setSyncStatus(`✓ Synced: ${data.balanceNear.toFixed(4)} NEAR (@ $${currentPrice.toFixed(2)})`);
         soundFx.playSuccessTone();
       } else {
         setSyncStatus(`⚠️ ${data.error || 'Account not found on-chain'}`);
@@ -176,8 +189,9 @@ export function WalletModal() {
                   </span>
                   <span className="font-mono text-xs text-pass font-extrabold">NEAR</span>
                 </div>
-                <div className="font-mono text-[11px] text-mute tabular-nums">
-                  ≈ ${(walletBalanceNear * 5.20).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                <div className="font-mono text-[11px] text-mute tabular-nums flex items-center gap-1.5">
+                  <span>≈ ${(walletBalanceNear * nearPriceUsd).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</span>
+                  <span className="text-[10px] text-pass font-semibold">(@ ${nearPriceUsd.toFixed(2)}/NEAR)</span>
                 </div>
               </div>
             </div>

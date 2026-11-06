@@ -98,6 +98,29 @@ export default function VaultRoomPage() {
     }
   }, [theme]);
 
+  // Live NEAR Market Price Poller (Pyth Network / Binance / Coinbase / CoinGecko)
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLivePrice = async () => {
+      try {
+        const res = await fetch('/api/near-price');
+        const data = await res.json();
+        if (isMounted && data.success && typeof data.price === 'number') {
+          useVaultStore.getState().setNearPriceUsd(data.price);
+        }
+      } catch (err) {
+        console.warn('Live price sync notice:', err);
+      }
+    };
+
+    fetchLivePrice();
+    const interval = setInterval(fetchLivePrice, 20_000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
   // Autonomous Daemon loop (Track 04 Autonomous Rebalance)
   useEffect(() => {
     if (daemonActive) {
