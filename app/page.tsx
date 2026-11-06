@@ -3,22 +3,26 @@
 /**
  * app/page.tsx
  *
- * DarkWallet Vanguard - Streamlined Consumer-Grade Autonomous Treasury
+ * DarkWallet Vanguard - Private AI Treasury Agent on NEAR
  *
- * Layout Structure:
- *  1. Top Section: Clean, elegant Treasury & Agent Command Card
- *     (Simple English, quick one-click actions, human balance, official crypto logos).
- *  2. Middle Section: Agent Guardrails in simple, plain-English safety switches
- *     (Max per tx, daily budget with progress, approved networks, emergency freeze).
- *  3. Bottom Section: Sleek "Live Shield Monitor & Activity"
- *     (3D WebGL Hardware Enclave visualization & tabbed telemetry / attack simulator / receipts).
+ * Progressive Disclosure Architecture:
+ *  - Single focal VaultCard on initial load (clean, centered, calm).
+ *  - Slide-over ShieldDrawer automatically reveals on execution or via top status pill.
+ *  - Clean top navigation: Vault · Test · Simulate · Activity.
+ *  - Instant server-rendered skeleton (no cold-start "INITIALIZING..." blank screen).
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { TopBar } from "@/components/hud/TopBar";
 import { ConfidentialityStrip } from "@/components/hud/ConfidentialityStrip";
-import { TreasuryCommandCard } from "@/components/treasury/TreasuryCommandCard";
-import { LiveShieldMonitor } from "@/components/treasury/LiveShieldMonitor";
+import { VaultCard } from "@/components/treasury/VaultCard";
+import { ShieldDrawer } from "@/components/hud/ShieldDrawer";
+import { GuardrailsModal } from "@/components/hud/GuardrailsModal";
+import { Gauntlet } from "@/components/hud/Gauntlet";
+import { Replay } from "@/components/hud/Replay";
+import { BusinessLedger } from "@/components/BusinessLedger";
+import { Terminal } from "@/components/hud/Terminal";
+import { VaultCanvas } from "@/components/scene/VaultCanvas";
 import { Receipt } from "@/components/hud/Receipt";
 import { ProofModal } from "@/components/hud/ProofModal";
 import { CommandPalette } from "@/components/hud/CommandPalette";
@@ -27,22 +31,70 @@ import { WalletModal } from "@/components/hud/WalletModal";
 import { MpcDerivationModal } from "@/components/hud/MpcDerivationModal";
 import { runIntent } from "@/lib/runIntent";
 import { useVaultStore } from "@/lib/store";
+import { TreasuryLedgerEntry } from "@/lib/types";
+
+const INITIAL_LEDGER_ENTRIES: TreasuryLedgerEntry[] = [
+  {
+    entryId: "tx-vanguard-01",
+    directiveId: "dir-intents-741a",
+    timestamp: "2026-11-06T10:15:00Z",
+    grossIntentVolumeUsd: 25.0,
+    inferenceCostUsd: 0.008,
+    solverRelayerFeeUsd: 0.035,
+    marketSlippageGainUsd: 0.042,
+    netYieldUsd: 1.992,
+    treasuryShareUsd: 1.594,
+    contributorPayoutUsd: 0.398,
+    contributorAccount: "contributors.vanguard.near",
+    status: "SETTLED",
+    isSlippageLoss: false,
+  },
+  {
+    entryId: "tx-vanguard-02",
+    directiveId: "dir-intents-992b",
+    timestamp: "2026-11-06T11:42:00Z",
+    grossIntentVolumeUsd: 35.0,
+    inferenceCostUsd: 0.012,
+    solverRelayerFeeUsd: 0.048,
+    marketSlippageGainUsd: 0.055,
+    netYieldUsd: 2.816,
+    treasuryShareUsd: 2.253,
+    contributorPayoutUsd: 0.563,
+    contributorAccount: "contributors.vanguard.near",
+    status: "SETTLED",
+    isSlippageLoss: false,
+  },
+  {
+    entryId: "tx-vanguard-03",
+    directiveId: "dir-intents-114c",
+    timestamp: "2026-11-06T13:20:00Z",
+    grossIntentVolumeUsd: 45.0,
+    inferenceCostUsd: 0.015,
+    solverRelayerFeeUsd: 0.062,
+    marketSlippageGainUsd: -0.018,
+    netYieldUsd: 3.568,
+    treasuryShareUsd: 2.854,
+    contributorPayoutUsd: 0.714,
+    contributorAccount: "contributors.vanguard.near",
+    status: "SETTLED",
+    isSlippageLoss: true,
+  },
+];
 
 export default function VaultRoomPage() {
-  const [mounted, setMounted] = useState(false);
+  const activeNavTab = useVaultStore((s) => s.activeNavTab);
   const daemonActive = useVaultStore((s) => s.daemonActive);
   const policy = useVaultStore((s) => s.policy);
   const addLog = useVaultStore((s) => s.addLog);
   const theme = useVaultStore((s) => s.theme);
-  const isMonitorVisible = useVaultStore((s) => s.isMonitorVisible);
+  const ledgerEntry = useVaultStore((s) => s.ledgerEntry);
 
   const daemonTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    setMounted(true);
-    if (typeof document !== 'undefined') {
-      document.documentElement.setAttribute('data-theme', theme);
-      document.documentElement.classList.toggle('dark', theme === 'dark');
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-theme", theme);
+      document.documentElement.classList.toggle("dark", theme === "dark");
     }
   }, [theme]);
 
@@ -96,39 +148,117 @@ export default function VaultRoomPage() {
     };
   }, [daemonActive, policy, addLog]);
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-void flex items-center justify-center font-mono text-xs text-mute">
-        INITIALIZING DARKWALLET VANGUARD...
-      </div>
-    );
-  }
+  const activeLedgerEntries = ledgerEntry
+    ? [ledgerEntry, ...INITIAL_LEDGER_ENTRIES]
+    : INITIAL_LEDGER_ENTRIES;
 
   return (
     <main className="min-h-screen bg-void text-ink flex flex-col font-mono selection:bg-enclave/30 selection:text-enclave">
-      {/* 1. Top Navigation Bar */}
+      {/* 1. Primary Header Navigation */}
       <TopBar />
 
       {/* 2. Confidentiality Guarantee Strip */}
       <ConfidentialityStrip />
 
-      {/* 3. Main Streamlined Treasury Workspace (Centered Master Layout) */}
-      <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Top Hero Section: The Centered Vanguard Vault & Guardrail Card */}
-        <section>
-          <TreasuryCommandCard />
-        </section>
+      {/* 3. Main Workspace Container with Progressive Disclosure */}
+      <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* TAB 1: VAULT (The Centered Single-Action Treasury Card) */}
+        {activeNavTab === "vault" && (
+          <section className="animate-fadeIn">
+            <VaultCard />
+          </section>
+        )}
 
-        {/* Bottom Section: Sleek Live Shield Monitor & Activity Dock (Revealed on execute or preview) */}
-        {isMonitorVisible && (
-          <section id="live-shield-monitor" className="animate-fadeIn">
-            <LiveShieldMonitor />
+        {/* TAB 2: TEST (Security Gauntlet Threat Simulator & 3D Hardware Telemetry) */}
+        {activeNavTab === "test" && (
+          <section className="space-y-6 animate-fadeIn">
+            <div className="p-5 sm:p-6 bg-panel rounded-3xl border border-line space-y-1.5 shadow-xs">
+              <div className="flex items-center justify-between">
+                <h2 className="font-mono text-base sm:text-lg font-bold text-ink">
+                  Test the Shield: Security Gauntlet
+                </h2>
+                <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-enclave/10 text-enclave border border-enclave/30 font-bold uppercase">
+                  Adversary Cyber-Range
+                </span>
+              </div>
+              <p className="font-mono text-xs text-mute leading-relaxed">
+                Fire real adversarial payloads (prompt injections, session budget exhaustion, malicious drainer addresses, replay attacks) to verify in real-time that Vanguard&apos;s 3 mathematical gates intercept and shatter each threat.
+              </p>
+            </div>
+
+            <Gauntlet />
+
+            <div className="bg-panel rounded-3xl border border-line p-5 sm:p-6 shadow-xs space-y-3">
+              <div className="flex items-center justify-between font-mono text-xs">
+                <span className="font-bold text-ink">
+                  3D Hardware Enclave & Gate Pipeline Visualizer
+                </span>
+                <span className="text-mute">WebGL / Three.js</span>
+              </div>
+              <div className="h-[420px] rounded-2xl overflow-hidden border border-line bg-void">
+                <VaultCanvas />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* TAB 3: SIMULATE (7-Day Fast-Forward Operational Replay) */}
+        {activeNavTab === "simulate" && (
+          <section className="space-y-6 animate-fadeIn">
+            <div className="p-5 sm:p-6 bg-panel rounded-3xl border border-line space-y-1.5 shadow-xs">
+              <div className="flex items-center justify-between">
+                <h2 className="font-mono text-base sm:text-lg font-bold text-ink">
+                  7-Day Fast-Forward Operational Replay
+                </h2>
+                <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-pass/10 text-pass border border-pass/30 font-bold uppercase">
+                  Autonomous Economics
+                </span>
+              </div>
+              <p className="font-mono text-xs text-mute leading-relaxed">
+                Observe full-week simulation under volatile market conditions: automated self-funded inference deductions to NEAR AI Cloud, realistic DEX slippage, and algorithmic 80/20 revenue distribution between treasury retention and contributor rewards.
+              </p>
+            </div>
+
+            <Replay />
+          </section>
+        )}
+
+        {/* TAB 4: ACTIVITY (Autonomous Business Ledger & Real-Time Terminal Log) */}
+        {activeNavTab === "activity" && (
+          <section className="space-y-6 animate-fadeIn">
+            <div className="p-5 sm:p-6 bg-panel rounded-3xl border border-line space-y-1.5 shadow-xs">
+              <div className="flex items-center justify-between">
+                <h2 className="font-mono text-base sm:text-lg font-bold text-ink">
+                  Autonomous Business Ledger & Audit Terminal
+                </h2>
+                <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-panel2 text-mute border border-line font-bold uppercase">
+                  Verifiable Receipts
+                </span>
+              </div>
+              <p className="font-mono text-xs text-mute leading-relaxed">
+                Complete audit trail of every autonomous rebalancing cycle, cross-chain intent settlement, cryptographic nonces, and hardware attestation logs.
+              </p>
+            </div>
+
+            <BusinessLedger entries={activeLedgerEntries} />
+
+            <div className="bg-panel rounded-3xl border border-line p-5 sm:p-6 shadow-xs space-y-3 font-mono">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-ink">
+                  Hardware Enclave & Policy Firewall Audit Stream
+                </span>
+                <span className="text-mute">Real-Time Luminous Logs</span>
+              </div>
+              <div className="h-[360px] rounded-2xl overflow-hidden border border-line bg-void">
+                <Terminal />
+              </div>
+            </div>
           </section>
         )}
       </div>
 
       {/* 4. Footer Information Bar */}
-      <footer className="border-t border-line bg-panel2/80 px-4 sm:px-6 lg:px-8 xl:px-12 py-5 select-none text-xs sm:text-sm font-mono text-mute">
+      <footer className="border-t border-line bg-panel2/80 px-4 sm:px-6 lg:px-8 xl:px-12 py-5 select-none text-xs sm:text-sm font-mono text-mute mt-auto">
         <div className="w-full max-w-[1720px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
           <div className="flex items-center gap-2.5 text-ink font-bold">
             <span className="w-2.5 h-2.5 rounded-full bg-pass" />
@@ -140,7 +270,9 @@ export default function VaultRoomPage() {
         </div>
       </footer>
 
-      {/* 5. Modals & Notifications */}
+      {/* 5. Drawers, Modals & Inspection Sheets */}
+      <ShieldDrawer />
+      <GuardrailsModal />
       <Receipt />
       <ProofModal />
       <CommandPalette />

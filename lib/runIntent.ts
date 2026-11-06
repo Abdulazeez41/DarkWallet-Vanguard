@@ -22,6 +22,7 @@ export async function runIntent(
   store.resetRun(true);
   store.setRunMode(options?.runMode || 'user');
   store.setMonitorVisible(true);
+  store.setShieldDrawerOpen(true);
 
   soundFx.playStepTick();
 

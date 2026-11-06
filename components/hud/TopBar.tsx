@@ -5,19 +5,31 @@
  *
  * Primary navigation header for DarkWallet Vanguard.
  * Features:
- *  - Warm Oreo brownish ash & cream aesthetic
- *  - Friendly, calm, rounded shapes (no robotic boxes)
- *  - NEAR Wallet Connection & Account Delegation Pill
- *  - Interactive "How It Works / Guide (?)" tour launcher
- *  - Autonomous Daemon mode toggle
- *  - Audio mute toggle
+ *  - Brand: ◆ Vanguard (Private AI Treasury Agent)
+ *  - Top Navigation Tabs: Vault · Test · Simulate · Activity
+ *  - Dynamic Shield Status Chip: [ 🛡️ Shield: Active ● ] (Opens Shield Execution Drawer)
+ *  - NEAR Cloud Wallet & Web3 Connection Pill
+ *  - Theme Toggle, Daemon Mode, Sound & Guide controls
  */
 
 import { soundFx } from '@/components/AudioFeedback';
 import { useVaultStore } from '@/lib/store';
 import { NearLogo } from '@/components/icons/CryptoLogos';
 
+const NAV_TABS = [
+  { id: 'vault', label: 'Vault', desc: 'Protected Treasury Card' },
+  { id: 'test', label: 'Test', desc: 'Security Gauntlet' },
+  { id: 'simulate', label: 'Simulate', desc: '7-Day Fast-Forward' },
+  { id: 'activity', label: 'Activity', desc: 'Ledger & Audit Log' },
+] as const;
+
 export function TopBar() {
+  const activeNavTab = useVaultStore((s) => s.activeNavTab);
+  const setActiveNavTab = useVaultStore((s) => s.setActiveNavTab);
+  const setShieldDrawerOpen = useVaultStore((s) => s.setShieldDrawerOpen);
+  const stage = useVaultStore((s) => s.stage);
+  const policy = useVaultStore((s) => s.policy);
+
   const daemonActive = useVaultStore((s) => s.daemonActive);
   const setDaemonActive = useVaultStore((s) => s.setDaemonActive);
   const muted = useVaultStore((s) => s.muted);
@@ -41,98 +53,172 @@ export function TopBar() {
     soundFx.setMuted(!muted);
   };
 
+  // Shield status pill logic
+  const isRunning =
+    stage === 'sealing' || stage === 'enclave' || stage === 'evaluating' || stage === 'settling';
+  const isSettled = stage === 'settled';
+  const isBlocked = stage === 'blocked';
+  const isFrozen = policy.isRevoked;
+
   return (
-    <header className="w-full bg-panel/95 backdrop-blur-md border-b border-line px-4 sm:px-6 lg:px-8 xl:px-12 py-3.5 flex items-center justify-between select-none z-30 sticky top-0 shadow-xs">
-      <div className="w-full max-w-[1720px] mx-auto flex items-center justify-between">
+    <header className="w-full bg-panel/95 backdrop-blur-md border-b border-line px-3 sm:px-6 lg:px-8 py-3 select-none z-30 sticky top-0 shadow-xs">
+      <div className="w-full max-w-[1720px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
         {/* Brand & Hardware Trust */}
-        <div className="flex items-center gap-3.5">
-          <div className="w-9 h-9 rounded-2xl bg-ink text-void flex items-center justify-center font-mono text-sm font-black shadow-xs">
-            DV
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-mono text-sm sm:text-base font-bold tracking-tight text-ink">
-                DARKWALLET VANGUARD
-              </h1>
-              <span className="hidden sm:inline-block font-mono text-[11px] px-2.5 py-0.5 rounded-full bg-panel2 text-mute border border-line font-medium">
-                Intel TDX TEE
-              </span>
+        <div className="flex items-center justify-between w-full md:w-auto gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-ink text-void flex items-center justify-center font-mono text-sm font-black shadow-xs">
+              ◆
             </div>
-            <p className="font-mono text-xs text-mute hidden sm:block">
-              Confidential Autonomous AI Treasury & Policy Shield on NEAR
-            </p>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-sm sm:text-base font-bold tracking-tight text-ink">
+                  Vanguard
+                </span>
+                <span className="hidden sm:inline-block font-mono text-[10px] px-2 py-0.5 rounded-full bg-panel2 text-mute border border-line font-medium">
+                  Intel TDX
+                </span>
+              </div>
+              <p className="font-mono text-[11px] text-mute hidden sm:block">
+                Private AI Treasury Agent
+              </p>
+            </div>
+          </div>
+
+          {/* Mobile Shield Chip (visible only on mobile next to brand) */}
+          <div className="md:hidden">
+            <button
+              onClick={() => {
+                soundFx.playStepTick();
+                setShieldDrawerOpen(true);
+              }}
+              className={`font-mono text-xs font-bold px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 shadow-xs ${
+                isFrozen
+                  ? 'bg-alert/10 border-alert text-alert animate-pulse'
+                  : isRunning
+                  ? 'bg-enclave/10 border-enclave text-enclave animate-pulse'
+                  : isSettled
+                  ? 'bg-pass/15 border-pass text-pass'
+                  : isBlocked
+                  ? 'bg-alert/10 border-alert text-alert'
+                  : 'bg-pass/10 border-pass/40 text-ink'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-pass" />
+              <span>Shield</span>
+            </button>
           </div>
         </div>
 
-        {/* Action Controls & Wallet Connection */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Prominent NEAR Cloud & Web3 Wallet Connection Pill */}
+        {/* Center: Navigation Tabs (Vault · Test · Simulate · Activity) */}
+        <nav className="flex items-center bg-void/80 p-1 rounded-2xl border border-line shadow-inner max-w-full overflow-x-auto">
+          {NAV_TABS.map((tab) => {
+            const isActive = activeNavTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  soundFx.playStepTick();
+                  setActiveNavTab(tab.id);
+                }}
+                className={`font-mono text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1.5 rounded-xl transition-all whitespace-nowrap ${
+                  isActive
+                    ? 'bg-panel text-ink border border-line shadow-xs font-bold'
+                    : 'text-mute hover:text-ink hover:bg-panel/40'
+                }`}
+                title={tab.desc}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Right: Shield Pill, Wallet, Theme & Controls */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Desktop Shield Status Chip: [ Shield: Active ● ] */}
+          <button
+            onClick={() => {
+              soundFx.playStepTick();
+              setShieldDrawerOpen(true);
+            }}
+            className={`hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full border font-mono text-xs font-bold transition-all shadow-xs active:scale-95 ${
+              isFrozen
+                ? 'bg-alert/15 border-alert text-alert animate-pulse'
+                : isRunning
+                ? 'bg-enclave/15 border-enclave text-enclave animate-pulse'
+                : isSettled
+                ? 'bg-pass/15 border-pass/50 text-pass'
+                : isBlocked
+                ? 'bg-alert/15 border-alert/50 text-alert'
+                : 'bg-pass/10 border-pass/40 text-ink hover:bg-pass/20'
+            }`}
+            title="Inspect Shield Pipeline, Cryptographic Proofs & 3D Hardware Telemetry"
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${
+                isFrozen
+                  ? 'bg-alert'
+                  : isRunning
+                  ? 'bg-enclave animate-ping'
+                  : isSettled
+                  ? 'bg-pass'
+                  : isBlocked
+                  ? 'bg-alert'
+                  : 'bg-pass animate-pulse'
+              }`}
+            />
+            <span>
+              {isFrozen
+                ? 'Shield: Frozen ❄️'
+                : isRunning
+                ? 'Shield: Enforcing... ⏳'
+                : isSettled
+                ? 'Shield: Settled ✓'
+                : isBlocked
+                ? 'Shield: Blocked ✕'
+                : 'Shield: Active ●'}
+            </span>
+          </button>
+
+          {/* NEAR Cloud Wallet & Web3 Pill */}
           <button
             onClick={() => {
               soundFx.playStepTick();
               setWalletModalOpen(true);
             }}
-            className={`flex items-center gap-2.5 px-4 py-2 rounded-full border transition-all shadow-xs active:scale-95 font-mono text-xs sm:text-sm font-medium ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all shadow-xs active:scale-95 font-mono text-xs font-medium ${
               walletConnected
                 ? 'border-pass/40 bg-pass/10 hover:bg-pass/15 text-ink'
-                : 'border-enclave/60 bg-enclave/10 hover:bg-enclave/20 text-ink font-semibold animate-pulse'
+                : 'border-enclave/60 bg-enclave/10 hover:bg-enclave/20 text-ink font-semibold'
             }`}
-            title="Connect or Inspect NEAR Cloud Wallet (FastAuth) / Web3 Normal Wallet"
+            title="Connect or Inspect NEAR FastAuth / Web3 Wallet"
           >
-            <NearLogo size={17} />
-            <div className="flex items-center gap-2">
-              {walletConnected ? (
-                <>
-                  <span className="font-bold text-ink">{walletAddress}</span>
-                  <span className="hidden md:inline-block text-[11px] px-2 py-0.2 rounded-full bg-panel2 border border-line text-mute">
-                    {walletProvider || 'Cloud FastAuth'}
-                  </span>
-                  <span className="w-2 h-2 rounded-full bg-pass" />
-                </>
-              ) : (
-                <>
-                  <span className="font-bold text-ink">Connect Wallet</span>
-                  <span className="hidden md:inline-block text-[11px] text-mute">
-                    (Cloud / Web3)
-                  </span>
-                  <span className="w-2 h-2 rounded-full bg-enclave" />
-                </>
-              )}
-            </div>
+            <NearLogo size={15} />
+            {walletConnected ? (
+              <span className="font-bold text-ink max-w-[100px] truncate">{walletAddress}</span>
+            ) : (
+              <span className="font-bold text-ink">Connect</span>
+            )}
           </button>
 
-          {/* Dark Cocoa / Oreo Cream Theme Switcher Button */}
+          {/* Theme Switcher Button */}
           <button
             onClick={() => {
               soundFx.playStepTick();
               toggleTheme();
             }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-line bg-panel hover:bg-panel2 text-xs font-mono text-ink transition-all shadow-xs active:scale-95"
+            className="p-1.5 px-2.5 rounded-full border border-line bg-panel hover:bg-panel2 text-xs font-mono text-ink transition-all shadow-xs active:scale-95"
             title={`Switch to ${theme === 'dark' ? 'Oreo Cream' : 'Dark Cocoa'} Mode`}
           >
-            <span>{theme === 'dark' ? '🍪 Oreo Cream' : '🌙 Dark Cocoa'}</span>
+            <span>{theme === 'dark' ? '🍪' : '🌙'}</span>
           </button>
 
-          {/* Interactive Guide Tour Button */}
-          <button
-            onClick={() => {
-              soundFx.playStepTick();
-              setGuideModalOpen(true);
-            }}
-            className="font-mono text-xs sm:text-sm font-medium px-3.5 py-2 rounded-full border border-line bg-panel hover:bg-panel2 text-ink transition-all flex items-center gap-1.5 active:scale-95 shadow-xs"
-            title="Open Interactive Navigation & Architectural Walkthrough"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-enclave" />
-            <span className="hidden sm:inline">How It Works</span>
-            <span className="sm:hidden">Guide</span>
-          </button>
-
-          {/* Autonomous Daemon Toggle */}
+          {/* Background Autonomous Daemon Toggle */}
           <button
             onClick={handleToggleDaemon}
-            className={`font-mono text-xs sm:text-sm font-medium px-3.5 py-2 rounded-full border transition-all flex items-center gap-2 shadow-xs ${
+            className={`p-1.5 px-2.5 rounded-full border font-mono text-xs font-medium transition-all flex items-center gap-1.5 shadow-xs ${
               daemonActive
-                ? 'bg-pass/10 border-pass/40 text-pass font-semibold'
+                ? 'bg-pass/15 border-pass/40 text-pass font-semibold'
                 : 'bg-panel border-line text-mute hover:text-ink'
             }`}
             title="Toggle Background Autonomous Rebalancing Daemon"
@@ -142,29 +228,28 @@ export function TopBar() {
                 daemonActive ? 'bg-pass animate-pulse' : 'bg-mute'
               }`}
             />
-            <span className="hidden md:inline">Daemon:</span>
-            <span>{daemonActive ? 'Active' : 'Idle'}</span>
+            <span className="hidden lg:inline">{daemonActive ? 'Daemon' : 'Idle'}</span>
           </button>
 
           {/* Audio Mute Toggle */}
           <button
             onClick={handleToggleMute}
-            className="p-2 rounded-full border border-line bg-panel text-mute hover:text-ink transition-colors shadow-xs"
+            className="p-1.5 rounded-full border border-line bg-panel text-mute hover:text-ink transition-colors shadow-xs"
             title={muted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
           >
             {muted ? <span className="text-xs">🔇</span> : <span className="text-xs">🔊</span>}
           </button>
 
-          {/* Quick Command Palette Button */}
+          {/* Guide Tour Launcher */}
           <button
             onClick={() => {
               soundFx.playStepTick();
-              setCommandPaletteOpen(true);
+              setGuideModalOpen(true);
             }}
-            className="hidden lg:flex items-center gap-1 font-mono text-xs font-medium px-3 py-2 rounded-full border border-line bg-panel text-mute hover:text-ink transition-all shadow-xs"
-            title="Open Quick Command Palette (⌘K)"
+            className="p-1.5 px-2 rounded-full border border-line bg-panel hover:bg-panel2 font-mono text-xs text-mute hover:text-ink shadow-xs"
+            title="Open Interactive Guide"
           >
-            <span>⌘K</span>
+            ?
           </button>
         </div>
       </div>

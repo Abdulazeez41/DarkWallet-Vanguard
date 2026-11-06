@@ -83,6 +83,10 @@ export interface VaultState {
   cameraFocus: 'all' | 'enclave' | 'gates' | 'chains';
   isStageExpanded: boolean;
   isMonitorVisible: boolean;
+  activeNavTab: 'vault' | 'test' | 'simulate' | 'activity';
+  isShieldDrawerOpen: boolean;
+  isGuardrailsModalOpen: boolean;
+  policyPreset: 'conservative' | 'balanced' | 'custom';
 
   // UI Overlays & Wallet State
   walletConnected: boolean;
@@ -130,6 +134,10 @@ export interface VaultState {
   setReceiptVisible: (visible: boolean) => void;
   setMonitorVisible: (visible: boolean) => void;
   toggleMonitorVisible: () => void;
+  setActiveNavTab: (tab: 'vault' | 'test' | 'simulate' | 'activity') => void;
+  setShieldDrawerOpen: (open: boolean) => void;
+  setGuardrailsModalOpen: (open: boolean) => void;
+  setPolicyPreset: (preset: 'conservative' | 'balanced' | 'custom') => void;
   applyRunEvent: (event: RunEvent) => void;
   resetRun: (keepGoal?: boolean) => void;
 }
@@ -207,6 +215,10 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   cameraFocus: 'all',
   isStageExpanded: false,
   isMonitorVisible: false,
+  activeNavTab: 'vault',
+  isShieldDrawerOpen: false,
+  isGuardrailsModalOpen: false,
+  policyPreset: 'balanced',
 
   // Account & Custody State
   walletConnected: true,
@@ -247,6 +259,40 @@ export const useVaultStore = create<VaultState>((set, get) => ({
 
   toggleMonitorVisible: () =>
     set((state) => ({ isMonitorVisible: !state.isMonitorVisible })),
+
+  setActiveNavTab: (activeNavTab) => set({ activeNavTab }),
+
+  setShieldDrawerOpen: (isShieldDrawerOpen) => set({ isShieldDrawerOpen }),
+
+  setGuardrailsModalOpen: (isGuardrailsModalOpen) => set({ isGuardrailsModalOpen }),
+
+  setPolicyPreset: (preset) => {
+    if (preset === 'conservative') {
+      set((state) => ({
+        policyPreset: 'conservative',
+        policy: {
+          ...state.policy,
+          maxUsdPerTx: 25,
+          sessionBudgetCapUsd: 100,
+          chainWhitelist: ['NEAR', 'Ethereum'],
+          tokenWhitelist: ['USDC', 'USDT', 'NEAR'],
+        },
+      }));
+    } else if (preset === 'balanced') {
+      set((state) => ({
+        policyPreset: 'balanced',
+        policy: {
+          ...state.policy,
+          maxUsdPerTx: 50,
+          sessionBudgetCapUsd: 200,
+          chainWhitelist: ['Ethereum', 'Solana', 'Bitcoin', 'NEAR'],
+          tokenWhitelist: ['USDC', 'USDT', 'NEAR', 'SOL', 'ETH', 'BTC'],
+        },
+      }));
+    } else {
+      set({ policyPreset: 'custom' });
+    }
+  },
 
   connectWallet: (type, address = 'operator.near', provider = 'NEAR FastAuth Cloud') =>
     set({
