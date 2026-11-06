@@ -95,6 +95,9 @@ export function TreasuryCommandCard() {
   const walletAddress = useVaultStore((s) => s.walletAddress);
   const walletProvider = useVaultStore((s) => s.walletProvider);
   const setWalletModalOpen = useVaultStore((s) => s.setWalletModalOpen);
+  const isMonitorVisible = useVaultStore((s) => s.isMonitorVisible);
+  const setMonitorVisible = useVaultStore((s) => s.setMonitorVisible);
+  const toggleMonitorVisible = useVaultStore((s) => s.toggleMonitorVisible);
 
   const [inputGoal, setInputGoal] = useState(lastGoal);
   const [showGuardrails, setShowGuardrails] = useState(false);
@@ -132,6 +135,12 @@ export function TreasuryCommandCard() {
     if (!inputGoal.trim() || isRunning) return;
 
     soundFx.playStepTick();
+    setMonitorVisible(true);
+
+    setTimeout(() => {
+      document.getElementById('live-shield-monitor')?.scrollIntoView({ behavior: 'smooth' });
+    }, 120);
+
     await runIntent(
       {
         goal: inputGoal.trim(),
@@ -470,6 +479,20 @@ export function TreasuryCommandCard() {
           </button>
         </div>
       </form>
+
+      {/* 6. Subtle Telemetry Drawer Toggle Pill */}
+      <div className="pt-1 flex items-center justify-center">
+        <button
+          type="button"
+          onClick={() => {
+            soundFx.playStepTick();
+            toggleMonitorVisible();
+          }}
+          className="font-mono text-xs text-mute hover:text-ink transition-colors flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-dashed border-line hover:border-ink/40 active:scale-95"
+        >
+          <span>{isMonitorVisible ? '▲ Hide Live Shield Monitor & Telemetry' : '▼ Live Shield Monitor & Telemetry (Auto-opens on execute)'}</span>
+        </button>
+      </div>
     </div>
   );
 }

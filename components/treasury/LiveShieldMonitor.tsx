@@ -37,6 +37,7 @@ export function LiveShieldMonitor() {
   const setCameraFocus = useVaultStore((s) => s.setCameraFocus);
   const isStageExpanded = useVaultStore((s) => s.isStageExpanded);
   const toggleStageExpanded = useVaultStore((s) => s.toggleStageExpanded);
+  const setMonitorVisible = useVaultStore((s) => s.setMonitorVisible);
 
   const isBlocked = stage === 'blocked' || Boolean(gateReason);
 
@@ -74,6 +75,18 @@ export function LiveShieldMonitor() {
 
         {/* Tab Switcher for Right Panel & Panoramic Expand */}
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              soundFx.playStepTick();
+              setMonitorVisible(false);
+            }}
+            className="font-mono text-xs sm:text-sm font-medium px-3.5 py-1.5 rounded-full border border-line bg-panel2 hover:border-ink/40 text-mute hover:text-ink transition-all flex items-center gap-1.5 shadow-xs"
+            title="Hide Live Monitor"
+          >
+            <span>✕ Hide</span>
+          </button>
+
           <button
             type="button"
             onClick={() => {

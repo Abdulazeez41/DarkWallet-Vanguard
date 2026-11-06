@@ -34,6 +34,7 @@ export default function VaultRoomPage() {
   const policy = useVaultStore((s) => s.policy);
   const addLog = useVaultStore((s) => s.addLog);
   const theme = useVaultStore((s) => s.theme);
+  const isMonitorVisible = useVaultStore((s) => s.isMonitorVisible);
 
   const daemonTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -118,10 +119,12 @@ export default function VaultRoomPage() {
           <TreasuryCommandCard />
         </section>
 
-        {/* Bottom Section: Sleek Live Shield Monitor & Activity Dock */}
-        <section>
-          <LiveShieldMonitor />
-        </section>
+        {/* Bottom Section: Sleek Live Shield Monitor & Activity Dock (Revealed on execute or preview) */}
+        {isMonitorVisible && (
+          <section id="live-shield-monitor" className="animate-fadeIn">
+            <LiveShieldMonitor />
+          </section>
+        )}
       </div>
 
       {/* 4. Footer Information Bar */}

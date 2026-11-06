@@ -21,6 +21,7 @@ export async function runIntent(
   // Reset previous state
   store.resetRun(true);
   store.setRunMode(options?.runMode || 'user');
+  store.setMonitorVisible(true);
 
   soundFx.playStepTick();
 

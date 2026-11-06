@@ -82,6 +82,7 @@ export interface VaultState {
   theme: 'dark' | 'cream';
   cameraFocus: 'all' | 'enclave' | 'gates' | 'chains';
   isStageExpanded: boolean;
+  isMonitorVisible: boolean;
 
   // UI Overlays & Wallet State
   walletConnected: boolean;
@@ -127,6 +128,8 @@ export interface VaultState {
   setCommandPaletteOpen: (open: boolean) => void;
   setGuideModalOpen: (open: boolean) => void;
   setReceiptVisible: (visible: boolean) => void;
+  setMonitorVisible: (visible: boolean) => void;
+  toggleMonitorVisible: () => void;
   applyRunEvent: (event: RunEvent) => void;
   resetRun: (keepGoal?: boolean) => void;
 }
@@ -203,6 +206,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   theme: 'cream',
   cameraFocus: 'all',
   isStageExpanded: false,
+  isMonitorVisible: false,
 
   // Account & Custody State
   walletConnected: true,
@@ -238,6 +242,11 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   setCameraFocus: (cameraFocus) => set({ cameraFocus }),
 
   toggleStageExpanded: () => set((state) => ({ isStageExpanded: !state.isStageExpanded })),
+
+  setMonitorVisible: (isMonitorVisible) => set({ isMonitorVisible }),
+
+  toggleMonitorVisible: () =>
+    set((state) => ({ isMonitorVisible: !state.isMonitorVisible })),
 
   connectWallet: (type, address = 'operator.near', provider = 'NEAR FastAuth Cloud') =>
     set({
