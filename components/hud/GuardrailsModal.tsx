@@ -63,10 +63,10 @@ export function GuardrailsModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs select-none animate-fadeIn">
-      <div className="w-full max-w-xl bg-panel rounded-3xl border border-line p-6 sm:p-7 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-ink/40 backdrop-blur-xs select-none animate-fadeIn">
+      <div className="w-full max-w-xl bg-panel rounded-3xl border border-line shadow-2xl flex flex-col max-h-[92dvh] overflow-hidden my-auto">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-line">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-line shrink-0 bg-panel2/40">
           <div>
             <div className="flex items-center gap-2">
               <h2 className="font-mono text-base sm:text-lg font-bold text-ink">
@@ -87,11 +87,14 @@ export function GuardrailsModal() {
               soundFx.playStepTick();
               setGuardrailsModalOpen(false);
             }}
-            className="w-9 h-9 rounded-full border border-line hover:border-ink/40 flex items-center justify-center text-mute hover:text-ink transition-colors"
+            className="w-8 h-8 rounded-full border border-line hover:border-ink/40 flex items-center justify-center text-mute hover:text-ink transition-colors shrink-0"
           >
             ✕
           </button>
         </div>
+
+        {/* Scrollable Modal Body */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 font-mono text-xs">
 
         {/* 1. Policy Presets (Conservative, Balanced, Custom) */}
         <div className="space-y-2">
@@ -296,15 +299,17 @@ export function GuardrailsModal() {
           </div>
         </div>
 
+        </div>
+
         {/* Footer */}
-        <div className="flex items-center justify-end pt-3 border-t border-line">
+        <div className="flex items-center justify-end p-3.5 sm:p-4 border-t border-line bg-panel2/60 shrink-0">
           <button
             type="button"
             onClick={() => {
               soundFx.playStepTick();
               setGuardrailsModalOpen(false);
             }}
-            className="font-mono text-xs font-bold px-6 py-2.5 rounded-full bg-ink text-void hover:opacity-90 transition-all shadow-xs"
+            className="font-mono text-xs font-bold px-6 py-2 rounded-full bg-ink text-void hover:opacity-90 transition-all shadow-xs"
           >
             Done
           </button>

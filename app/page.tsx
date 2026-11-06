@@ -161,7 +161,7 @@ export default function VaultRoomPage() {
       <ConfidentialityStrip />
 
       {/* 3. Main Workspace Container with Progressive Disclosure */}
-      <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
         {/* TAB 1: VAULT (The Centered Single-Action Treasury Card) */}
         {activeNavTab === "vault" && (
           <section className="animate-fadeIn">

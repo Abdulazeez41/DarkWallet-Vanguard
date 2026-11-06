@@ -13,6 +13,7 @@ import { soundFx } from '@/components/AudioFeedback';
 import { useVaultStore } from '@/lib/store';
 import { VaultCanvas } from '@/components/scene/VaultCanvas';
 import { Terminal } from '@/components/hud/Terminal';
+import { getDerivedChainKeys } from '@/lib/mpcDerivation';
 
 export function ShieldDrawer() {
   const isShieldDrawerOpen = useVaultStore((s) => s.isShieldDrawerOpen);
@@ -25,8 +26,11 @@ export function ShieldDrawer() {
   const settlement = useVaultStore((s) => s.settlement);
   const directive = useVaultStore((s) => s.directive);
   const gateReason = useVaultStore((s) => s.gateReason);
+  const agentAddress = useVaultStore((s) => s.agentAddress);
   const setProofModalOpen = useVaultStore((s) => s.setProofModalOpen);
   const setMpcModalOpen = useVaultStore((s) => s.setMpcModalOpen);
+
+  const derivedKeys = getDerivedChainKeys(agentAddress);
 
   const [showDevView, setShowDevView] = useState(false);
   const [show3dView, setShow3dView] = useState(true);
@@ -247,6 +251,42 @@ export function ShieldDrawer() {
                       Decentralized threshold MPC signs across Bitcoin, Ethereum, and Solana without raw private keys.
                     </p>
                   )}
+
+                  {/* Derived Foreign Chains Quick View */}
+                  <div className="pt-2 space-y-1.5 border-t border-line/60 mt-2">
+                    <div className="flex items-center justify-between text-[10px] text-mute font-medium">
+                      <span>Derived Foreign Keys</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundFx.playStepTick();
+                          setMpcModalOpen(true);
+                        }}
+                        className="text-enclave hover:underline font-semibold"
+                      >
+                        Inspect Proofs ↗
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1.5 text-[10px]">
+                      {derivedKeys.slice(0, 3).map((k) => (
+                        <div
+                          key={k.chain}
+                          className="p-1.5 rounded-xl bg-void border border-line flex flex-col gap-0.5 overflow-hidden"
+                        >
+                          <div className="flex items-center justify-between text-ink font-bold text-[10px]">
+                            <span>{k.chain}</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-pass" />
+                          </div>
+                          <div
+                            className="truncate text-mute font-mono text-[9px] select-all"
+                            title={k.derivedAddress}
+                          >
+                            {k.derivedAddress.slice(0, 6)}...{k.derivedAddress.slice(-4)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

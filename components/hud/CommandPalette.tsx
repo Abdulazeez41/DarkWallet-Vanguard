@@ -155,8 +155,8 @@ export function CommandPalette() {
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-void/80 backdrop-blur-sm select-none">
-      <div className="bg-panel border border-line rounded-lg max-w-xl w-full shadow-2xl overflow-hidden font-mono text-xs">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-14 sm:pt-20 px-3 sm:px-4 bg-ink/40 backdrop-blur-xs select-none animate-fadeIn">
+      <div className="bg-panel border border-line rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden font-mono text-xs max-h-[85dvh] flex flex-col">
         {/* Search Input Bar */}
         <div className="p-3 border-b border-line flex items-center gap-2">
           <span className="text-mute font-bold">⌘</span>

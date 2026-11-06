@@ -49,13 +49,13 @@ export function WalletModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs select-none">
-      <div className="w-full max-w-2xl bg-panel rounded-3xl border border-line p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-ink/40 backdrop-blur-xs select-none animate-fadeIn">
+      <div className="w-full max-w-2xl bg-panel rounded-3xl border border-line shadow-2xl flex flex-col max-h-[92dvh] overflow-hidden my-auto">
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-line">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-line shrink-0 bg-panel2/40">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-panel2 border border-line flex items-center justify-center shadow-xs">
-              <NearLogo size={24} />
+            <div className="w-10 h-10 rounded-2xl bg-panel2 border border-line flex items-center justify-center shadow-xs shrink-0">
+              <NearLogo size={22} />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export function WalletModal() {
                   {walletConnected ? 'Connected' : 'Offline'}
                 </span>
               </div>
-              <p className="font-mono text-xs text-mute">
+              <p className="font-mono text-[11px] sm:text-xs text-mute">
                 Connect via NEAR Cloud (FastAuth) or Normal Web3 Wallets · Dual-Key Security
               </p>
             </div>
@@ -77,11 +77,14 @@ export function WalletModal() {
               soundFx.playStepTick();
               setWalletModalOpen(false);
             }}
-            className="w-9 h-9 rounded-full border border-line hover:border-ink/40 flex items-center justify-center text-mute hover:text-ink transition-colors"
+            className="w-8 h-8 rounded-full border border-line hover:border-ink/40 flex items-center justify-center text-mute hover:text-ink transition-colors shrink-0"
           >
             ✕
           </button>
         </div>
+
+        {/* Scrollable Modal Content */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 font-mono text-xs">
 
         {/* Current Active Connection Status Banner */}
         <div className="p-4 rounded-2xl bg-panel2 border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -461,8 +464,10 @@ export function WalletModal() {
           </div>
         )}
 
+        </div>
+
         {/* Action Controls Footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-line">
+        <div className="flex items-center justify-between p-3.5 sm:p-4 border-t border-line bg-panel2/60 shrink-0 font-mono text-xs">
           <div className="text-xs font-mono text-mute">
             {connectingProvider ? `Connecting ${connectingProvider}...` : 'Status: Ready'}
           </div>
@@ -473,7 +478,7 @@ export function WalletModal() {
               soundFx.playStepTick();
               setWalletModalOpen(false);
             }}
-            className="font-mono text-xs font-bold px-6 py-2.5 rounded-full bg-ink hover:bg-black text-void shadow-sm transition-all active:scale-95"
+            className="font-mono text-xs font-bold px-6 py-2 rounded-full bg-ink hover:opacity-90 text-void shadow-sm transition-all active:scale-95"
           >
             Done
           </button>

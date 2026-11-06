@@ -110,8 +110,8 @@ export function GuideModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none">
-      <div className="bg-panel border border-enclave/40 rounded-xl max-w-2xl w-full shadow-2xl overflow-hidden font-mono text-xs flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-ink/40 backdrop-blur-xs select-none animate-fadeIn">
+      <div className="bg-panel border border-line rounded-3xl max-w-2xl w-full max-h-[92dvh] shadow-2xl overflow-hidden font-mono text-xs flex flex-col my-auto">
         {/* Header Bar */}
         <div className="border-b border-line px-5 py-3.5 flex items-center justify-between bg-panel2/80">
           <div className="flex items-center gap-2.5">

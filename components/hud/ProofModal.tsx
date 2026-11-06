@@ -26,10 +26,10 @@ export function ProofModal() {
   const badgeInfo = getAttestationBadge(attestation);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none">
-      <div className="bg-panel border border-line rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden font-mono text-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-ink/40 backdrop-blur-xs select-none animate-fadeIn">
+      <div className="bg-panel border border-line rounded-3xl max-w-2xl w-full max-h-[92dvh] flex flex-col shadow-2xl overflow-hidden font-mono text-xs my-auto">
         {/* Modal Header */}
-        <div className="border-b border-line px-5 py-3.5 flex items-center justify-between bg-panel2/60">
+        <div className="border-b border-line p-4 sm:p-5 flex items-center justify-between bg-panel2/60 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-2.5 h-2.5 rounded-full bg-enclave shadow-glow-enclave" />
             <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-ink">

@@ -62,24 +62,24 @@ export function MpcDerivationModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/30 backdrop-blur-xs select-none overflow-y-auto">
-      <div className="w-full max-w-2xl bg-panel rounded-3xl border border-line p-6 sm:p-8 shadow-2xl space-y-6 my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-ink/40 backdrop-blur-xs select-none animate-fadeIn">
+      <div className="w-full max-w-2xl bg-panel rounded-3xl border border-line shadow-2xl flex flex-col max-h-[92dvh] overflow-hidden my-auto">
         {/* Modal Header */}
-        <div className="flex items-start justify-between pb-4 border-b border-line">
+        <div className="flex items-start justify-between p-4 sm:p-5 border-b border-line shrink-0 bg-panel2/40">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-mono text-xs font-bold text-enclave uppercase tracking-wider flex items-center gap-2">
+              <span className="font-mono text-[10px] sm:text-xs font-bold text-enclave uppercase tracking-wider flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-enclave" />
                 NEAR PROTOCOL CHAIN SIGNATURES
               </span>
-              <span className="font-mono text-[11px] px-2.5 py-0.5 rounded-full bg-panel2 text-mute border border-line font-medium">
+              <span className="font-mono text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full bg-panel2 text-mute border border-line font-medium">
                 v1.signer MPC
               </span>
             </div>
-            <h2 className="font-mono text-lg font-bold text-ink">
+            <h2 className="font-mono text-base sm:text-lg font-bold text-ink">
               NEAR MPC Key Derivation Inspector
             </h2>
-            <p className="font-mono text-xs text-mute mt-1">
+            <p className="font-mono text-[11px] sm:text-xs text-mute mt-0.5">
               One NEAR account controls Bitcoin, Ethereum, and Solana natively without bridges.
             </p>
           </div>
@@ -89,140 +89,148 @@ export function MpcDerivationModal() {
               soundFx.playStepTick();
               setMpcModalOpen(false);
             }}
-            className="w-8 h-8 rounded-full border border-line hover:border-ink/40 flex items-center justify-center text-mute hover:text-ink transition-colors"
+            className="w-8 h-8 rounded-full border border-line hover:border-ink/40 flex items-center justify-center text-mute hover:text-ink transition-colors shrink-0"
           >
             ✕
           </button>
         </div>
 
-        {/* Cryptographic Architecture Card */}
-        <div className="p-5 rounded-2xl bg-panel2 border border-line font-mono space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-            <span className="font-bold text-ink flex items-center gap-2">
-              <span>Root Signer Contract:</span>
-              <code className="px-2 py-0.5 rounded-md bg-panel border border-line text-enclave">
-                {ROOT_MPC_CONTRACT_MAINNET}
-              </code>
-            </span>
-            <span className="text-mute font-medium">SECP256K1 Threshold MPC</span>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-void border border-line text-xs space-y-1.5 leading-relaxed">
-            <div className="font-bold text-ink">Additive Derivation Equation:</div>
-            <div className="text-enclave font-bold">
-              P_child = P_root + SHA256(account_id || &apos;,&apos; || path) * G
+        {/* Scrollable Modal Content */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 font-mono text-xs">
+          {/* Cryptographic Architecture Card */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-panel2 border border-line font-mono space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs">
+              <span className="font-bold text-ink flex items-center gap-1.5">
+                <span>Root Signer:</span>
+                <code className="px-2 py-0.5 rounded-md bg-panel border border-line text-enclave text-[11px]">
+                  {ROOT_MPC_CONTRACT_MAINNET}
+                </code>
+              </span>
+              <span className="text-mute text-[11px] font-medium">SECP256K1 Threshold MPC</span>
             </div>
-            <p className="text-[11px] text-mute pt-1">
-              The root private key is distributed across validator threshold shares. No single entity or server ever possesses the private key for any foreign address.
-            </p>
-          </div>
-        </div>
 
-        {/* Derived Foreign Chains Table */}
-        <div className="space-y-3 font-mono">
-          <div className="flex items-center justify-between text-xs text-mute font-medium px-1">
-            <span>DERIVED FOREIGN ACCOUNTS FOR: <strong className="text-ink">{agentAddress}</strong></span>
-            <span>4 Rails Connected</span>
-          </div>
-
-          <div className="space-y-2.5">
-            {derivedKeys.map((item) => (
-              <div
-                key={item.chain}
-                className="p-4 rounded-2xl bg-panel2 border border-line space-y-2 hover:border-ink/30 transition-all shadow-xs"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    {getChainIcon(item.chain)}
-                    <span className="font-bold text-sm text-ink">{item.chain}</span>
-                    <span className="text-xs text-mute font-medium">({item.derivationPath})</span>
-                  </div>
-                  <span className="text-xs font-bold text-pass flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-pass" />
-                    {item.status}
-                  </span>
-                </div>
-
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
-                  <div className="text-xs text-ink font-bold truncate max-w-md bg-panel px-3 py-1.5 rounded-xl border border-line">
-                    {item.derivedAddress}
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(item.derivedAddress, item.chain)}
-                      className="text-xs font-medium px-3 py-1 rounded-full border border-line bg-panel hover:bg-void text-mute hover:text-ink transition-colors"
-                    >
-                      {copiedKey === item.chain ? '✓ Copied' : 'Copy'}
-                    </button>
-                    <a
-                      href={item.explorerUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs font-medium px-3 py-1 rounded-full border border-line bg-panel hover:bg-void text-enclave transition-colors flex items-center gap-1"
-                    >
-                      <span>Explorer</span>
-                      <span className="text-[10px]">↗</span>
-                    </a>
-                  </div>
-                </div>
+            <div className="p-3 rounded-xl bg-void border border-line text-xs space-y-1 leading-relaxed">
+              <div className="font-bold text-ink text-[11px]">Additive Derivation Equation:</div>
+              <div className="text-enclave font-bold text-[11px] sm:text-xs break-all">
+                P_child = P_root + SHA256(account_id || &apos;,&apos; || path) * G
               </div>
-            ))}
+              <p className="text-[10px] sm:text-[11px] text-mute pt-0.5">
+                The root private key is distributed across validator threshold shares. No single server ever possesses raw foreign private keys.
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* Live Threshold Signature Proof Card */}
-        <div className="p-4 rounded-2xl bg-void border border-line font-mono text-xs space-y-2 text-mute">
-          <div className="flex items-center justify-between">
-            <span className="font-bold text-ink uppercase tracking-wider">
-              Live MPC Signature Proof ({selectedChain}):
-            </span>
-            <div className="flex gap-1.5">
-              {(['Ethereum', 'Bitcoin', 'Solana'] as const).map((chain) => (
-                <button
-                  key={chain}
-                  onClick={() => setSelectedChain(chain)}
-                  className={`px-2.5 py-0.5 rounded-full text-xs font-medium border transition-all ${
-                    selectedChain === chain
-                      ? 'bg-ink text-void border-ink'
-                      : 'bg-panel border-line text-mute hover:text-ink'
-                  }`}
+          {/* Derived Foreign Chains Table */}
+          <div className="space-y-2 font-mono">
+            <div className="flex items-center justify-between text-[11px] sm:text-xs text-mute font-medium px-1">
+              <span className="truncate max-w-[280px] sm:max-w-none">
+                DERIVED ACCOUNTS FOR: <strong className="text-ink">{agentAddress}</strong>
+              </span>
+              <span className="shrink-0">4 Rails Connected</span>
+            </div>
+
+            <div className="space-y-2">
+              {derivedKeys.map((item) => (
+                <div
+                  key={item.chain}
+                  className="p-3 sm:p-3.5 rounded-2xl bg-panel2 border border-line space-y-1.5 hover:border-ink/30 transition-all shadow-xs"
                 >
-                  {chain}
-                </button>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {getChainIcon(item.chain)}
+                      <span className="font-bold text-xs sm:text-sm text-ink">{item.chain}</span>
+                      <span className="text-[10px] sm:text-xs text-mute font-medium">({item.derivationPath})</span>
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-bold text-pass flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-pass" />
+                      {item.status}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-0.5">
+                    <div 
+                      className="flex-1 min-w-0 text-[11px] sm:text-xs text-ink font-semibold truncate bg-panel px-3 py-1.5 rounded-xl border border-line select-all"
+                      title={item.derivedAddress}
+                    >
+                      {item.derivedAddress}
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(item.derivedAddress, item.chain)}
+                        className="text-xs font-medium px-3 py-1 rounded-full border border-line bg-panel hover:bg-void text-mute hover:text-ink transition-colors"
+                      >
+                        {copiedKey === item.chain ? '✓ Copied' : 'Copy'}
+                      </button>
+                      <a
+                        href={item.explorerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium px-3 py-1 rounded-full border border-line bg-panel hover:bg-void text-enclave transition-colors flex items-center gap-1"
+                      >
+                        <span>Explorer</span>
+                        <span className="text-[10px]">↗</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
-            <div>
-              <span className="text-mute">Digest Hash: </span>
-              <span className="text-ink font-bold truncate block">{proof.requestPayloadHash}</span>
-            </div>
-            <div>
-              <span className="text-mute">Validator Consensus: </span>
-              <span className="text-pass font-bold block">{proof.mpcNodeQuorum}</span>
-            </div>
-            <div className="sm:col-span-2">
-              <span className="text-mute">ECDSA Signature (r, s, v=0): </span>
-              <span className="text-ink font-mono text-[10px] break-all block bg-panel p-2 rounded-lg border border-line mt-1">
-                r: {proof.signatureR}<br />
-                s: {proof.signatureS}
+          {/* Live Threshold Signature Proof Card */}
+          <div className="p-3 sm:p-3.5 rounded-2xl bg-void border border-line font-mono text-xs space-y-2 text-mute">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <span className="font-bold text-ink uppercase tracking-wider text-[11px]">
+                Live MPC Signature Proof ({selectedChain}):
               </span>
+              <div className="flex gap-1">
+                {(['Ethereum', 'Bitcoin', 'Solana'] as const).map((chain) => (
+                  <button
+                    key={chain}
+                    onClick={() => setSelectedChain(chain)}
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium border transition-all ${
+                      selectedChain === chain
+                        ? 'bg-ink text-void border-ink'
+                        : 'bg-panel border-line text-mute hover:text-ink'
+                    }`}
+                  >
+                    {chain}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] sm:text-[11px]">
+              <div>
+                <span className="text-mute">Digest Hash: </span>
+                <span className="text-ink font-bold truncate block">{proof.requestPayloadHash}</span>
+              </div>
+              <div>
+                <span className="text-mute">Validator Consensus: </span>
+                <span className="text-pass font-bold block">{proof.mpcNodeQuorum}</span>
+              </div>
+              <div className="sm:col-span-2">
+                <span className="text-mute">ECDSA Signature (r, s, v=0): </span>
+                <span className="text-ink font-mono text-[10px] break-all block bg-panel p-2 rounded-lg border border-line mt-1 max-h-20 overflow-y-auto select-all">
+                  r: {proof.signatureR}<br />
+                  s: {proof.signatureS}
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center justify-between p-3.5 sm:p-4 border-t border-line bg-panel2/60 shrink-0 font-mono text-xs">
           <a
             href="https://docs.near.org/abstraction/chain-signatures"
             target="_blank"
             rel="noopener noreferrer"
             className="font-mono text-xs font-medium text-enclave hover:underline flex items-center gap-1"
           >
-            <span>NEAR Chain Signatures Documentation</span>
+            <span>Documentation</span>
             <span>↗</span>
           </a>
 
@@ -232,7 +240,7 @@ export function MpcDerivationModal() {
               soundFx.playStepTick();
               setMpcModalOpen(false);
             }}
-            className="font-mono text-xs font-bold px-6 py-2.5 rounded-full bg-ink hover:opacity-90 text-void shadow-xs transition-all"
+            className="font-mono text-xs font-bold px-5 py-2 rounded-full bg-ink hover:opacity-90 text-void shadow-xs transition-all"
           >
             Done
           </button>

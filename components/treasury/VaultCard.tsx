@@ -95,11 +95,11 @@ export function VaultCard() {
   );
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-4">
+    <div className="w-full max-w-2xl mx-auto space-y-3.5">
       {/* The Centered Vanguard Vault Card */}
-      <div className="w-full bg-panel rounded-3xl border border-line p-6 sm:p-8 shadow-xs space-y-6">
+      <div className="w-full bg-panel rounded-3xl border border-line p-5 sm:p-7 shadow-xs space-y-4 sm:space-y-5">
         {/* Card Header: Plain English Title & Treasury Balance */}
-        <div className="flex items-center justify-between pb-4 border-b border-line">
+        <div className="flex items-center justify-between pb-3.5 border-b border-line">
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-mono text-base sm:text-lg font-bold text-ink tracking-tight">
@@ -109,41 +109,41 @@ export function VaultCard() {
                 Intel TDX
               </span>
             </div>
-            <p className="font-mono text-xs text-mute mt-0.5">
+            <p className="font-mono text-[11px] sm:text-xs text-mute mt-0.5">
               Confidential computation on NEAR AI Cloud & NEAR Intents
             </p>
           </div>
 
           <div className="text-right font-mono">
-            <div className="text-[11px] text-mute uppercase font-semibold">Protected Treasury</div>
-            <div className="text-lg sm:text-xl font-bold text-ink tracking-tight tabular-nums">
+            <div className="text-[10px] sm:text-[11px] text-mute uppercase font-semibold">Protected Treasury</div>
+            <div className="text-base sm:text-xl font-bold text-ink tracking-tight tabular-nums">
               ${currentBalance}
             </div>
           </div>
         </div>
 
         {/* Input Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           {/* Natural Language Intent Input */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="font-mono text-xs sm:text-sm font-bold text-ink uppercase tracking-wider flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-enclave" />
                 What should your agent do?
               </span>
-              <span className="text-[11px] font-normal text-mute">
+              <span className="text-[10px] sm:text-[11px] font-normal text-mute">
                 Plain English · Encrypted in memory
               </span>
             </label>
 
             <div className="relative">
               <textarea
-                rows={3}
+                rows={2}
                 value={inputGoal}
                 onChange={(e) => setInputGoal(e.target.value)}
                 disabled={isRunning}
                 placeholder="e.g. Rebalance 25 USDC from Solana to Ethereum via NEAR Intents for higher staking yield..."
-                className="w-full bg-void border border-line rounded-2xl p-4 font-mono text-base text-ink placeholder:text-mute/50 focus:outline-none focus:border-ink/50 transition-colors resize-none shadow-xs leading-relaxed"
+                className="w-full bg-void border border-line rounded-2xl p-3.5 sm:p-4 font-mono text-base text-ink placeholder:text-mute/50 focus:outline-none focus:border-ink/50 transition-colors resize-none shadow-xs leading-relaxed"
               />
             </div>
           </div>
