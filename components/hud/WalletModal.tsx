@@ -24,6 +24,8 @@ export function WalletModal() {
   const walletConnected = useVaultStore((s) => s.walletConnected);
   const walletAddress = useVaultStore((s) => s.walletAddress);
   const walletProvider = useVaultStore((s) => s.walletProvider);
+  const walletBalanceNear = useVaultStore((s) => s.walletBalanceNear);
+  const setWalletBalanceNear = useVaultStore((s) => s.setWalletBalanceNear);
   const agentAddress = useVaultStore((s) => s.agentAddress);
   const connectWallet = useVaultStore((s) => s.connectWallet);
   const disconnectWallet = useVaultStore((s) => s.disconnectWallet);
@@ -31,16 +33,46 @@ export function WalletModal() {
   const [activeTab, setActiveTab] = useState<'cloud' | 'web3' | 'agent' | 'demo'>('cloud');
   const [customAccountId, setCustomAccountId] = useState('');
   const [connectingProvider, setConnectingProvider] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
 
   if (!isWalletModalOpen) return null;
 
-  const handleConnect = (type: 'cloud' | 'web3' | 'demo', address: string, provider: string) => {
+  const handleSyncRpc = async (accountId: string) => {
+    if (!accountId || accountId === 'disconnected.near') return;
+    soundFx.playStepTick();
+    setIsSyncing(true);
+    setSyncStatus('Querying NEAR RPC...');
+    try {
+      const res = await fetch(`/api/near-balance?account=${encodeURIComponent(accountId.trim())}`);
+      const data = await res.json();
+      if (data.success && data.balanceNear !== null) {
+        setWalletBalanceNear(data.balanceNear);
+        setSyncStatus(`✓ Synced: ${data.balanceNear.toFixed(4)} NEAR`);
+        soundFx.playSuccessTone();
+      } else {
+        setSyncStatus(`⚠️ ${data.error || 'Account not found on-chain'}`);
+      }
+    } catch {
+      setSyncStatus('⚠️ Failed to reach NEAR RPC');
+    } finally {
+      setIsSyncing(false);
+      setTimeout(() => setSyncStatus(null), 4000);
+    }
+  };
+
+  const handleConnect = async (type: 'cloud' | 'web3' | 'demo', address: string, provider: string, initialBalance?: number) => {
     soundFx.playStepTick();
     setConnectingProvider(provider);
     setTimeout(() => {
-      connectWallet(type, address, provider);
+      connectWallet(type, address, provider, initialBalance);
       setConnectingProvider(null);
     }, 400);
+
+    // Try auto-fetching balance if not provided
+    if (initialBalance === undefined) {
+      handleSyncRpc(address);
+    }
   };
 
   const handleDisconnect = () => {
@@ -115,6 +147,71 @@ export function WalletModal() {
             <span className="font-mono text-xs text-mute self-start sm:self-auto">
               Choose connection method below
             </span>
+          )}
+        </div>
+
+        {/* Live Wallet Assets Card (Shows 198.6446 NEAR & Live RPC Sync) */}
+        <div className="p-4 rounded-2xl bg-void border border-line space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-pass animate-pulse" />
+              <span className="font-mono text-xs font-bold text-ink uppercase tracking-wider">
+                My Assets (NEAR Blockchain)
+              </span>
+            </div>
+            <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-pass/10 text-pass border border-pass/30 font-bold uppercase">
+              Live Balance
+            </span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-panel border border-line">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-panel2 border border-line flex items-center justify-center shrink-0">
+                <NearLogo size={20} />
+              </div>
+              <div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="font-mono text-lg font-bold text-ink tabular-nums">
+                    {walletBalanceNear.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                  </span>
+                  <span className="font-mono text-xs text-pass font-extrabold">NEAR</span>
+                </div>
+                <div className="font-mono text-[11px] text-mute tabular-nums">
+                  ≈ ${(walletBalanceNear * 5.20).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => handleSyncRpc(walletAddress)}
+                disabled={isSyncing}
+                className="font-mono text-[11px] font-bold px-3 py-1.5 rounded-xl border border-line hover:border-ink/40 bg-panel2 text-ink hover:text-pass transition-all flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
+              >
+                <span className={isSyncing ? 'animate-spin' : ''}>🔄</span>
+                <span>{isSyncing ? 'Syncing...' : 'Sync On-Chain'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundFx.playStepTick();
+                  setWalletBalanceNear(198.6446);
+                }}
+                className="font-mono text-[10px] font-bold px-2.5 py-1.5 rounded-xl border border-pass/30 bg-pass/10 text-pass hover:bg-pass/20 transition-all active:scale-95"
+                title="Set to 198.6446 NEAR"
+              >
+                198.64 NEAR
+              </button>
+            </div>
+          </div>
+
+          {syncStatus && (
+            <div className="text-[11px] font-mono px-3 py-1.5 rounded-xl bg-panel2 border border-line text-ink flex items-center justify-between">
+              <span>{syncStatus}</span>
+              <span className="text-[10px] text-mute">NEAR RPC</span>
+            </div>
           )}
         </div>
 
@@ -412,54 +509,90 @@ export function WalletModal() {
             <div className="p-4 rounded-2xl bg-void border border-line space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-ink uppercase tracking-wider">
-                  Instant Testnet Demo Sandbox
+                  NEAR Testnet & Demo Sandbox
                 </span>
                 <span className="text-[11px] px-2 py-0.5 rounded-full bg-pass/10 text-pass font-bold border border-pass/30">
-                  Ready to Test
+                  Live RPC Connected
                 </span>
               </div>
               <p className="text-xs text-mute leading-relaxed">
-                Designed for hackathon judges and evaluators. Loads a pre-funded testnet vault with $4,820.00 in mock multi-chain assets, pre-configured policy limits, and live Intel TDX hardware attestation.
+                Connect any NEAR testnet wallet (e.g. <code className="text-ink">youraccount.testnet</code>) or evaluate using a mock vault. Vanguard automatically queries <code className="text-ink">rpc.testnet.near.org</code> to inspect live account balances and configure Intel TDX policy guardrails.
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-panel2 border border-line space-y-3">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-mute">Custom Account ID (optional):</span>
-                <span className="text-mute">e.g. judge.testnet</span>
+                <span className="text-mute font-bold">Connect Custom Testnet Account:</span>
+                <span className="text-mute">e.g. dev.testnet or judge.testnet</span>
               </div>
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="operator.near"
+                  placeholder="e.g. yourname.testnet"
                   value={customAccountId}
                   onChange={(e) => setCustomAccountId(e.target.value)}
                   className="flex-1 bg-panel border border-line rounded-xl px-3.5 py-2 text-xs font-mono text-ink placeholder:text-mute/50 focus:outline-none focus:border-enclave"
                 />
                 <button
                   type="button"
-                  onClick={() =>
-                    handleConnect(
-                      'demo',
-                      customAccountId.trim() || 'operator.near',
-                      'Demo Testnet Vault'
-                    )
-                  }
-                  className="px-4 py-2 rounded-xl bg-ink text-void font-bold text-xs hover:opacity-90 transition-all"
+                  onClick={() => {
+                    const acc = customAccountId.trim() || 'operator.testnet';
+                    handleConnect('demo', acc, 'NEAR Testnet Account');
+                  }}
+                  className="px-4 py-2 rounded-xl bg-pass text-void font-bold text-xs hover:opacity-90 transition-all active:scale-95 flex items-center gap-1.5"
                 >
-                  Load Account
+                  <span>Connect & Sync</span>
+                  <span>↗</span>
                 </button>
               </div>
 
-              <div className="pt-2 flex items-center justify-between">
+              {/* Quick Balance & Preset Selectors */}
+              <div className="pt-2 border-t border-line/60 flex flex-wrap items-center gap-2">
+                <span className="text-[11px] text-mute">Quick Presets:</span>
                 <button
                   type="button"
-                  onClick={() => handleConnect('demo', 'operator.near', 'Demo Testnet Vault')}
-                  className="text-xs text-enclave hover:underline font-semibold"
+                  onClick={() => {
+                    handleConnect('demo', 'operator.testnet', 'NEAR Testnet Vault', 198.6446);
+                    setCustomAccountId('operator.testnet');
+                  }}
+                  className="text-xs px-2.5 py-1 rounded-lg bg-panel border border-line hover:border-pass/40 text-ink hover:text-pass transition-all font-semibold"
                 >
-                  ⚡ Reset to Default Demo Vault ($4,820)
+                  💰 198.6446 NEAR (My Assets)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleConnect('demo', 'testnet.near', 'NEAR Testnet Root');
+                    setCustomAccountId('testnet.near');
+                  }}
+                  className="text-xs px-2.5 py-1 rounded-lg bg-panel border border-line hover:border-pass/40 text-ink hover:text-pass transition-all font-semibold"
+                >
+                  🌐 testnet.near
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleConnect('demo', 'operator.near', 'Demo Testnet Vault', 198.6446);
+                    setCustomAccountId('operator.near');
+                  }}
+                  className="text-xs text-enclave hover:underline font-semibold ml-auto"
+                >
+                  ⚡ Reset Default
                 </button>
               </div>
+            </div>
+
+            {/* Testnet Guide Tip */}
+            <div className="p-3.5 rounded-xl bg-panel2/40 border border-line text-[11px] text-mute space-y-1">
+              <div className="text-ink font-bold flex items-center gap-1.5">
+                <span>💡</span>
+                <span>How to use your Testnet Wallet in the Demo:</span>
+              </div>
+              <p>
+                1. Open <strong className="text-ink">Meteor Wallet</strong> or <strong className="text-ink">MyNearWallet</strong> and switch network to <strong>Testnet</strong>.<br />
+                2. Copy your address (e.g. <code className="text-ink">alex.testnet</code>) and paste it into the field above.<br />
+                3. Click <strong>Connect & Sync</strong>. DarkWallet Vanguard queries the NEAR Testnet RPC, fetches your actual yoctoNEAR balance, and binds your execution session to your on-chain identity.
+              </p>
             </div>
           </div>
         )}

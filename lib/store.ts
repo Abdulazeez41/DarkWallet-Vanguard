@@ -94,6 +94,8 @@ export interface VaultState {
   agentAddress: string;
   walletType: 'cloud' | 'web3' | 'demo' | null;
   walletProvider: string;
+  walletBalanceNear: number;
+  nearPriceUsd: number;
   isWalletModalOpen: boolean;
   isMpcModalOpen: boolean;
   isProofModalOpen: boolean;
@@ -106,9 +108,11 @@ export interface VaultState {
   setTheme: (theme: 'dark' | 'light') => void;
   setCameraFocus: (focus: 'all' | 'enclave' | 'gates' | 'chains') => void;
   toggleStageExpanded: () => void;
-  connectWallet: (type: 'cloud' | 'web3' | 'demo', address?: string, provider?: string) => void;
+  connectWallet: (type: 'cloud' | 'web3' | 'demo', address?: string, provider?: string, balanceNear?: number) => void;
   disconnectWallet: () => void;
   toggleWallet: () => void;
+  setWalletBalanceNear: (balance: number) => void;
+  setNearPriceUsd: (price: number) => void;
   setWalletModalOpen: (open: boolean) => void;
   setMpcModalOpen: (open: boolean) => void;
   setStage: (stage: Stage) => void;
@@ -226,6 +230,8 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   agentAddress: 'vanguard-agent.near',
   walletType: 'cloud',
   walletProvider: 'NEAR FastAuth Cloud',
+  walletBalanceNear: 198.6446,
+  nearPriceUsd: 5.20,
   isWalletModalOpen: false,
   isMpcModalOpen: false,
   isProofModalOpen: false,
@@ -294,13 +300,18 @@ export const useVaultStore = create<VaultState>((set, get) => ({
     }
   },
 
-  connectWallet: (type, address = 'operator.near', provider = 'NEAR FastAuth Cloud') =>
-    set({
+  connectWallet: (type, address = 'operator.near', provider = 'NEAR FastAuth Cloud', balanceNear) =>
+    set((state) => ({
       walletConnected: true,
       walletType: type,
       walletAddress: address,
       walletProvider: provider,
-    }),
+      walletBalanceNear: balanceNear !== undefined ? balanceNear : state.walletBalanceNear,
+    })),
+
+  setWalletBalanceNear: (walletBalanceNear) => set({ walletBalanceNear }),
+
+  setNearPriceUsd: (nearPriceUsd) => set({ nearPriceUsd }),
 
   disconnectWallet: () =>
     set({

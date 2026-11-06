@@ -57,8 +57,13 @@ export function VaultCard() {
   const policyPreset = useVaultStore((s) => s.policyPreset);
   const lastGoal = useVaultStore((s) => s.lastGoal);
   const stats = useVaultStore((s) => s.stats);
+  const walletConnected = useVaultStore((s) => s.walletConnected);
+  const walletAddress = useVaultStore((s) => s.walletAddress);
+  const walletBalanceNear = useVaultStore((s) => s.walletBalanceNear);
+  const nearPriceUsd = useVaultStore((s) => s.nearPriceUsd);
   const setGuardrailsModalOpen = useVaultStore((s) => s.setGuardrailsModalOpen);
   const setShieldDrawerOpen = useVaultStore((s) => s.setShieldDrawerOpen);
+  const setWalletModalOpen = useVaultStore((s) => s.setWalletModalOpen);
 
   const [inputGoal, setInputGoal] = useState(lastGoal);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
@@ -87,12 +92,16 @@ export function VaultCard() {
     );
   };
 
-  // Human treasury balance calculation with tabular numerals
-  const baseBalance = 1420.5;
-  const currentBalance = (baseBalance + stats.cumulativePnlUsd - policy.spentInSessionUsd).toLocaleString(
-    'en-US',
-    { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-  );
+  // Live treasury balance calculation in native NEAR and estimated USD
+  const estimatedUsd = walletBalanceNear * nearPriceUsd + stats.cumulativePnlUsd - policy.spentInSessionUsd;
+  const formattedUsd = Math.max(0, estimatedUsd).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  const formattedNear = walletBalanceNear.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  });
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-3.5">
@@ -114,12 +123,28 @@ export function VaultCard() {
             </p>
           </div>
 
-          <div className="text-right font-mono">
-            <div className="text-[10px] sm:text-[11px] text-mute uppercase font-semibold">Protected Treasury</div>
-            <div className="text-base sm:text-xl font-bold text-ink tracking-tight tabular-nums">
-              ${currentBalance}
+          <button
+            type="button"
+            onClick={() => {
+              soundFx.playStepTick();
+              setWalletModalOpen(true);
+            }}
+            className="text-right font-mono p-1.5 -mr-2 rounded-2xl hover:bg-panel2/60 transition-all cursor-pointer group"
+            title="Click to view wallet assets, inspect accounts, or sync with NEAR RPC"
+          >
+            <div className="text-[10px] sm:text-[11px] text-mute uppercase font-semibold flex items-center justify-end gap-1.5 group-hover:text-pass transition-colors">
+              <span className="w-1.5 h-1.5 rounded-full bg-pass animate-pulse" />
+              <span>Protected Assets</span>
+              <span className="text-[10px] opacity-70 group-hover:opacity-100">⚙️</span>
             </div>
-          </div>
+            <div className="text-base sm:text-lg font-bold text-ink tracking-tight tabular-nums flex items-baseline justify-end gap-1">
+              <span>{formattedNear}</span>
+              <span className="text-xs text-pass font-extrabold">NEAR</span>
+            </div>
+            <div className="text-[10px] text-mute tabular-nums">
+              ≈ ${formattedUsd} USD
+            </div>
+          </button>
         </div>
 
         {/* Input Form */}
