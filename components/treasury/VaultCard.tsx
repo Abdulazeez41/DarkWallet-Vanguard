@@ -193,12 +193,12 @@ export function VaultCard() {
             </button>
           </div>
 
-          {/* Primary Action Button */}
+          {/* Primary Action Button (Rule 1 & 2: One bright hero button per screen, black text on mint) */}
           <div>
             <button
               type="submit"
               disabled={isRunning || !inputGoal.trim()}
-              className="w-full font-mono text-sm sm:text-base font-bold py-4 px-6 rounded-full bg-ink hover:opacity-90 text-void shadow-sm transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full font-mono text-sm sm:text-base font-bold py-3.5 sm:py-4 px-6 rounded-full bg-pass text-void hover:brightness-110 shadow-lg shadow-pass/20 transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 tracking-wide"
             >
               {isRunning ? (
                 <>

@@ -60,17 +60,17 @@ export function ShieldDrawer() {
                 Shield Execution Inspector
               </h2>
               <span
-                className={`font-mono text-[10px] px-2 py-0.5 rounded-full uppercase font-bold border ${
+                className={`font-mono text-[10px] px-2.5 py-0.5 rounded-full uppercase font-bold border ${
                   isRunning
-                    ? 'bg-enclave/10 text-enclave border-enclave/30 animate-pulse'
+                    ? 'bg-enclave/15 text-enclave border-enclave/40 animate-pulse'
                     : isSettled
-                    ? 'bg-pass/10 text-pass border-pass/30'
+                    ? 'bg-pass/15 text-pass border-pass/40'
                     : isBlocked
-                    ? 'bg-block/10 text-block border-block/30'
+                    ? 'bg-block/15 text-block border-block/40'
                     : 'bg-panel text-mute border-line'
                 }`}
               >
-                {isRunning ? 'Processing' : isSettled ? 'Verified & Settled' : isBlocked ? 'Blocked' : 'Idle'}
+                {isRunning ? '⏳ Processing' : isSettled ? '✓ Verified & Settled' : isBlocked ? '✕ Blocked' : '● Idle'}
               </span>
             </div>
             <p className="font-mono text-xs text-mute">
@@ -177,37 +177,37 @@ export function ShieldDrawer() {
 
                   <div className="grid grid-cols-3 gap-1.5 pt-0.5">
                     <div
-                      className={`p-2 rounded-lg border text-center ${
+                      className={`p-2 rounded-lg border text-center text-[10px] sm:text-xs ${
                         gates.spend === 'passed'
-                          ? 'bg-pass/10 text-pass border-pass/30 font-bold'
+                          ? 'bg-pass/15 text-pass border-pass/40 font-bold'
                           : gates.spend === 'failed'
-                          ? 'bg-block/10 text-block border-block/30 font-bold'
+                          ? 'bg-block/15 text-block border-block/40 font-bold'
                           : 'bg-panel border-line text-mute'
                       }`}
                     >
-                      Gate 1: Spend
+                      {gates.spend === 'passed' ? '✓ ' : gates.spend === 'failed' ? '✕ ' : ''}Gate 1: Spend
                     </div>
                     <div
-                      className={`p-2 rounded-lg border text-center ${
+                      className={`p-2 rounded-lg border text-center text-[10px] sm:text-xs ${
                         gates.allowlist === 'passed'
-                          ? 'bg-pass/10 text-pass border-pass/30 font-bold'
+                          ? 'bg-pass/15 text-pass border-pass/40 font-bold'
                           : gates.allowlist === 'failed'
-                          ? 'bg-block/10 text-block border-block/30 font-bold'
+                          ? 'bg-block/15 text-block border-block/40 font-bold'
                           : 'bg-panel border-line text-mute'
                       }`}
                     >
-                      Gate 2: Allowlist
+                      {gates.allowlist === 'passed' ? '✓ ' : gates.allowlist === 'failed' ? '✕ ' : ''}Gate 2: Allowlist
                     </div>
                     <div
-                      className={`p-2 rounded-lg border text-center ${
+                      className={`p-2 rounded-lg border text-center text-[10px] sm:text-xs ${
                         gates.nonce === 'passed'
-                          ? 'bg-pass/10 text-pass border-pass/30 font-bold'
+                          ? 'bg-pass/15 text-pass border-pass/40 font-bold'
                           : gates.nonce === 'failed'
-                          ? 'bg-block/10 text-block border-block/30 font-bold'
+                          ? 'bg-block/15 text-block border-block/40 font-bold'
                           : 'bg-panel border-line text-mute'
                       }`}
                     >
-                      Gate 3: Fresh Nonce
+                      {gates.nonce === 'passed' ? '✓ ' : gates.nonce === 'failed' ? '✕ ' : ''}Gate 3: Nonce
                     </div>
                   </div>
 

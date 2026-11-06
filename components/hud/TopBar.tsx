@@ -66,7 +66,7 @@ export function TopBar() {
         {/* Brand & Hardware Trust */}
         <div className="flex items-center justify-between w-full md:w-auto gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-ink text-void flex items-center justify-center font-mono text-sm font-black shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-pass text-void flex items-center justify-center font-mono text-sm font-black shadow-glow-pass">
               ◆
             </div>
             <div>
@@ -143,13 +143,13 @@ export function TopBar() {
             }}
             className={`hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full border font-mono text-xs font-bold transition-all shadow-xs active:scale-95 ${
               isFrozen
-                ? 'bg-alert/15 border-alert text-alert animate-pulse'
+                ? 'bg-block/15 border-block/50 text-block animate-pulse'
                 : isRunning
-                ? 'bg-enclave/15 border-enclave text-enclave animate-pulse'
+                ? 'bg-enclave/15 border-enclave/50 text-enclave animate-pulse'
                 : isSettled
                 ? 'bg-pass/15 border-pass/50 text-pass'
                 : isBlocked
-                ? 'bg-alert/15 border-alert/50 text-alert'
+                ? 'bg-block/15 border-block/50 text-block'
                 : 'bg-pass/10 border-pass/40 text-ink hover:bg-pass/20'
             }`}
             title="Inspect Shield Pipeline, Cryptographic Proofs & 3D Hardware Telemetry"
@@ -157,26 +157,26 @@ export function TopBar() {
             <span
               className={`w-2 h-2 rounded-full ${
                 isFrozen
-                  ? 'bg-alert'
+                  ? 'bg-block'
                   : isRunning
                   ? 'bg-enclave animate-ping'
                   : isSettled
                   ? 'bg-pass'
                   : isBlocked
-                  ? 'bg-alert'
+                  ? 'bg-block'
                   : 'bg-pass animate-pulse'
               }`}
             />
             <span>
               {isFrozen
-                ? 'Shield: Frozen ❄️'
+                ? '❄️ Shield: Frozen'
                 : isRunning
-                ? 'Shield: Enforcing... ⏳'
+                ? '⏳ Shield: Enforcing...'
                 : isSettled
-                ? 'Shield: Settled ✓'
+                ? '✓ Shield: Settled'
                 : isBlocked
-                ? 'Shield: Blocked ✕'
-                : 'Shield: Active ●'}
+                ? '✕ Shield: Blocked'
+                : '✓ Shield: Active'}
             </span>
           </button>
 
@@ -208,9 +208,9 @@ export function TopBar() {
               toggleTheme();
             }}
             className="p-1.5 px-2.5 rounded-full border border-line bg-panel hover:bg-panel2 text-xs font-mono text-ink transition-all shadow-xs active:scale-95"
-            title={`Switch to ${theme === 'dark' ? 'Oreo Cream' : 'Dark Cocoa'} Mode`}
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'NEAR Dark'} Mode`}
           >
-            <span>{theme === 'dark' ? '🍪' : '🌙'}</span>
+            <span>{theme === 'dark' ? '🌙' : '☀️'}</span>
           </button>
 
           {/* Background Autonomous Daemon Toggle */}

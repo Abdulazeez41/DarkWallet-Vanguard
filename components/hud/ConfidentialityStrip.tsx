@@ -13,25 +13,25 @@ export function ConfidentialityStrip() {
   const guarantees = [
     {
       actor: 'YOU (CLIENT)',
-      access: 'SEEN',
+      access: '👁️ SEEN',
       statusClass: 'text-pass border-pass/40 bg-pass/10',
       description: 'Full unredacted prompt & private directive visibility',
     },
     {
       actor: 'HOST & HYPERVISOR',
-      access: 'SEALED',
+      access: '🔒 SEALED',
       statusClass: 'text-enclave border-enclave/40 bg-enclave/10',
       description: 'Physical RAM & CPU bus encrypted via Intel TDX MKTME',
     },
     {
       actor: 'NEAR AI CLOUD',
-      access: 'SEALED',
+      access: '🔒 SEALED',
       statusClass: 'text-enclave border-enclave/40 bg-enclave/10',
       description: 'Stateless confidential inference · Zero server-side retention',
     },
     {
       actor: 'PUBLIC BLOCKCHAIN',
-      access: 'SEALED',
+      access: '🔒 SEALED',
       statusClass: 'text-enclave border-enclave/40 bg-enclave/10',
       description: 'Gasless settlement via NEAR MPC chain signatures',
     },

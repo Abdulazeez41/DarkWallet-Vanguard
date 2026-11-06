@@ -79,7 +79,7 @@ export interface VaultState {
   };
 
   // Theme & 3D Stage Settings
-  theme: 'dark' | 'cream';
+  theme: 'dark' | 'light';
   cameraFocus: 'all' | 'enclave' | 'gates' | 'chains';
   isStageExpanded: boolean;
   isMonitorVisible: boolean;
@@ -103,7 +103,7 @@ export interface VaultState {
 
   // Actions
   toggleTheme: () => void;
-  setTheme: (theme: 'dark' | 'cream') => void;
+  setTheme: (theme: 'dark' | 'light') => void;
   setCameraFocus: (focus: 'all' | 'enclave' | 'gates' | 'chains') => void;
   toggleStageExpanded: () => void;
   connectWallet: (type: 'cloud' | 'web3' | 'demo', address?: string, provider?: string) => void;
@@ -210,8 +210,8 @@ export const useVaultStore = create<VaultState>((set, get) => ({
     totalRuns: 16,
   },
 
-  // Theme & 3D Camera Focus (Default to signature Oreo Cream filling palette)
-  theme: 'cream',
+  // Theme & 3D Camera Focus (Default to NEAR Hardware Vault Dark palette)
+  theme: 'dark',
   cameraFocus: 'all',
   isStageExpanded: false,
   isMonitorVisible: false,
@@ -235,7 +235,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
 
   toggleTheme: () =>
     set((state) => {
-      const nextTheme = state.theme === 'dark' ? 'cream' : 'dark';
+      const nextTheme = state.theme === 'dark' ? 'light' : 'dark';
       if (typeof document !== 'undefined') {
         document.documentElement.setAttribute('data-theme', nextTheme);
         document.documentElement.classList.toggle('dark', nextTheme === 'dark');
