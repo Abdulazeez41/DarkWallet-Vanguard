@@ -18,7 +18,6 @@ import { useEffect, useRef, useState } from "react";
 import { TopBar } from "@/components/hud/TopBar";
 import { ConfidentialityStrip } from "@/components/hud/ConfidentialityStrip";
 import { TreasuryCommandCard } from "@/components/treasury/TreasuryCommandCard";
-import { AgentGuardrails } from "@/components/treasury/AgentGuardrails";
 import { LiveShieldMonitor } from "@/components/treasury/LiveShieldMonitor";
 import { Receipt } from "@/components/hud/Receipt";
 import { ProofModal } from "@/components/hud/ProofModal";
@@ -112,19 +111,14 @@ export default function VaultRoomPage() {
       {/* 2. Confidentiality Guarantee Strip */}
       <ConfidentialityStrip />
 
-      {/* 3. Main Streamlined Treasury Workspace (Wide Desktop Responsive Fit) */}
-      <div className="flex-1 w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 space-y-6">
-        {/* Top Section: Clean, elegant Treasury & Agent Command Card */}
+      {/* 3. Main Streamlined Treasury Workspace (Centered Master Layout) */}
+      <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Top Hero Section: The Centered Vanguard Vault & Guardrail Card */}
         <section>
           <TreasuryCommandCard />
         </section>
 
-        {/* Middle Section: Agent Guardrails in simple, plain-English safety switches */}
-        <section>
-          <AgentGuardrails />
-        </section>
-
-        {/* Bottom Section: Sleek Live Shield Monitor & Activity */}
+        {/* Bottom Section: Sleek Live Shield Monitor & Activity Dock */}
         <section>
           <LiveShieldMonitor />
         </section>
