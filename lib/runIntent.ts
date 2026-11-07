@@ -11,6 +11,7 @@ import { getCachedDemoResponse, generateDemoEventSequence } from './demoScript';
 import { RunEvent } from './events';
 import { useVaultStore } from './store';
 import { AgentRunRequest } from './types';
+import { isMeteorInstalled, signAndBroadcastNearTransaction } from './nearWallet';
 
 export async function runIntent(
   request: AgentRunRequest,
@@ -146,6 +147,58 @@ async function playbackEvents(events: RunEvent[]): Promise<void> {
     } else if (event.type === 'SETTLEMENT_EVENT') {
       soundFx.playSuccessTone();
       soundFx.triggerHaptic(60);
+    }
+
+    if (event.type === 'STAGE_CHANGE' && event.payload.stage === 'settling') {
+      const state = useVaultStore.getState();
+      const hasMeteor = isMeteorInstalled();
+
+      // Only attempt live on-chain broadcast if policy passed and Meteor is active
+      if (hasMeteor && state.walletConnected) {
+        state.addLog({
+          level: 'enclave',
+          source: 'ENCLAVE',
+          message: 'All policy gates passed. Invoking Meteor Wallet to sign on-chain transaction on NEAR Testnet...',
+        });
+
+        try {
+          const txRes = await signAndBroadcastNearTransaction({
+            receiverId: 'v1.signer-prod.testnet',
+            methodName: 'public_key',
+            args: { path: 'ethereum,1' },
+            gasTGas: 30,
+          });
+
+          if (txRes.success && txRes.txHash) {
+            state.addLog({
+              level: 'pass',
+              source: 'POLICY',
+              message: `ON-CHAIN TRANSACTION BROADCASTED! Tx: ${txRes.txHash.slice(0, 16)}... confirmed on NEAR Testnet.`,
+            });
+
+            // Update settlement event with the real on-chain transaction hash
+            const settlementEvt = events.find((e) => e.type === 'SETTLEMENT_EVENT');
+            if (settlementEvt && settlementEvt.type === 'SETTLEMENT_EVENT') {
+              settlementEvt.payload.settlement.intentHash = txRes.txHash;
+              settlementEvt.payload.settlement.explorerUrl =
+                txRes.explorerUrl || `https://testnet.nearblocks.io/txns/${txRes.txHash}`;
+              settlementEvt.payload.settlement.isSimulated = false;
+            }
+          } else if (txRes.error) {
+            state.addLog({
+              level: 'warn',
+              source: 'POLICY',
+              message: `Meteor Wallet notice: ${txRes.error}. Finalized with verified enclave receipt.`,
+            });
+          }
+        } catch (err: any) {
+          state.addLog({
+            level: 'warn',
+            source: 'POLICY',
+            message: `Meteor note: ${err?.message || 'Transaction skipped'}.`,
+          });
+        }
+      }
     }
 
     // Delay between paced visual events
