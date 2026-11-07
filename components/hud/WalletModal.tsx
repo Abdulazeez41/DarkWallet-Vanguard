@@ -61,7 +61,7 @@ export function WalletModal() {
 
       if (data.success && data.balanceNear !== null) {
         setWalletBalanceNear(data.balanceNear);
-        setSyncStatus(`✓ Synced: ${data.balanceNear.toFixed(4)} NEAR (@ $${currentPrice.toFixed(2)})`);
+        setSyncStatus(`✓ Synced: ${data.balanceNear.toFixed(4)} NEAR`);
         soundFx.playSuccessTone();
       } else {
         setSyncStatus(`⚠️ ${data.error || 'Account not found on-chain'}`);
@@ -189,9 +189,8 @@ export function WalletModal() {
                   </span>
                   <span className="font-mono text-xs text-pass font-extrabold">NEAR</span>
                 </div>
-                <div className="font-mono text-[11px] text-mute tabular-nums flex items-center gap-1.5">
-                  <span>≈ ${(walletBalanceNear * nearPriceUsd).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</span>
-                  <span className="text-[10px] text-pass font-semibold">(@ ${nearPriceUsd.toFixed(2)}/NEAR)</span>
+                <div className="font-mono text-[11px] text-mute tabular-nums">
+                  ≈ ${(walletBalanceNear * nearPriceUsd).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
                 </div>
               </div>
             </div>

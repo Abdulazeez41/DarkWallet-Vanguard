@@ -141,11 +141,8 @@ export function VaultCard() {
               <span>{formattedNear}</span>
               <span className="text-xs text-pass font-extrabold">NEAR</span>
             </div>
-            <div className="text-[10px] text-mute tabular-nums flex items-center justify-end gap-1.5">
-              <span>≈ ${formattedUsd} USD</span>
-              <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-pass/10 text-pass border border-pass/20 font-mono font-semibold">
-                ${nearPriceUsd.toFixed(2)}/NEAR
-              </span>
+            <div className="text-[10px] text-mute tabular-nums">
+              ≈ ${formattedUsd} USD
             </div>
           </button>
         </div>
