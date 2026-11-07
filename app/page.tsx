@@ -140,25 +140,29 @@ export default function VaultRoomPage() {
         .catch(() => {});
       window.history.replaceState({}, "", window.location.pathname);
     } else {
-      const wallet = (window as any).meteorWallet || (window as any).near;
-      if (wallet && typeof wallet.isSignedIn === "function") {
-        wallet.isSignedIn().then((signedIn: boolean) => {
-          if (signedIn) {
-            const acc = typeof wallet.getAccountId === "function" ? wallet.getAccountId() : null;
-            if (acc) {
-              useVaultStore.getState().connectWallet("web3", acc, "Meteor Wallet");
-              fetch(`/api/near-balance?account=${encodeURIComponent(acc)}`)
-                .then((r) => r.json())
-                .then((d) => {
-                  if (d.success && d.balanceNear !== null) {
-                    useVaultStore.getState().setWalletBalanceNear(d.balanceNear);
-                  }
-                })
-                .catch(() => {});
+      const checkWalletAuth = async () => {
+        try {
+          const wallet = (window as any).meteorWallet || (window as any).near;
+          if (wallet && typeof wallet.isSignedIn === "function") {
+            const signedIn = await Promise.resolve(wallet.isSignedIn());
+            if (signedIn) {
+              const acc = typeof wallet.getAccountId === "function" ? wallet.getAccountId() : null;
+              if (acc) {
+                useVaultStore.getState().connectWallet("web3", acc, "Meteor Wallet");
+                const res = await fetch(`/api/near-balance?account=${encodeURIComponent(acc)}`);
+                const d = await res.json();
+                if (d.success && d.balanceNear !== null) {
+                  useVaultStore.getState().setWalletBalanceNear(d.balanceNear);
+                }
+              }
             }
           }
-        }).catch(() => {});
-      }
+        } catch {
+          // Extension detection error ignored safely
+        }
+      };
+
+      checkWalletAuth();
     }
   }, []);
 

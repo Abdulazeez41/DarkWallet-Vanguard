@@ -45,7 +45,7 @@ export async function connectMeteorWallet(): Promise<{
   }
 
   try {
-    const isSignedIn = typeof wallet.isSignedIn === 'function' ? await wallet.isSignedIn() : false;
+    const isSignedIn = typeof wallet.isSignedIn === 'function' ? await Promise.resolve(wallet.isSignedIn()) : false;
     let accountId = typeof wallet.getAccountId === 'function' ? wallet.getAccountId() : null;
 
     if (!isSignedIn || !accountId) {
