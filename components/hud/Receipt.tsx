@@ -27,6 +27,7 @@ export function Receipt() {
   const settlement = useVaultStore((s) => s.settlement);
   const ledgerEntry = useVaultStore((s) => s.ledgerEntry);
   const gateReason = useVaultStore((s) => s.gateReason);
+  const walletAddress = useVaultStore((s) => s.walletAddress);
 
   const isBlocked = stage === 'blocked' || Boolean(gateReason);
   const badgeInfo = getAttestationBadge(attestation);
@@ -184,14 +185,21 @@ export function Receipt() {
                 INSPECT PROOFS ↗
               </button>
 
-              {settlement?.explorerUrl && !isBlocked && (
+              {!isBlocked && (
                 <a
-                  href={settlement.explorerUrl}
+                  href={
+                    settlement?.explorerUrl && !settlement.explorerUrl.includes('demo')
+                      ? settlement.explorerUrl
+                      : walletAddress.endsWith('.testnet')
+                      ? `https://testnet.nearblocks.io/address/${walletAddress}`
+                      : 'https://testnet.nearblocks.io/address/v1.signer-prod.testnet'
+                  }
                   target="_blank"
                   rel="noreferrer"
                   className="py-1.5 px-3 rounded bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-[10px] tracking-wider uppercase text-center transition-colors"
+                  title="View account on NEAR Testnet Explorer"
                 >
-                  EXPLORER ↗
+                  TESTNET EXPLORER ↗
                 </a>
               )}
             </div>

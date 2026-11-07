@@ -375,7 +375,7 @@ export function getCachedDemoResponse(
     amountUsd: 25,
     settlementPath: ['Solana', 'NEAR Solver Mesh', 'Ethereum'],
     status: 'settled',
-    explorerUrl: 'https://nearblocks.io/txns/intent_near_demo',
+    explorerUrl: 'https://testnet.nearblocks.io/address/v1.signer-prod.testnet',
     isSimulated: true,
     simulationReason: 'Cached offline judge demo mode.',
     executedAt: timestamp,

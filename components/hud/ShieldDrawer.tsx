@@ -26,11 +26,12 @@ export function ShieldDrawer() {
   const settlement = useVaultStore((s) => s.settlement);
   const directive = useVaultStore((s) => s.directive);
   const gateReason = useVaultStore((s) => s.gateReason);
+  const walletAddress = useVaultStore((s) => s.walletAddress);
   const agentAddress = useVaultStore((s) => s.agentAddress);
   const setProofModalOpen = useVaultStore((s) => s.setProofModalOpen);
   const setMpcModalOpen = useVaultStore((s) => s.setMpcModalOpen);
 
-  const derivedKeys = getDerivedChainKeys(agentAddress);
+  const derivedKeys = getDerivedChainKeys(walletAddress);
 
   const [showDevView, setShowDevView] = useState(false);
   const [show3dView, setShow3dView] = useState(true);
@@ -269,21 +270,24 @@ export function ShieldDrawer() {
                     </div>
                     <div className="grid grid-cols-3 gap-1.5 text-[10px]">
                       {derivedKeys.slice(0, 3).map((k) => (
-                        <div
+                        <a
                           key={k.chain}
-                          className="p-1.5 rounded-xl bg-void border border-line flex flex-col gap-0.5 overflow-hidden"
+                          href={k.explorerUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 rounded-xl bg-void border border-line hover:border-pass/40 transition-colors flex flex-col gap-0.5 overflow-hidden group cursor-pointer"
+                          title={`View ${k.chain} on Testnet Explorer: ${k.derivedAddress}`}
                         >
-                          <div className="flex items-center justify-between text-ink font-bold text-[10px]">
-                            <span>{k.chain}</span>
-                            <span className="w-1.5 h-1.5 rounded-full bg-pass" />
+                          <div className="flex items-center justify-between text-ink font-bold text-[10px] group-hover:text-pass">
+                            <span className="truncate">{k.chain.replace(' Testnet', '').replace(' Sepolia', '')}</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-pass shrink-0" />
                           </div>
                           <div
                             className="truncate text-mute font-mono text-[9px] select-all"
-                            title={k.derivedAddress}
                           >
-                            {k.derivedAddress.slice(0, 6)}...{k.derivedAddress.slice(-4)}
+                            {k.derivedAddress.slice(0, 6)}...{k.derivedAddress.slice(-4)} ↗
                           </div>
-                        </div>
+                        </a>
                       ))}
                     </div>
                   </div>

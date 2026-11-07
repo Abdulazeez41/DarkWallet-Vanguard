@@ -476,7 +476,9 @@ No markdown fences, no conversational prose. Just pure JSON.`;
         amountUsd: directive.amountUsd,
         settlementPath: [directive.sourceChain, 'NEAR Chain Signatures', directive.destinationChain],
         status: 'settled',
-        explorerUrl: `https://nearblocks.io/txns/${data.result?.intent_hash || 'demo'}`,
+        explorerUrl: data.result?.intent_hash
+          ? `https://testnet.nearblocks.io/txns/${data.result.intent_hash}`
+          : 'https://testnet.nearblocks.io/address/v1.signer-prod.testnet',
         isSimulated: false,
         executedAt: new Date().toISOString(),
       };
@@ -499,7 +501,7 @@ No markdown fences, no conversational prose. Just pure JSON.`;
       amountUsd: directive.amountUsd,
       settlementPath: [directive.sourceChain, 'NEAR MPC Network', directive.destinationChain],
       status: 'simulated',
-      explorerUrl: `https://intents.near.org/intents/0x${randomHash.slice(0, 16)}`,
+      explorerUrl: 'https://testnet.nearblocks.io/address/v1.signer-prod.testnet',
       isSimulated: true,
       simulationReason: settlementSimulationReason,
       executedAt: new Date().toISOString(),

@@ -32,8 +32,8 @@ export function WalletModal() {
   const connectWallet = useVaultStore((s) => s.connectWallet);
   const disconnectWallet = useVaultStore((s) => s.disconnectWallet);
 
-  const [activeTab, setActiveTab] = useState<'cloud' | 'web3' | 'agent' | 'demo'>('cloud');
-  const [customAccountId, setCustomAccountId] = useState('');
+  const [activeTab, setActiveTab] = useState<'cloud' | 'web3' | 'agent' | 'demo'>('demo');
+  const [customAccountId, setCustomAccountId] = useState(walletAddress);
   const [connectingProvider, setConnectingProvider] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<string | null>(null);
@@ -234,15 +234,15 @@ export function WalletModal() {
             type="button"
             onClick={() => {
               soundFx.playStepTick();
-              setActiveTab('cloud');
+              setActiveTab('demo');
             }}
             className={`font-mono text-xs font-medium py-2 px-3 rounded-xl transition-all text-center ${
-              activeTab === 'cloud'
+              activeTab === 'demo'
                 ? 'bg-ink text-void shadow-xs font-bold'
                 : 'text-mute hover:text-ink'
             }`}
           >
-            ☁️ Cloud Wallet
+            ⚡ NEAR Testnet
           </button>
           <button
             type="button"
@@ -276,15 +276,15 @@ export function WalletModal() {
             type="button"
             onClick={() => {
               soundFx.playStepTick();
-              setActiveTab('demo');
+              setActiveTab('cloud');
             }}
             className={`font-mono text-xs font-medium py-2 px-3 rounded-xl transition-all text-center ${
-              activeTab === 'demo'
+              activeTab === 'cloud'
                 ? 'bg-ink text-void shadow-xs font-bold'
                 : 'text-mute hover:text-ink'
             }`}
           >
-            ⚡ Demo Vault
+            ☁️ Cloud FastAuth
           </button>
         </div>
 
@@ -541,7 +541,7 @@ export function WalletModal() {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="e.g. yourname.testnet"
+                  placeholder="e.g. dulaz.testnet"
                   value={customAccountId}
                   onChange={(e) => setCustomAccountId(e.target.value)}
                   className="flex-1 bg-panel border border-line rounded-xl px-3.5 py-2 text-xs font-mono text-ink placeholder:text-mute/50 focus:outline-none focus:border-enclave"
@@ -549,7 +549,7 @@ export function WalletModal() {
                 <button
                   type="button"
                   onClick={() => {
-                    const acc = customAccountId.trim() || 'operator.testnet';
+                    const acc = customAccountId.trim() || 'dulaz.testnet';
                     handleConnect('demo', acc, 'NEAR Testnet Account');
                   }}
                   className="px-4 py-2 rounded-xl bg-pass text-void font-bold text-xs hover:opacity-90 transition-all active:scale-95 flex items-center gap-1.5"
@@ -565,12 +565,12 @@ export function WalletModal() {
                 <button
                   type="button"
                   onClick={() => {
-                    handleConnect('demo', 'operator.testnet', 'NEAR Testnet Vault', 198.6446);
-                    setCustomAccountId('operator.testnet');
+                    handleConnect('demo', 'dulaz.testnet', 'NEAR Testnet', 198.6446);
+                    setCustomAccountId('dulaz.testnet');
                   }}
-                  className="text-xs px-2.5 py-1 rounded-lg bg-panel border border-line hover:border-pass/40 text-ink hover:text-pass transition-all font-semibold"
+                  className="text-xs px-2.5 py-1 rounded-lg bg-panel border border-pass/40 text-pass hover:bg-pass/10 transition-all font-bold"
                 >
-                  💰 198.6446 NEAR (My Assets)
+                  💰 dulaz.testnet (198.64 NEAR)
                 </button>
                 <button
                   type="button"
@@ -585,8 +585,8 @@ export function WalletModal() {
                 <button
                   type="button"
                   onClick={() => {
-                    handleConnect('demo', 'operator.near', 'Demo Testnet Vault', 198.6446);
-                    setCustomAccountId('operator.near');
+                    handleConnect('demo', 'dulaz.testnet', 'Demo Testnet Vault', 198.6446);
+                    setCustomAccountId('dulaz.testnet');
                   }}
                   className="text-xs text-enclave hover:underline font-semibold ml-auto"
                 >

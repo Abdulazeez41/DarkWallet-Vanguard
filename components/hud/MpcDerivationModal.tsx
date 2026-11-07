@@ -19,6 +19,7 @@ import {
   getDerivedChainKeys,
   generateMpcSignatureProof,
   ROOT_MPC_CONTRACT_MAINNET,
+  ROOT_MPC_CONTRACT_TESTNET,
   ROOT_MPC_PUBLIC_KEY,
 } from '@/lib/mpcDerivation';
 import {
@@ -31,6 +32,7 @@ import {
 export function MpcDerivationModal() {
   const isMpcModalOpen = useVaultStore((s) => s.isMpcModalOpen);
   const setMpcModalOpen = useVaultStore((s) => s.setMpcModalOpen);
+  const walletAddress = useVaultStore((s) => s.walletAddress);
   const agentAddress = useVaultStore((s) => s.agentAddress);
 
   const [selectedChain, setSelectedChain] = useState<'Ethereum' | 'Bitcoin' | 'Solana'>('Ethereum');
@@ -38,7 +40,8 @@ export function MpcDerivationModal() {
 
   if (!isMpcModalOpen) return null;
 
-  const derivedKeys = getDerivedChainKeys(agentAddress);
+  const isTestnet = walletAddress.endsWith('.testnet') || walletAddress.includes('testnet');
+  const derivedKeys = getDerivedChainKeys(walletAddress);
   const proof = generateMpcSignatureProof('dir_active_intent', `${selectedChain.toLowerCase()},1`);
 
   const handleCopy = (text: string, label: string) => {
@@ -49,16 +52,10 @@ export function MpcDerivationModal() {
   };
 
   const getChainIcon = (chain: string) => {
-    switch (chain) {
-      case 'Bitcoin':
-        return <BitcoinLogo size={18} />;
-      case 'Ethereum':
-        return <EthereumLogo size={18} />;
-      case 'Solana':
-        return <SolanaLogo size={18} />;
-      default:
-        return <NearLogo size={18} />;
-    }
+    if (chain.includes('Bitcoin')) return <BitcoinLogo size={18} />;
+    if (chain.includes('Ethereum')) return <EthereumLogo size={18} />;
+    if (chain.includes('Solana')) return <SolanaLogo size={18} />;
+    return <NearLogo size={18} />;
   };
 
   return (
@@ -101,12 +98,12 @@ export function MpcDerivationModal() {
           <div className="p-3.5 sm:p-4 rounded-2xl bg-panel2 border border-line font-mono space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs">
               <span className="font-bold text-ink flex items-center gap-1.5">
-                <span>Root Signer:</span>
+                <span>Root MPC Contract:</span>
                 <code className="px-2 py-0.5 rounded-md bg-panel border border-line text-enclave text-[11px]">
-                  {ROOT_MPC_CONTRACT_MAINNET}
+                  {isTestnet ? ROOT_MPC_CONTRACT_TESTNET : ROOT_MPC_CONTRACT_MAINNET}
                 </code>
               </span>
-              <span className="text-mute text-[11px] font-medium">SECP256K1 Threshold MPC</span>
+              <span className="text-mute text-[11px] font-medium">SECP256K1 Threshold MPC ({isTestnet ? 'Testnet' : 'Mainnet'})</span>
             </div>
 
             <div className="p-3 rounded-xl bg-void border border-line text-xs space-y-1 leading-relaxed">
@@ -124,9 +121,9 @@ export function MpcDerivationModal() {
           <div className="space-y-2 font-mono">
             <div className="flex items-center justify-between text-[11px] sm:text-xs text-mute font-medium px-1">
               <span className="truncate max-w-[280px] sm:max-w-none">
-                DERIVED ACCOUNTS FOR: <strong className="text-ink">{agentAddress}</strong>
+                ROOT CUSTODY ACCOUNT: <strong className="text-pass">{walletAddress}</strong>
               </span>
-              <span className="shrink-0">4 Rails Connected</span>
+              <span className="shrink-0">{derivedKeys.length} Rails Connected</span>
             </div>
 
             <div className="space-y-2">

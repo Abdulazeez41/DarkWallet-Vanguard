@@ -224,12 +224,12 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   isGuardrailsModalOpen: false,
   policyPreset: 'balanced',
 
-  // Account & Custody State
+  // Account & Custody State (Default: NEAR Testnet with active custody)
   walletConnected: true,
-  walletAddress: 'operator.near',
-  agentAddress: 'vanguard-agent.near',
-  walletType: 'cloud',
-  walletProvider: 'NEAR FastAuth Cloud',
+  walletAddress: 'dulaz.testnet',
+  agentAddress: 'agent.dulaz.testnet',
+  walletType: 'demo',
+  walletProvider: 'NEAR Testnet (Meteor / MyNearWallet)',
   walletBalanceNear: 198.6446,
   nearPriceUsd: 5.20,
   isWalletModalOpen: false,
@@ -300,11 +300,12 @@ export const useVaultStore = create<VaultState>((set, get) => ({
     }
   },
 
-  connectWallet: (type, address = 'operator.near', provider = 'NEAR FastAuth Cloud', balanceNear) =>
+  connectWallet: (type, address = 'dulaz.testnet', provider = 'NEAR Testnet', balanceNear) =>
     set((state) => ({
       walletConnected: true,
       walletType: type,
       walletAddress: address,
+      agentAddress: address.endsWith('.testnet') ? `agent.${address}` : `agent.${address}`,
       walletProvider: provider,
       walletBalanceNear: balanceNear !== undefined ? balanceNear : state.walletBalanceNear,
     })),
@@ -317,16 +318,18 @@ export const useVaultStore = create<VaultState>((set, get) => ({
     set({
       walletConnected: false,
       walletType: null,
-      walletAddress: 'disconnected.near',
+      walletAddress: 'disconnected.testnet',
+      agentAddress: 'agent.disconnected.testnet',
       walletProvider: 'None',
     }),
 
   toggleWallet: () =>
     set((state) => ({
       walletConnected: !state.walletConnected,
-      walletAddress: state.walletConnected ? 'disconnected.near' : 'operator.near',
-      walletType: state.walletConnected ? null : 'cloud',
-      walletProvider: state.walletConnected ? 'None' : 'NEAR FastAuth Cloud',
+      walletAddress: state.walletConnected ? 'disconnected.testnet' : 'dulaz.testnet',
+      agentAddress: state.walletConnected ? 'agent.disconnected.testnet' : 'agent.dulaz.testnet',
+      walletType: state.walletConnected ? null : 'demo',
+      walletProvider: state.walletConnected ? 'None' : 'NEAR Testnet',
     })),
   setWalletModalOpen: (isWalletModalOpen) => set({ isWalletModalOpen }),
   setMpcModalOpen: (isMpcModalOpen) => set({ isMpcModalOpen }),
