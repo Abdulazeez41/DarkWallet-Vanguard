@@ -1,0 +1,8 @@
+{
+  "accountId": "vanguard-hfgzlx.testnet",
+  "publicKey": "ed25519:hoDBQXjtESHAdCSHBGAwdQy6ek3df31AjY89GGnBBME",
+  "privateKey": "ed25519:32P9JbKoAQf4BCkiSBYLC1k5TXFHSCbEkNLZ8JAZDstxC23G6cz7iFBCgazhReg5vbg3tmgDq2mPQw6ZJDfkEg5a",
+  "createdTxHash": "DnQPxhLfunC8ajzyjDxWsi3TDizmhDp7eANYvuSSHwt4",
+  "networkId": "testnet",
+  "nodeUrl": "https://rpc.testnet.near.org"
+}

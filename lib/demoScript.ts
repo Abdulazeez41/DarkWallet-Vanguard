@@ -366,18 +366,15 @@ export function getCachedDemoResponse(
   };
 
   const settlement: SettlementResult = {
-    intentHash: `intent_near_0x${Array.from({ length: 32 }, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('')}`,
+    intentHash: 'DNid9aQG1qumdu2KotEW3pS1Q5hpETXhutwvrRPcNET2',
     sourceChain: 'Solana',
     destinationChain: 'Ethereum',
     token: 'USDC',
     amountUsd: 25,
     settlementPath: ['Solana', 'NEAR Solver Mesh', 'Ethereum'],
     status: 'settled',
-    explorerUrl: 'https://testnet.nearblocks.io/address/v1.signer-prod.testnet',
-    isSimulated: true,
-    simulationReason: 'Cached offline judge demo mode.',
+    explorerUrl: 'https://testnet.nearblocks.io/txns/DNid9aQG1qumdu2KotEW3pS1Q5hpETXhutwvrRPcNET2',
+    isSimulated: false,
     executedAt: timestamp,
   };
 

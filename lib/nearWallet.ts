@@ -151,6 +151,21 @@ export async function signAndBroadcastNearTransaction(params?: {
 }
 
 /**
+ * Disconnects from Meteor Wallet browser extension.
+ */
+export async function disconnectMeteorWallet(): Promise<void> {
+  if (typeof window === 'undefined') return;
+  const wallet = getInjectedNearWallet();
+  if (wallet && typeof wallet.signOut === 'function') {
+    try {
+      await Promise.resolve(wallet.signOut());
+    } catch {
+      // Ignored
+    }
+  }
+}
+
+/**
  * Generates an official MyNearWallet testnet signing URL for browsers without an extension.
  */
 export function getMyNearWalletTestnetSignUrl(callbackUrl: string): string {

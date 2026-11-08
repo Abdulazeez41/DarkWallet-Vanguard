@@ -125,6 +125,17 @@ export default function VaultRoomPage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // Immediately fetch live balance for active NEAR Testnet account
+    const initialAcc = useVaultStore.getState().walletAddress || "dulaz.testnet";
+    fetch(`/api/near-balance?account=${encodeURIComponent(initialAcc)}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && typeof d.balanceNear === "number") {
+          useVaultStore.getState().setWalletBalanceNear(d.balanceNear);
+        }
+      })
+      .catch(() => {});
+
     const params = new URLSearchParams(window.location.search);
     const redirectedAccount = params.get("account_id");
 

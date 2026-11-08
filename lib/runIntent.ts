@@ -57,6 +57,7 @@ export async function runIntent(
       },
       body: JSON.stringify({
         ...request,
+        userAccountId: store.walletAddress || 'dulaz.testnet',
         stream: true,
       }),
     });
@@ -153,8 +154,8 @@ async function playbackEvents(events: RunEvent[]): Promise<void> {
       const state = useVaultStore.getState();
       const hasMeteor = isMeteorInstalled();
 
-      // Only attempt live on-chain broadcast if policy passed and Meteor is active
-      if (hasMeteor && state.walletConnected) {
+      // Only attempt live browser extension signing if user actively connected via web3 extension
+      if (hasMeteor && state.walletConnected && state.walletType === 'web3') {
         state.addLog({
           level: 'enclave',
           source: 'ENCLAVE',
@@ -179,10 +180,15 @@ async function playbackEvents(events: RunEvent[]): Promise<void> {
             // Update settlement event with the real on-chain transaction hash
             const settlementEvt = events.find((e) => e.type === 'SETTLEMENT_EVENT');
             if (settlementEvt && settlementEvt.type === 'SETTLEMENT_EVENT') {
-              settlementEvt.payload.settlement.intentHash = txRes.txHash;
-              settlementEvt.payload.settlement.explorerUrl =
-                txRes.explorerUrl || `https://testnet.nearblocks.io/txns/${txRes.txHash}`;
-              settlementEvt.payload.settlement.isSimulated = false;
+              settlementEvt.payload = {
+                ...settlementEvt.payload,
+                settlement: {
+                  ...settlementEvt.payload.settlement,
+                  intentHash: txRes.txHash,
+                  explorerUrl: txRes.explorerUrl || `https://testnet.nearblocks.io/txns/${txRes.txHash}`,
+                  isSimulated: false,
+                },
+              };
             }
           } else if (txRes.error) {
             state.addLog({

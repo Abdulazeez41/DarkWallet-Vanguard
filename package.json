@@ -21,6 +21,7 @@
     "@react-three/postprocessing": "^3.2.2",
     "clsx": "^2.1.1",
     "framer-motion": "^14.9.1",
+    "near-api-js": "^7.4.0",
     "next": "^15.5.28",
     "openai": "^4.104.0",
     "react": "^19.3.1",

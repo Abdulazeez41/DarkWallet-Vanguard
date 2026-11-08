@@ -71,17 +71,14 @@ export class VanguardClient {
     this.enclaveEndpoint = config.enclaveEndpoint || 'https://cloud-api.near.ai/v1';
 
     this.policy = {
-      maxSpendPerActionUsd: config.policy?.maxSpendPerActionUsd ?? 50,
+      maxUsdPerTx: (config.policy as any)?.maxUsdPerTx ?? (config.policy as any)?.maxSpendPerActionUsd ?? 50,
       sessionBudgetCapUsd: config.policy?.sessionBudgetCapUsd ?? 200,
       spentInSessionUsd: 0,
       tokenWhitelist: config.policy?.tokenWhitelist ?? ['USDC', 'USDT', 'NEAR', 'SOL', 'ETH', 'BTC'],
       chainWhitelist: config.policy?.chainWhitelist ?? ['Ethereum', 'Solana', 'Bitcoin', 'NEAR'],
-      counterpartyAllowlist: config.policy?.counterpartyAllowlist ?? [
-        '0x71c8...vanguard_vault',
-        '0x1111111254fb6c44bac0bed2854e76f90643097d',
-      ],
-      sessionExpiryTimestampMs: Date.now() + 24 * 60 * 60 * 1000,
+      sessionExpiryMs: Date.now() + 24 * 60 * 60 * 1000,
       isRevoked: false,
+      requireHumanApprovalOnWarn: true,
     };
   }
 
@@ -128,7 +125,7 @@ export class VanguardClient {
 
     // Accumulate session spend
     this.sessionSpentUsd += intent.amountUsd;
-    this.policy.spentInSessionUsd = this.sessionSpentUsd;
+    this.policy = { ...this.policy, spentInSessionUsd: this.sessionSpentUsd };
 
     const freshNonce = `0x${Array.from({ length: 32 }, () =>
       Math.floor(Math.random() * 16).toString(16)
